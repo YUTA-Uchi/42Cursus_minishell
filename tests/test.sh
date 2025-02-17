@@ -1,5 +1,5 @@
 cleanup() {
-	rm -f cmp out
+	rm -f cmp out a.out
 }
 
 assert() {
@@ -27,7 +27,23 @@ assert() {
 	echo
 }
 
+# Generate Executable
+cat <<EOF | gcc -xc -o a.out -
+#include <stdio.h>
+int main() { printf("hello from a.out\n"); }
+EOF
+
 # Empty line (EOF)
 assert ''
+assert '/bin/echo'
+assert '/bin/pwd'
+
+assert 'pwd'
+assert 'echo'
+assert 'ls'
+assert './a.out'
+
+assert 'a.out'
+assert 'nosuchfile'
 
 cleanup
