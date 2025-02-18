@@ -1,34 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/17 14:35:35 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 16:23:31 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/02/18 16:32:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "minishell.h"
+#include "error_handler.h"
 
-# include <stdio.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <string.h>
-# include <stdbool.h>
-# include <errno.h>
-# include <ctype.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <sys/types.h>
-# include <sys/wait.h>
-# include "libft.h"
+void	fatal_error(const char *function_name, const char *msg)
+{
+	ft_printf(STDERR_FILENO, "%s%sFatal Error: %s\n", ERR_HEADER, \
+			function_name, msg);
+	exit(1);
+}
 
-
-
-
-
-
-#endif
+int	get_err_status(void)
+{
+	if (errno == EACCES)
+		return (E_NOPERMISSION);
+	return (E_NOTFOUND);
+}

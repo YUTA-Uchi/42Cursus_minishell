@@ -1,34 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   command.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/17 14:35:35 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 16:23:31 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/02/18 15:26:54 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/02/18 16:17:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef COMMAND_H
+# define COMMAND_H
 
-# include <stdio.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <string.h>
-# include <stdbool.h>
-# include <errno.h>
-# include <ctype.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <sys/types.h>
-# include <sys/wait.h>
-# include "libft.h"
+# include "minishell.h"
+# include "redirection.h"
 
+typedef struct s_cmd	t_cmd;
 
+struct s_cmd
+{
+	pid_t			pid;
+	char			*cmd_name;
+	char			**args;
+	t_redirection	*redirections;
+	t_cmd			*next;
+};
 
-
-
-
+t_cmd	*create_cmd(char *line);
+void	free_cmd(t_cmd *cmd);
 #endif

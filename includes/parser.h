@@ -1,34 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/17 14:35:35 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 16:23:31 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/02/18 18:07:10 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
-
-# include <stdio.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <string.h>
-# include <stdbool.h>
-# include <errno.h>
-# include <ctype.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <sys/types.h>
-# include <sys/wait.h>
-# include "libft.h"
+#ifndef PARSER_H
+# define PARSER_H
 
 
+# include "minishell.h"
+# include "command.h"
+# include "error_handler.h"
 
+# define META_CHARACTER " \t\n|;><"
 
+typedef struct s_parser	t_parser;
+struct s_parser
+{
+	char	*line;
+	t_cmd	*(*order)(t_parser *);
+};
 
+t_parser	*create_parser(void);
+void		free_parser(t_parser *parser);
 
 #endif

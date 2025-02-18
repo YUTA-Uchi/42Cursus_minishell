@@ -1,38 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 18:10:31 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/02/18 16:34:25 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "front_desk.h"
+#include "command.h"
 
-int	main(void)
+t_cmd	*create_cmd(char *line)
 {
-	char			*line;
-	t_front_desk	*front_desk;
-	t_cmd			*cmds_list;
+	t_cmd		*cmd;
+	char		*args[] = {line, NULL};
 
-	front_desk = create_front_desk();
-	if (!front_desk)
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
 		exit(1);
-	while (1)
+	cmd->cmd_name = strdup(line);
+	if (!cmd->cmd_name)
+		exit(1);
+	cmd->args = args;
+	cmd->pid = 0;
+	return (cmd);
+}
+
+void	free_arr(char **data)
+{
+	char	**data_origin;
+
+	data_origin = data;
+	while (*data)
 	{
-		set_line(front_desk);
-		if (!front_desk->parser->line)
-			continue ;
-		set_cmds(front_desk);
-		if (!front_desk->executor->cmds)
-			// TODO error handling parser error;
-		front_desk->executor->excute(front_desk->executor);
-		free(line);
+		free(*data);
+		data++;
 	}
-	free_front_desk(front_desk);
-	exit(0);
+	free(data_origin);
 }

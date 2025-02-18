@@ -6,12 +6,17 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/02/17 18:20:17 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/02/18 18:14:55 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			:=	minishell
-COMMON_SRCS		:=	main.c
+COMMON_SRCS		:=	main.c \
+					command.c \
+					error_handler.c \
+					executer.c \
+					front_desk.c \
+					parser.c \
 
 OBJ_DIR			:=	./obj
 OBJS			:=	$(COMMON_SRCS:%.c=$(OBJ_DIR)/%.o)
@@ -22,7 +27,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executer:./srcs/parser:./srcs/front_desk:
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a
