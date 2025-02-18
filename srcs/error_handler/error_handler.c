@@ -26,3 +26,20 @@ int	get_err_status(void)
 		return (E_NOPERMISSION);
 	return (E_NOTFOUND);
 }
+
+t_error_handler	*create_error_handler(void)
+{
+	t_error_handler	*error_handler;
+
+	error_handler = malloc(sizeof(t_error_handler));
+	if (!error_handler)
+		return (NULL);
+	error_handler->error = E_SUCCESS;
+	error_handler->msg = NULL;
+	return (error_handler);
+}
+
+void	free_error_handler(t_error_handler *error_handler)
+{
+	free(error_handler);
+}

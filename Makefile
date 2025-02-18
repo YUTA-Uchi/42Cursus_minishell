@@ -14,7 +14,7 @@ NAME			:=	minishell
 COMMON_SRCS		:=	main.c \
 					command.c \
 					error_handler.c \
-					executer.c \
+					executor.c \
 					front_desk.c \
 					parser.c \
 
@@ -27,7 +27,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executer:./srcs/parser:./srcs/front_desk:
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/parser:./srcs/front_desk:
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a

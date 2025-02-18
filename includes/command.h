@@ -29,4 +29,5 @@ struct s_cmd
 
 t_cmd	*create_cmd(char *line);
 void	free_cmd(t_cmd *cmd);
+void	free_arr(char **data);
 #endif

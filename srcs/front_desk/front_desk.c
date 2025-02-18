@@ -13,6 +13,19 @@
 #include "minishell.h"
 #include "front_desk.h"
 
+void	set_line(t_front_desk *front_desk)
+{
+	char	*line;
+
+	line = front_desk->listen(front_desk, PROMPT);
+	front_desk->parser->line = line;
+}
+
+void	set_cmds(t_front_desk *front_desk)
+{
+	front_desk->executor->cmds = front_desk->parser->order(front_desk->parser);
+}
+
 static char	*ft_readline(t_front_desk *self, const char *prompt)
 {
 	char	*line;

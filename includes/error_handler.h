@@ -18,12 +18,6 @@
 
 typedef enum e_error	t_error;
 
-typedef struct s_error_handler
-{
-	t_error		error;
-	char		*msg;
-}	t_error_handler;
-
 enum	e_error
 {
 	E_SUCCESS = 0,
@@ -33,8 +27,15 @@ enum	e_error
 	E_SIGTERM = 128
 };
 
+typedef struct s_error_handler
+{
+	t_error		error;
+	char		*msg;
+}	t_error_handler;
+
 t_error_handler	*create_error_handler(void);
 void			free_error_handler(t_error_handler *error_handler);
 void			fatal_error(const char *function_name, const char *msg) \
 							__attribute__((noreturn));
+int				get_err_status(void);
 #endif

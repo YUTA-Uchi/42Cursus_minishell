@@ -15,9 +15,7 @@
 
 int	main(void)
 {
-	char			*line;
 	t_front_desk	*front_desk;
-	t_cmd			*cmds_list;
 
 	front_desk = create_front_desk();
 	if (!front_desk)
@@ -28,10 +26,10 @@ int	main(void)
 		if (!front_desk->parser->line)
 			continue ;
 		set_cmds(front_desk);
-		if (!front_desk->executor->cmds)
-			// TODO error handling parser error;
+		// if (!front_desk->executor->cmds)
+		// 	// TODO error handling parser error;
 		front_desk->executor->excute(front_desk->executor);
-		free(line);
+		free(front_desk->parser->line);
 	}
 	free_front_desk(front_desk);
 	exit(0);

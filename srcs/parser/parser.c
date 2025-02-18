@@ -13,18 +13,21 @@
 #include "minishell.h"
 #include "parser.h"
 
-t_cmd	*create_cmd(char *line)
+t_cmd	*parse(t_parser *parser)
 {
-	t_cmd		*cmd;
-	char		*args[] = {line, NULL};
+	char	*line;
+	t_cmd	*cmd;
 
+	line = parser->line;
 	cmd = malloc(sizeof(t_cmd));
 	if (!cmd)
 		exit(1);
-	cmd->cmd_name = strdup(line);
+	cmd->args = ft_split(line, ' ');
+	if (!cmd->args)
+		exit(1);
+	cmd->cmd_name = cmd->args[0];
 	if (!cmd->cmd_name)
 		exit(1);
-	cmd->args = args;
 	cmd->pid = 0;
 	return (cmd);
 }
@@ -37,7 +40,7 @@ t_parser	*create_parser(void)
 	if (!parser)
 		return (NULL);
 	parser->line = NULL;
-	parser->order = create_cmd;
+	parser->order = parse;
 	return (parser);
 }
 

@@ -26,9 +26,4 @@
 # include <sys/wait.h>
 # include "libft.h"
 
-
-
-
-
-
 #endif

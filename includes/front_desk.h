@@ -31,6 +31,8 @@ struct s_front_desk
 	char			*(*listen)(t_front_desk *, const char *);
 };
 
+void	set_line(t_front_desk *front_desk);
+void	set_cmds(t_front_desk *front_desk);
 t_front_desk	*create_front_desk(void);
 void			free_front_desk(t_front_desk *front_desk);
 
