@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 14:03:33 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 16:40:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef struct s_executor	t_executor;
 struct s_executor
 {
 	t_cmd				*cmds;
-	t_error				*error_handler;
+	t_error_handler		*error_handler;
 	const t_builtins	*builtins_list;
 	int					(*excute)(t_executor *);
 };

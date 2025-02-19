@@ -6,12 +6,46 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 13:16:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 16:49:16 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "executor.h"
+
+static const t_builtins	*create_builtins_list(void)
+{
+	static const t_builtins	builtins_list[] = {\
+		{BUILTIN_ECHO, ft_echo}, \
+		{BUILTIN_CD, ft_cd}, \
+		{BUILTIN_PWD, ft_pwd}, \
+		{BUILTIN_EXPORT, ft_export}, \
+		{BUILTIN_UNSET, ft_unset}, \
+		{BUILTIN_ENV, ft_env}, \
+		{BUILTIN_EXIT, ft_exit}, \
+		{NULL, NULL}
+	};
+
+	return (builtins_list);
+}
+
+const t_builtins	*lookup_builtin(char *cmd_name, \
+									const t_builtins *builtins_list)
+{
+	int					i;
+	const t_builtins	*ret;
+
+	i = 0;
+	ret = builtins_list;
+	while (ret->name)
+	{
+		if (strcmp(ret->name, cmd_name) == 0)
+			break ;
+		i++;
+		ret++;
+	}
+	return (ret);
+}
 
 static char	*create_path(char *env_path, char *cmd)
 {
@@ -61,13 +95,17 @@ int	excute(t_executor *self)
 	int	status;
 	int	exec_ret;
 
+	if (lookup_builtin(self->cmds->cmd_name, self->builtins_list)->name)
+	{
+		exec_ret = lookup_builtin(self->cmds->cmd_name, \
+				self->builtins_list)->func(self->cmds, self->error_handler);
+		return (exec_ret);
+	}
 	self->cmds->pid = fork();
 	if (self->cmds->pid == -1)
 		fatal_error("fork: ", strerror(errno));
 	else if (self->cmds->pid == 0)
 	{
-		// if (is_builtin(self->cmds->cmd_name))
-		// 	exec_ret = exec_builtin(self->cmds);
 		if (ft_strchr(self->cmds->cmd_name, '/') != NULL)
 			exec_ret = execve_in_absolute_path(self->cmds);
 		else
@@ -87,23 +125,14 @@ int	excute(t_executor *self)
 t_executor	*create_executor(void)
 {
 	t_executor			*executor;
-	// const t_builtins	t_builtins_list[] = {\
-	// 	{BUILTIN_ECHO, ft_echo}, \
-	// 	{BUILTIN_CD, ft_cd}, \
-	// 	{BUILTIN_PWD, ft_pwd}, \
-	// 	{BUILTIN_EXPORT, ft_export}, \
-	// 	{BUILTIN_UNSET, ft_unset}, \
-	// 	{BUILTIN_ENV, ft_env}, \
-	// 	{BUILTIN_EXIT, ft_exit}, \
-	// 	{NULL, NULL} \
-	// };
 
 	executor = malloc(sizeof(t_executor));
 	if (!executor)
 		return (NULL);
 	executor->cmds = NULL;
 	executor->excute = excute;
-	executor->builtins_list = NULL;
+	executor->error_handler = create_error_handler();
+	executor->builtins_list = create_builtins_list();
 	return (executor);
 }
 

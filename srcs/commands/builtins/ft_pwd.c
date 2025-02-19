@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 14:07:44 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 15:42:24 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@ int	ft_pwd(t_cmd *self, t_error_handler *error_handler)
 {
 	char	*absolute_path_buff;
 
+	if (self->args[1] != NULL)
+	{
+		set_error(error_handler, E_GENERAL_ERR, PWD_TOO_MANY_ARGS);
+		return (1);
+	}
 	absolute_path_buff = malloc(sizeof(char) * PATH_MAX);
 	if (getcwd(absolute_path_buff, PATH_MAX) == NULL)
 	{

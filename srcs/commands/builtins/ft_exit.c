@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 14:47:32 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 16:44:16 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,6 @@ int	ft_exit(t_cmd *cmd, t_error_handler *error_handler)
 		set_error(error_handler, E_GENERAL_ERR, "numeric argument required");
 		return (1);
 	}
-	free_cmd(cmd); // TODO exit should free all the memory
+	//free_cmd(cmd); // TODO exit should free all the memory
 	exit(exit_status);
 }

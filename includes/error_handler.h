@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 14:18:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 15:44:35 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@
 # define COMMAND_NOT_FOUND "command not found"
 // builtin pwd error message
 # define BUFF_NULL "buff is null"
+# define PWD_TOO_MANY_ARGS "pwd: too many arguments"
 // buitin cd error message
 # define CD_HOME_NOT_SET "cd: HOME not set"
 # define CD_TOO_MANY_ARGS "cd: too many arguments"
 //builtin env error message
 # define ENV_TOO_MANY_ARGS "env: too many arguments"
 # define ENV_NULL "environment variables are NULL"
+// builtin unset error message
 
 typedef enum e_error	t_error;
 
@@ -37,8 +39,8 @@ enum	e_error
 
 typedef struct s_error_handler
 {
-	t_error		error;
-	char		*msg;
+	t_error			error;
+	const char		*msg;
 }	t_error_handler;
 
 t_error_handler	*create_error_handler(void);
