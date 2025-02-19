@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 18:06:08 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 13:16:16 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static char	*create_path(char *env_path, char *cmd)
 int	execve_in_absolute_path(t_cmd *cmd)
 {
 	if (access(cmd->cmd_name, F_OK) == 0)
-		return (execve(cmd->cmd_name, cmd->args, NULL));
+		return (execve(cmd->cmd_name, cmd->args, __environ));
 	return (fatal_error("", strerror(errno)), get_err_status());
 }
 
@@ -47,7 +47,7 @@ int	ft_execvp(t_cmd *cmd)
 		if (access(exec_path, F_OK) == 0)
 		{
 			free_arr(env_pathes);
-			return (execve(exec_path, cmd->args, NULL));
+			return (execve(exec_path, cmd->args, __environ));
 		}
 		free(exec_path);
 		i++;
@@ -66,6 +66,8 @@ int	excute(t_executor *self)
 		fatal_error("fork: ", strerror(errno));
 	else if (self->cmds->pid == 0)
 	{
+		// if (is_builtin(self->cmds->cmd_name))
+		// 	exec_ret = exec_builtin(self->cmds);
 		if (ft_strchr(self->cmds->cmd_name, '/') != NULL)
 			exec_ret = execve_in_absolute_path(self->cmds);
 		else
@@ -84,17 +86,30 @@ int	excute(t_executor *self)
 
 t_executor	*create_executor(void)
 {
-	t_executor	*executor;
+	t_executor			*executor;
+	// const t_builtins	t_builtins_list[] = {\
+	// 	{BUILTIN_ECHO, ft_echo}, \
+	// 	{BUILTIN_CD, ft_cd}, \
+	// 	{BUILTIN_PWD, ft_pwd}, \
+	// 	{BUILTIN_EXPORT, ft_export}, \
+	// 	{BUILTIN_UNSET, ft_unset}, \
+	// 	{BUILTIN_ENV, ft_env}, \
+	// 	{BUILTIN_EXIT, ft_exit}, \
+	// 	{NULL, NULL} \
+	// };
 
 	executor = malloc(sizeof(t_executor));
 	if (!executor)
 		return (NULL);
 	executor->cmds = NULL;
 	executor->excute = excute;
+	executor->builtins_list = NULL;
 	return (executor);
 }
 
 void	free_executor(t_executor *executor)
 {
+	if (executor->cmds)
+		free_cmd(executor->cmds);
 	free(executor);
 }

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 16:34:25 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 13:28:09 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,25 @@ void	free_arr(char **data)
 		data++;
 	}
 	free(data_origin);
+}
+
+void	free_cmd(t_cmd *cmd)
+{
+	free(cmd->cmd_name);
+	free_arr(cmd->args);
+	free(cmd->redirections);
+	free(cmd);
+}
+
+void	free_cmd_list(t_list *cmds)
+{
+	t_list	*tmp;
+
+	while (cmds)
+	{
+		tmp = cmds->next;
+		free_cmd(cmds->content);
+		free(cmds);
+		cmds = tmp;
+	}
 }

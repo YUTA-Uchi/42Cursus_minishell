@@ -1,34 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command.h                                          :+:      :+:    :+:   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/18 15:26:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 13:50:25 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/02/19 13:35:17 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/02/19 14:43:26 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMAND_H
-# define COMMAND_H
+#include "minishell.h"
+#include "executor.h"
 
-# include "minishell.h"
-# include "redirection.h"
-
-typedef struct s_cmd	t_cmd;
-
-struct s_cmd
+int	ft_unset(t_cmd *cmd, t_error_handler *error_handler)
 {
-	pid_t			pid;
-	char			*cmd_name;
-	char			**args;
-	t_redirection	*redirections;
-};
+	int		i;
 
-t_cmd	*create_cmd(char *line);
-void	free_cmd(t_cmd *cmd);
-void	free_arr(char **data);
-void	free_cmd_list(t_list *cmds);
-
-#endif
+	i = 1;
+	while (cmd->args[i])
+	{
+		if (unsetenv(cmd->args[i]) == -1) // unsetenv could not be used
+			return (fatal_error("ft_unset: ", strerror(errno)), get_err_status());
+		i++;
+	}
+	return (0);
+}

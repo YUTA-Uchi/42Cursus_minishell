@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 16:32:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 13:57:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ int	get_err_status(void)
 	if (errno == EACCES)
 		return (E_NOPERMISSION);
 	return (E_NOTFOUND);
+}
+
+void	set_error(t_error_handler *error_handler, int error, const char *msg)
+{
+	error_handler->error = error;
+	error_handler->msg = msg;
 }
 
 t_error_handler	*create_error_handler(void)

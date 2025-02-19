@@ -6,13 +6,20 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/02/18 18:14:55 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/02/19 14:46:26 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			:=	minishell
 COMMON_SRCS		:=	main.c \
 					command.c \
+					ft_cd.c \
+					ft_echo.c \
+					ft_env.c \
+					ft_exit.c \
+					ft_export.c \
+					ft_pwd.c \
+					ft_unset.c \
 					error_handler.c \
 					executor.c \
 					front_desk.c \
@@ -27,7 +34,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/parser:./srcs/front_desk:
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/builtins:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/parser:./srcs/front_desk:
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a
