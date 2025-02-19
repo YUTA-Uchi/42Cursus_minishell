@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/02/19 17:01:34 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/02/19 19:55:15 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ COMMON_SRCS		:=	main.c \
 					executor.c \
 					front_desk.c \
 					parser.c \
+					tokenizer.c \
 
 OBJ_DIR			:=	./obj
 OBJS			:=	$(COMMON_SRCS:%.c=$(OBJ_DIR)/%.o)
