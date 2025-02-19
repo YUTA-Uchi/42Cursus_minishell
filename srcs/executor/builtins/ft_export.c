@@ -6,12 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 15:40:40 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 17:00:06 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "executor.h"
+#include "builtin.h"
 
 int	ft_setenv(char *key, char *value, int overwrite)
 {

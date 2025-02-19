@@ -1,39 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*   ft_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/19 13:31:24 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 14:14:22 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/02/19 13:34:29 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/02/19 16:59:57 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "executor.h"
+#include "builtin.h"
 
-int	ft_echo(t_cmd *self, t_error_handler *error_handler)
+int	ft_env(t_cmd *cmd, t_error_handler *error_handler)
 {
 	int		i;
-	bool	is_option_n;
 
-	i = 1;
-	(void)error_handler;
-	is_option_n = false;
-	if (self->args[i] != NULL && ft_strncmp(self->args[i], "-n", 2) == 0)
+	i = 0;
+	if (cmd->args[1] != NULL)
 	{
-		is_option_n = true;
+		set_error(error_handler, E_GENERAL_ERR, ENV_TOO_MANY_ARGS);
+		return (1);
+	}
+	if (__environ == NULL)
+	{
+		set_error(error_handler, E_GENERAL_ERR, ENV_NULL);
+		return (1);
+	}
+	while (__environ[i])
+	{
+		ft_printf(STDOUT_FILENO, "%s\n", __environ[i]);
 		i++;
 	}
-	while (self->args[i] != NULL)
-	{
-		ft_printf(STDOUT_FILENO, "%s", self->args[i]);
-		if (self->args[i + 1] != NULL)
-			ft_printf(STDOUT_FILENO, " ");
-		i++;
-	}
-	if (!is_option_n)
-		ft_printf(STDOUT_FILENO, "\n");
 	return (0);
 }

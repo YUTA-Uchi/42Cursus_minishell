@@ -6,12 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 16:44:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/19 17:00:02 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "executor.h"
+#include "builtin.h"
 
 bool	ft_isdigit_str(char *str)
 {

@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/02/19 14:46:26 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/02/19 17:01:34 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ COMMON_SRCS		:=	main.c \
 					ft_export.c \
 					ft_pwd.c \
 					ft_unset.c \
+					builtins.c \
 					error_handler.c \
 					executor.c \
 					front_desk.c \
@@ -34,7 +35,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/builtins:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/parser:./srcs/front_desk:
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser:./srcs/front_desk:
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a
