@@ -6,31 +6,31 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 12:13:35 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 12:36:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "front_desk.h"
+#include "shell_manager.h"
 
 int	main(void)
 {
-	t_front_desk	*front_desk;
+	t_shell_manager	*shell_manager;
 
-	front_desk = create_front_desk();
-	if (!front_desk)
+	shell_manager = create_shell_manager();
+	if (!shell_manager)
 		exit(1);
 	while (1)
 	{
-		set_line(front_desk);
-		if (!front_desk->parser->line)
+		set_line(shell_manager);
+		if (!shell_manager->parser->line)
 			continue ;
-		set_cmds(front_desk);
-		// if (!front_desk->executor->cmds)
+		set_cmds(shell_manager);
+		// if (!shell_manager->executor->cmds)
 		// 	// TODO error handling parser error;
-		front_desk->executor->excute(front_desk->executor);
-		free(front_desk->parser->line);
+		shell_manager->executor->excute(shell_manager->executor);
+		free(shell_manager->parser->line);
 	}
-	free_front_desk(front_desk);
+	free_shell_manager(shell_manager);
 	exit(0);
 }
