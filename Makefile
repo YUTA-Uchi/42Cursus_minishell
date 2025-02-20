@@ -6,13 +6,14 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/02/20 12:35:40 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/02/20 16:41:05 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			:=	minishell
 COMMON_SRCS		:=	main.c \
 					command.c \
+					redirections.c \
 					ft_cd.c \
 					ft_echo.c \
 					ft_env.c \

@@ -6,27 +6,29 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 13:28:09 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 19:15:34 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "command.h"
 
-t_cmd	*create_cmd(char *line)
+t_list	*create_cmd(void)
 {
 	t_cmd		*cmd;
-	char		*args[] = {line, NULL};
 
-	cmd = malloc(sizeof(t_cmd));
+	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
-		exit(1);
-	cmd->cmd_name = strdup(line);
-	if (!cmd->cmd_name)
-		exit(1);
-	cmd->args = args;
+		return (NULL);
+	cmd->cmd_name = NULL;
+	cmd->args = ft_calloc(1, sizeof(char *));
+	if (!cmd->args)
+		return (free_cmd(cmd), NULL);
+	cmd->redirections = ft_calloc(1, sizeof(t_list));
+	if (!cmd->redirections)
+		return (free_cmd(cmd), NULL);
 	cmd->pid = 0;
-	return (cmd);
+	return (ft_lstnew(cmd));
 }
 
 void	free_arr(char **data)
@@ -42,23 +44,23 @@ void	free_arr(char **data)
 	free(data_origin);
 }
 
-void	free_cmd(t_cmd *cmd)
+void	free_cmd(void *cmd)
 {
-	free(cmd->cmd_name);
-	free_arr(cmd->args);
-	free(cmd->redirections);
-	free(cmd);
+	t_cmd	*cmd_ptr;
+
+	if (!cmd)
+		return ;
+	cmd_ptr = (t_cmd *)cmd;
+	if (cmd_ptr->cmd_name)
+		free(cmd_ptr->cmd_name);
+	if (cmd_ptr->args)
+		free_arr(cmd_ptr->args);
+	if (cmd_ptr->redirections)
+		free_redirection(&cmd_ptr->redirections);
+	free(cmd_ptr);
 }
 
-void	free_cmd_list(t_list *cmds)
+void	free_cmd_list(t_list **cmds)
 {
-	t_list	*tmp;
-
-	while (cmds)
-	{
-		tmp = cmds->next;
-		free_cmd(cmds->content);
-		free(cmds);
-		cmds = tmp;
-	}
+	ft_lstclear(cmds, free_cmd);
 }

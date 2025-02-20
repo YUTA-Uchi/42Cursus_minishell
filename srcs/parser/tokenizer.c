@@ -6,14 +6,26 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 19:50:52 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 19:46:52 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "parser.h"
 
-t_token	*create_token(t_token_type type, const char *value)
+t_token_type	get_token_type(char c)
+{
+	if (c == '|')
+		return (TOKEN_PIPE);
+	else if (c == '<')
+		return (TOKEN_REDIR_IN);
+	else if (c == '>')
+		return (TOKEN_REDIR_OUT);
+	else
+		return (TOKEN_WORD);
+}
+
+t_list	*create_token(t_token_type type, const char value)
 {
 	t_token	*token;
 
@@ -21,238 +33,179 @@ t_token	*create_token(t_token_type type, const char *value)
 	if (!token)
 		return (NULL);
 	token->type = type;
-	token->value = ft_strdup(value);
-	token->next = NULL;
-	return (token);
+	token->len = 1;
+	token->capacity = INITIAL_TOKEN_BUF_SIZE;
+	token->value = malloc(token->capacity);
+	if (!token->value)
+	{
+		free(token);
+		return (NULL);
+	}
+	token->value[0] = value;
+	token->value[1] = '\0';
+	return (ft_lstnew(token));
 }
 
-void	append_token(t_token **head, t_token **tail, t_token *token)
+bool	append_char_to_token(t_state *state, t_list **head, char c)
 {
-	if (!*head)
-	{
-		*head = token;
-		*tail = token;
-	}
-	else
-	{
-		(*tail)->next = token;
-		*tail = token;
-	}
-}
-
-#define INITIAL_TOKEN_BUF_SIZE 64
-
-char	*append_char(char *buffer, int *length, int *capacity, char c)
-{
-	int		new_capacity;
 	char	*new_buffer;
 	int		i;
+	t_list	*current;
+	t_token	*token_content;
 
-	if (*length + 1 >= *capacity)
+	current = *head;
+	current = ft_lstlast(current);
+	if (*state == STATE_NONE)
 	{
-		new_capacity = (*capacity) * 2;
-		new_buffer = malloc(new_capacity);
+		// ft_printf(STDOUT_FILENO, "append_char:%c\n", c);
+		ft_lstadd_back(head, create_token(TOKEN_WORD, c));
+		return (true);
+	}
+	token_content = (t_token *)(current->content);
+	if (token_content->len + 1 >= token_content->capacity)
+	{
+		token_content->capacity *= 2;
+		new_buffer = malloc(token_content->capacity);
 		if (!new_buffer)
-			return (NULL);
+			return (false);
 		i = 0;
-		while (i < *length)
+		while (i < token_content->len)
 		{
-			new_buffer[i] = buffer[i];
+			new_buffer[i] = token_content->value[i];
 			i++;
 		}
-		free(buffer);
-		buffer = new_buffer;
-		*capacity = new_capacity;
+		free(token_content->value);
+		token_content->value = new_buffer;
 	}
-	buffer[*length] = c;
-	(*length)++;
-	buffer[*length] = '\0';
-	return (buffer);
+	token_content->value[token_content->len] = c;
+	token_content->len++;
+	token_content->value[token_content->len] = '\0';
+	// ft_printf(STDOUT_FILENO, "append_char:%c\n", c);
+	return (true);
 }
 
-bool	tokenize_state_none(t_state *state, t_token **head, t_token **tail, char **token_buf, int *token_len, int *token_capacity, char c)
+bool	tokenize_state_none(t_state *state, t_list **head, char c)
 {
-	if (isspace(c))
+	t_list	*token;
+
+	// ft_printf(STDOUT_FILENO, "tokenize_state_none\n");
+	if (c == '<' || c == '>' || c == '|')
 	{
-		/* スペースは無視 */
-	}
-	else if (c == '<')
-	{
-		t_token *token = create_token(TOKEN_REDIR_IN, "<");
-		append_token(head, tail, token);
-	}
-	else if (c == '>')
-	{
-		t_token *token = create_token(TOKEN_REDIR_OUT, ">");
-		append_token(head, tail, token);
-	}
-	else if (c == '|')
-	{
-		t_token *token = create_token(TOKEN_PIPE, "|");
-		append_token(head, tail, token);
-	}
-	else if (c == '\'')
-	{
-		*state = STATE_IN_SINGLE_QUOTE;
-	}
-	else if (c == '\"')
-	{
-		*state = STATE_IN_DOUBLE_QUOTE;
+		token = create_token(get_token_type(c), c);
+		ft_lstadd_back(head, token);
 	}
 	else
 	{
-		*state = STATE_WORD;
-		*token_buf = append_char(*token_buf, token_len, token_capacity, c);
-		if (!*token_buf)
+		if (!append_char_to_token(state, head, c))
 			return (false);
+		if (c == '\'')
+			*state = STATE_IN_SINGLE_QUOTE;
+		else if (c == '\"')
+			*state = STATE_IN_DOUBLE_QUOTE;
+		else if (!isspace(c))
+			*state = STATE_WORD;
 	}
 	return (true);
 }
 
-bool	tokenize_state_word(t_state *state, t_token **head, t_token **tail, char **token_buf, int *token_len, int *token_capacity, char c)
+bool	tokenize_state_word(t_state *state, t_list **head, char c)
 {
+	t_list	*token;
+
+	// ft_printf(STDOUT_FILENO, "tokenize_state_word\n");
 	if (isspace(c))
 	{
-		/* WORDトークンの終了 */
-		t_token *token = create_token(TOKEN_WORD, token_buf);
-		append_token(&head, &tail, token);
-		state = STATE_NONE;
-		token_len = 0;
-		token_buf[0] = '\0';
+		*state = STATE_NONE;
 	}
 	else if (c == '<' || c == '>' || c == '|')
 	{
-		/* 現在のWORDを終了し、特殊文字を別トークンとして追加 */
-		t_token *token = create_token(TOKEN_WORD, token_buf);
-		append_token(&head, &tail, token);
-		token_len = 0;
-		token_buf[0] = '\0';
-		if (c == '<')
-		{
-			token = create_token(TOKEN_REDIR_IN, "<");
-			append_token(&head, &tail, token);
-		}
-		else if (c == '>')
-		{
-			token = create_token(TOKEN_REDIR_OUT, ">");
-			append_token(&head, &tail, token);
-		}
-		else if (c == '|')
-		{
-			token = create_token(TOKEN_PIPE, "|");
-			append_token(&head, &tail, token);
-		}
-		state = STATE_NONE;
+		token = create_token(get_token_type(c), c);
+		ft_lstadd_back(head, token);
+		*state = STATE_NONE;
 	}
 	else if (c == '\'')
-	{
-		/* WORDの途中でシングルクォート開始 */
-		state = STATE_IN_SINGLE_QUOTE;
-	}
+		*state = STATE_IN_SINGLE_QUOTE;
 	else if (c == '\"')
-	{
-		/* WORDの途中でダブルクォート開始 */
-		state = STATE_IN_DOUBLE_QUOTE;
-	}
+		*state = STATE_IN_DOUBLE_QUOTE;
 	else
 	{
-		token_buf = append_char(token_buf, &token_len, &token_capacity, c);
-		if (!token_buf)
+		if (!append_char_to_token(state, head, c))
 			return (false);
 	}
 	return (true);
 }
 
-bool	tokenize_state_in_single_quote(t_state *state, t_token **head, t_token **tail, char **token_buf, int *token_len, int *token_capacity, char c)
+bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 {
+	// ft_printf(STDOUT_FILENO, "tokenize_state_in_single_quote\n");
 	if (c == '\'')
 	{
-		/* シングルクォート終了 → WORDに戻る */
-		state = STATE_WORD;
+		*state = STATE_WORD;
 	}
 	else
 	{
-		token_buf = append_char(token_buf, &token_len, &token_capacity, c);
-		if (!token_buf)
+		if (!append_char_to_token(state, head, c))
 			return (false);
 	}
 	return (true);
 }
 
-bool	tokenize_state_in_double_quote(t_state *state, t_token **head, t_token **tail, char **token_buf, int *token_len, int *token_capacity, char c)
+bool	tokenize_state_in_double_quote(t_state *state, t_list **head, char c)
 {
+	// ft_printf(STDOUT_FILENO, "tokenize_state_in_double_quote\n");
 	if (c == '\"')
 	{
-		/* ダブルクォート終了 → WORDに戻る */
-		state = STATE_WORD;
+		*state = STATE_WORD;
 	}
 	else
 	{
-		token_buf = append_char(token_buf, &token_len, &token_capacity, c);
-		if (!token_buf)
+		if (!append_char_to_token(state, head, c))
 			return (false);
 	}
 	return (true);
 }
 
-t_token	*tokenize_line(const char *line)
+t_list	*tokenize_line(const char *line)
 {
-	t_token	*head;
-	t_token	*tail;
+	t_list	*head;
 	t_state	state;
-	int		token_len;
-	int		token_capacity;
-	char	*token_buf;
 	int		i;
 
 	head = NULL;
-	tail = NULL;
 	state = STATE_NONE;
-	token_len = 0;
-	token_capacity = INITIAL_TOKEN_BUF_SIZE;
-	token_buf = malloc(token_capacity);
-	if (!token_buf)
-		return (NULL);
-	token_buf[0] = '\0';
 	i = 0;
+
 	while (line[i])
 	{
-		char c = line[i];
+		ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
 		if (state == STATE_NONE)
 		{
-			if (!tokenize_state_none(&state, &head, &tail, &token_buf, &token_len, &token_capacity, c))
+			if (!tokenize_state_none(&state, &head, line[i]))
 				return (NULL);
 		}
-		else if (STATE_WORD)
+		else if (state == STATE_WORD)
 		{
-			if (!tokenize_state_word(&state, &head, &tail, &token_buf, &token_len, &token_capacity, c))
+			if (!tokenize_state_word(&state, &head, line[i]))
 				return (NULL);
 		}
 		else if (state == STATE_IN_SINGLE_QUOTE)
 		{
-			if (!tokenize_state_in_single_quote(&state, &head, &tail, &token_buf, &token_len, &token_capacity, c))
+			if (!tokenize_state_in_single_quote(&state, &head, line[i]))
 				return (NULL);
 		}
 		else if (state == STATE_IN_DOUBLE_QUOTE)
 		{
-			if (!tokenize_state_in_double_quote(&state, &head, &tail, &token_buf, &token_len, &token_capacity, c))
+			if (!tokenize_state_in_double_quote(&state, &head, line[i]))
 				return (NULL);
 		}
-			i++;
+		ft_printf(STDOUT_FILENO, "state:%d\n", state);
+		i++;
 	}
-	if (state == STATE_WORD)
-	{
-		t_token *token = create_token(TOKEN_WORD, token_buf);
-		append_token(&head, &tail, token);
-	}
-	else if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)
+	if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)
 	{
 		fprintf(stderr, "Error: Unclosed quote detected.\n");
-		free(token_buf);
-		// ここでトークンリストも適切に解放するべき
 		return (NULL);
 	}
-	free(token_buf);
 	return (head);
 }
 

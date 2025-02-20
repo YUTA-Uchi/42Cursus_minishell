@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 16:59:02 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 19:36:49 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,36 +56,45 @@ int	ft_execvp(t_cmd *cmd)
 	return (fatal_error("", strerror(errno)), get_err_status());
 }
 
-int	excute(t_executor *self)
+int	excute(t_executor *self, t_error_handler *error_handler)
 {
-	int	status;
-	int	exec_ret;
+	int		status;
+	int		exec_ret;
+	t_cmd	*cmd_content;
 
-	if (lookup_builtin(self->cmds->cmd_name, self->builtins_list)->name)
+	cmd_content = (t_cmd *)(self->cmds->content);
+	int	i = 0;
+	while (cmd_content->args[i])
 	{
-		exec_ret = lookup_builtin(self->cmds->cmd_name, \
-				self->builtins_list)->func(self->cmds, self->error_handler);
+		ft_printf(STDOUT_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
+		i++;
+	}
+	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
+	{
+		exec_ret = lookup_builtin(cmd_content->cmd_name, \
+				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler);
 		return (exec_ret);
 	}
-	self->cmds->pid = fork();
-	if (self->cmds->pid == -1)
+	cmd_content->pid = fork();
+	if (cmd_content->pid == -1)
 		fatal_error("fork: ", strerror(errno));
-	else if (self->cmds->pid == 0)
+	else if (cmd_content->pid == 0)
 	{
-		if (ft_strchr(self->cmds->cmd_name, '/') != NULL)
-			exec_ret = execve_in_absolute_path(self->cmds);
+		if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
+			exec_ret = execve_in_absolute_path((t_cmd *)(self->cmds->content));
 		else
-			exec_ret = ft_execvp(self->cmds);
+			exec_ret = ft_execvp((t_cmd *)(self->cmds->content));
+		ft_printf(STDOUT_FILENO, "minishell: %i\n", exec_ret);
 		if (exec_ret != 0)
 			return (exec_ret);
 		fatal_error("", COMMAND_NOT_FOUND);
 	}
 	else
 	{
-		waitpid(self->cmds->pid, &status, 0);
+		waitpid(cmd_content->pid, &status, 0);
 		return (WEXITSTATUS(status));
 	}
-	return (0);
+	return (1);
 }
 
 t_executor	*create_executor(void)
@@ -97,7 +106,6 @@ t_executor	*create_executor(void)
 		return (NULL);
 	executor->cmds = NULL;
 	executor->excute = excute;
-	executor->error_handler = create_error_handler();
 	executor->builtins_list = create_builtins_list();
 	return (executor);
 }

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 17:00:02 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 12:44:15 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ bool	ft_isdigit_str(char *str)
 	return (true);
 }
 
+/*
+* need to think about the error handling
+*/
 int	ft_exit(t_cmd *cmd, t_error_handler *error_handler)
 {
 	int		exit_status;

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:11:09 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 12:36:38 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 19:16:39 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,12 @@ void	set_line(t_shell_manager *shell_manager)
 
 	line = shell_manager->listen(shell_manager, PROMPT);
 	shell_manager->parser->line = line;
+	// ft_printf(STDOUT_FILENO, "line: %s\n", line);
 }
 
 void	set_cmds(t_shell_manager *shell_manager)
 {
-	shell_manager->executor->cmds = shell_manager->parser->order(shell_manager->parser);
+	shell_manager->executor->cmds = shell_manager->parser->parse(shell_manager->parser, shell_manager->error_handler);
 }
 
 static char	*ft_readline(t_shell_manager *self, const char *prompt)

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:13 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 11:45:57 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/20 19:13:38 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@ struct s_redirection
 	char			*file;
 	int				from_fd;
 	int				to_fd;
-	t_redirection	*next;
 };
 
-t_redirection	*create_redirection(char *file, int from_fd, int to_fd, t_redir_type type);
-void			free_redirection(t_redirection *redir);
+t_list	*create_redirection(char *file, t_redir_type type);
+void	free_redirection(t_list **redir);
 #endif
