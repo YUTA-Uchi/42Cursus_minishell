@@ -6,46 +6,42 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 12:13:32 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:43:43 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "shell_manager.h"
+#include "error_handler.h"
+#include "parser.h"
+#include "executor.h"
 
 int	main(void)
 {
-	t_shell_manager	*manager;
 	int				running_status;
-	int				original_stdin;
-	int				original_stdout;
+	t_error_handler	*error_handler;
+	t_parser		*parser;
+	t_executor		*executor;
 
-	manager = create_shell_manager();
-	if (!manager)
-		exit(1);
+	error_handler = create_error_handler();
+	if (!error_handler)
+		fatal_error("main", "malloc failed");
 	running_status = 0;
 	while (!running_status)
 	{
-		set_line(manager);
-		if (!manager->parser->line)
-			continue ;
-		set_cmds(manager);
-		// if (!manager->executor->cmds)
-		// 	// TODO error handling parser error;
-		original_stdin = dup(STDIN_FILENO);
-		original_stdout = dup(STDOUT_FILENO);
-		running_status = manager->executor->execute(manager->executor, manager->error_handler);
+		parser = create_parser(error_handler);
+		if (!parser)
+			fatal_error("main", "malloc failed");
+		executor = create_executor();
+		if (!executor)
+			fatal_error("main", "malloc failed");
+		executor->cmds = parser->parse(parser, error_handler);
+		free_parser(parser);
+		running_status = executor->execute(executor, error_handler);
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
-		free_cmd_list(&manager->executor->cmds);
-		free(manager->parser->line);
-		manager->parser->line = NULL;
-		close(STDIN_FILENO);
-		dup2(original_stdin, STDIN_FILENO);
-		close(original_stdin);
-		close(STDOUT_FILENO);
-		dup2(original_stdout, STDOUT_FILENO);
-		close(original_stdout);
+		repair_std_io(executor);
+		free_executor(executor);
+		ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 	}
-	free_shell_manager(manager);
+	free_error_handler(error_handler);
 	exit(0);
 }

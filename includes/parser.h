@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 16:31:11 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:35:10 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ struct s_parser
 	t_list	*(*parse)(t_parser *, t_error_handler *);
 };
 
-t_parser	*create_parser(void);
+t_parser	*create_parser(t_error_handler *err_handler);
 void		free_parser(t_parser *parser);
 
 t_list		*tokenize_line(const char *line);

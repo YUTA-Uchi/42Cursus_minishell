@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 10:49:48 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:33:53 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,23 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 	return (head);
 }
 
+static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
+{
+	char	*line;
+
+	rl_outstream = stderr;
+	line = readline(prompt);
+	if (!line)
+	{
+		// TODO error handling
+		error_handler->error = E_GENERAL_ERR;
+		error_handler->msg = "readline: ";
+		fatal_error("ft_readline", strerror(errno));
+	}
+	if (*line)
+		add_history(line);
+	return (line);
+}
 
 t_list	*parse(t_parser *parser, t_error_handler *error_handler)
 {
@@ -116,15 +133,15 @@ t_list	*parse(t_parser *parser, t_error_handler *error_handler)
 	return (cmd);
 }
 
-t_parser	*create_parser(void)
+t_parser	*create_parser(t_error_handler *error_handler)
 {
 	t_parser	*parser;
 
 	parser = malloc(sizeof(t_parser));
 	if (!parser)
 		return (NULL);
-	parser->line = NULL;
 	parser->parse = parse;
+	parser->line = ft_readline(error_handler, PROMPT);
 	return (parser);
 }
 

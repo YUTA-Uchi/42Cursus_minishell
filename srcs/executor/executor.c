@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 12:53:11 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:59:30 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,11 +100,11 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler)
 		exec_ret = execve_in_absolute_path(cmd_content);
 	else
 		exec_ret = ft_execvp(cmd_content);
-	ft_printf(STDOUT_FILENO, "minishell: %i\n", exec_ret);
+	ft_printf(STDERR_FILENO, "minishell: %i\n", exec_ret);
 	if (exec_ret != 0)
 		exit(exec_ret);
 	fatal_error("", COMMAND_NOT_FOUND);
-	exit(1);
+	exit(E_NOTFOUND);
 }
 
 t_pipes	*create_pipes(void)
@@ -121,6 +121,30 @@ t_pipes	*create_pipes(void)
 	return (pipes);
 }
 
+void	set_pipes(t_executor *self, t_list *head, t_error_handler *error_handler)
+{
+	(void)error_handler;
+	if (self->cmds != head)
+	{
+		close(STDIN_FILENO);
+		dup2(self->pipes->prev_pipe[0], STDIN_FILENO);
+		close(self->pipes->prev_pipe[0]);
+		close(self->pipes->prev_pipe[1]);
+	}
+	if (self->cmds->next)
+	{
+		close(self->pipes->next_pipe[0]);
+		close(STDOUT_FILENO);
+		dup2(self->pipes->next_pipe[1], STDOUT_FILENO);
+		close(self->pipes->next_pipe[1]);
+	}
+}
+
+void	free_pipes(t_pipes *pipes)
+{
+	free(pipes);
+}
+
 void	parent_process(t_pipes *pipes)
 {
 	if (pipes->prev_pipe[0] != -1)
@@ -133,13 +157,12 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 {
 	int		status;
 	t_cmd	*cmd_content;
-	t_pipes	*pipes;
 	t_list	*head;
 
 	head = self->cmds;
 	// print_cmd(self->cmds);
 	cmd_content = (t_cmd *)(self->cmds->content);
-	while (!self->cmds->next)
+	if (!self->cmds->next)
 	{
 		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		{
@@ -147,14 +170,13 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler));
 		}
 	}
-	pipes = create_pipes();
 	while (self->cmds)
 	{
-		pipes->prev_pipe[0] = pipes->next_pipe[0];
-		pipes->prev_pipe[1] = pipes->next_pipe[1];
+		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
+		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
 		if (self->cmds->next)
 		{
-			if (pipe(pipes->next_pipe) == -1)
+			if (pipe(self->pipes->next_pipe) == -1)
 				return (fatal_error("pipe", strerror(errno)), get_err_status());
 		}
 		cmd_content = (t_cmd *)(self->cmds->content);
@@ -163,29 +185,26 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 			return (fatal_error("", strerror(errno)), get_err_status());
 		else if (cmd_content->pid > 0)
 		{
-			parent_process(pipes);
+			parent_process(self->pipes);
 			self->cmds = self->cmds->next;
 			continue ;
 		}
-		if (self->cmds != head)
-		{
-			close(STDIN_FILENO);
-			dup2(pipes->prev_pipe[0], STDIN_FILENO);
-			close(pipes->prev_pipe[0]);
-			close(pipes->prev_pipe[1]);
-		}
-		if (self->cmds->next)
-		{
-			close(pipes->next_pipe[0]);
-			close(STDOUT_FILENO);
-			dup2(pipes->next_pipe[1], STDOUT_FILENO);
-			close(pipes->next_pipe[1]);
-		}
+		set_pipes(self, head, error_handler);
 		execute_child_process(self, error_handler);
 	}
 	waitpid(cmd_content->pid, &status, 0);
 	// ft_printf(STDERR_FILENO, "pid:%d status: %d\n", cmd_content->pid, WEXITSTATUS(status));
 	return (WEXITSTATUS(status));
+}
+
+void	repair_std_io(t_executor *self)
+{
+	close(STDIN_FILENO);
+	dup2(self->original_stdin, STDIN_FILENO);
+	close(self->original_stdin);
+	close(STDOUT_FILENO);
+	dup2(self->original_stdout, STDOUT_FILENO);
+	close(self->original_stdout);
 }
 
 t_executor	*create_executor(void)
@@ -198,12 +217,19 @@ t_executor	*create_executor(void)
 	executor->cmds = NULL;
 	executor->execute = execute;
 	executor->builtins_list = create_builtins_list();
+	executor->pipes = create_pipes();
+	if (!executor->builtins_list || !executor->pipes)
+		return (free_executor(executor), NULL);
+	executor->original_stdin = dup(STDIN_FILENO);
+	executor->original_stdout = dup(STDOUT_FILENO);
 	return (executor);
 }
 
 void	free_executor(t_executor *executor)
 {
 	if (executor->cmds)
-		free_cmd(executor->cmds);
+		free_cmd_list(&executor->cmds);
+	if (executor->pipes)
+		free_pipes(executor->pipes);
 	free(executor);
 }
