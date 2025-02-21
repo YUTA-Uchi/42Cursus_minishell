@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 14:59:30 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 15:29:53 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,63 @@ void	free_pipes(t_pipes *pipes)
 	free(pipes);
 }
 
+void	set_redirections(t_executor *self, t_error_handler *error_handler)
+{
+	t_cmd	*cmd_content;
+	t_list	*redirections;
+	int		fd;
+
+	(void)error_handler;
+	cmd_content = (t_cmd *)(self->cmds->content);
+	redirections = cmd_content->redirections;
+	while (redirections)
+	{
+		if (((t_redirection *)(redirections->content))->type == REDIR_IN)
+		{
+			close(STDIN_FILENO);
+			fd = open(((t_redirection *)(redirections->content))->file, O_RDONLY);
+			if (fd == -1)
+				fatal_error("open", strerror(errno));
+			if (fd != STDIN_FILENO)
+			{
+				dup2(fd, STDIN_FILENO);
+				close(fd);
+			}
+			redirections = redirections->next;
+			continue ;
+		}
+		if (((t_redirection *)(redirections->content))->type == REDIR_OUT)
+		{
+			close(STDOUT_FILENO);
+			fd = open(((t_redirection *)(redirections->content))->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd == -1)
+				fatal_error("open", strerror(errno));
+			if (fd != STDOUT_FILENO)
+			{
+				dup2(fd, STDOUT_FILENO);
+				close(fd);
+			}
+			redirections = redirections->next;
+			continue ;
+		}
+		if (((t_redirection *)(redirections->content))->type == REDIR_APPEND)
+		{
+			close(STDOUT_FILENO);
+			fd = open(((t_redirection *)(redirections->content))->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			if (fd == -1)
+				fatal_error("open", strerror(errno));
+			if (fd != STDOUT_FILENO)
+			{
+				dup2(fd, STDOUT_FILENO);
+				close(fd);
+			}
+			redirections = redirections->next;
+			continue ;
+		}
+		redirections = redirections->next;
+	}
+}
+
 void	parent_process(t_pipes *pipes)
 {
 	if (pipes->prev_pipe[0] != -1)
@@ -190,6 +247,7 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 			continue ;
 		}
 		set_pipes(self, head, error_handler);
+		set_redirections(self, error_handler);
 		execute_child_process(self, error_handler);
 	}
 	waitpid(cmd_content->pid, &status, 0);

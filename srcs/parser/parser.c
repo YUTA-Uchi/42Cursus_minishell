@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 14:33:53 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 18:13:50 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,22 @@ bool	add_arg(char ***args, char *arg)
 	return (true);
 }
 
-t_redir_type	get_redir_type(t_token_type token_type)
+t_redir_type	get_redir_type(t_token_type token_type, bool is_double_char)
 {
-	if (token_type == TOKEN_REDIR_IN)
-		return (REDIR_IN);
-	else if (token_type == TOKEN_REDIR_OUT)
-		return (REDIR_OUT);
+	if (is_double_char)
+	{
+		if (token_type == TOKEN_REDIR_IN)
+			return (REDIR_HEREDOC);
+		else
+			return (REDIR_APPEND);
+	}
 	else
-		return (REDIR_APPEND);
+	{
+		if (token_type == TOKEN_REDIR_IN)
+			return (REDIR_IN);
+		else
+			return (REDIR_OUT);
+	}
 }
 
 t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
@@ -87,9 +95,24 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 			{
 				ft_lstadd_back(&(cmd_content->redirections) \
 				, create_redirection(((t_token *)(tokens->next->content))->value \
-				, get_redir_type(token_content->type)));
+				, get_redir_type(token_content->type, false)));
 				tokens = tokens->next;
 			}
+			else if (tokens->next && ((t_token *)(tokens->next->content))->type == token_content->type)
+			{
+				tokens = tokens->next;
+				if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
+				{
+					ft_lstadd_back(&(cmd_content->redirections) \
+					, create_redirection(((t_token *)(tokens->next->content))->value \
+					, get_redir_type(token_content->type, true)));
+					tokens = tokens->next;
+				}
+				else
+					return (set_error(err_handler, E_GENERAL_ERR, "syntax error"), NULL);
+			}
+			else
+				return (set_error(err_handler, E_GENERAL_ERR, "syntax error"), NULL);
 		}
 		else if (token_content->type == TOKEN_WORD)
 		{

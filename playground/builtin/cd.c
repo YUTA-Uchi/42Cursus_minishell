@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:36:34 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 15:04:53 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 16:08:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,33 +21,20 @@
 #include <readline/history.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "libft.h"
+#include <sys/stat.h>
 
 #define PATH_MAX 4096
 
 int	main(int argc, char **argv)
 {
-	char		*absolute_path_buff;
-	char		*current_path;
+	struct stat	*st;
 
-	if (argc > 2)
-		return (printf("minishell: cd: too many arguments\n"), 1);
-	if (argc == 1)
-	{
-		absolute_path_buff = getenv("HOME");
-		if (absolute_path_buff == NULL)
-			return (printf("minishell: cd: HOME not set\n"), 1);
-	}
-	else
-		absolute_path_buff = argv[1];
-	if (chdir(absolute_path_buff) == -1)
-	{
-		printf("minishell: cd: %s: %s\n", absolute_path_buff, strerror(errno));
-		return (1);
-	}
-	current_path = (char *)malloc(PATH_MAX);
-	getcwd(current_path, PATH_MAX);
-	printf("%s\n", current_path);
-	free(current_path);
+	(void)argc;
+	st = malloc(sizeof(struct stat));
+	stat(argv[1], st);
+	printf("st_mode: %d\n", st->st_mode);
+	printf("S_ISDIR: %d\n", S_ISDIR(st->st_mode));
+	printf("S_ISREG: %d\n", S_ISREG(st->st_mode));
+	free(st);
 	return (0);
 }
