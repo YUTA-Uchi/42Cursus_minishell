@@ -56,19 +56,42 @@ int	ft_execvp(t_cmd *cmd)
 	return (fatal_error("", strerror(errno)), get_err_status());
 }
 
+void print_cmd(t_list *cmds)
+{
+	int		i;
+	t_cmd	*cmd_content;
+	t_list	*cmd_list;
+
+	cmd_list = cmds;
+	while (cmd_list)
+	{
+		cmd_content = (t_cmd *)(cmd_list->content);
+		ft_printf(STDOUT_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
+		i = 0;
+		while (cmd_content->args[i])
+		{
+			ft_printf(STDOUT_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
+			i++;
+		}
+		i = 0;
+		while ((t_redirection *)cmd_content->redirections->content)
+		{
+			ft_printf(STDOUT_FILENO, "redirections[%d]: %s:%d\n", i, ((t_redirection *)(cmd_content->redirections->content))->file, ((t_redirection *)(cmd_content->redirections->content))->type);
+			cmd_content->redirections = cmd_content->redirections->next;
+			i++;
+		}
+		cmd_list = cmd_list->next;
+	}
+}
+
 int	excute(t_executor *self, t_error_handler *error_handler)
 {
 	int		status;
 	int		exec_ret;
 	t_cmd	*cmd_content;
 
+	print_cmd(self->cmds);
 	cmd_content = (t_cmd *)(self->cmds->content);
-	int	i = 0;
-	while (cmd_content->args[i])
-	{
-		ft_printf(STDOUT_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
-		i++;
-	}
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
 		exec_ret = lookup_builtin(cmd_content->cmd_name, \

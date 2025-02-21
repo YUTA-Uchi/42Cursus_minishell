@@ -78,13 +78,24 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 			continue ;
 		}
 		cmd_content = (t_cmd *)(current_cmd->content);
+		ft_printf(STDOUT_FILENO, "token:%s:%d\n", token_content->value, token_content->type);
 		if (token_content->type == TOKEN_REDIR_IN || token_content->type == TOKEN_REDIR_OUT)
 		{
-			if (tokens->next && ((t_token *)(tokens->next))->type == TOKEN_WORD)
+			ft_printf(STDOUT_FILENO, "redir:%s:%d\n", token_content->value, token_content->type);
+			ft_printf(STDOUT_FILENO, "redir:%s\n", ((t_token *)(tokens->next->content))->value);
+			if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
 			{
 				ft_lstadd_back(&(cmd_content->redirections) \
-				, create_redirection(((t_token *)(tokens->next))->value \
+				, create_redirection(((t_token *)(tokens->next->content))->value \
 				, get_redir_type(token_content->type)));
+				int i = 0;
+				ft_printf(STDOUT_FILENO, "redir:%p\n", (t_redirection *)(cmd_content->redirections->content));
+				while ((t_redirection *)cmd_content->redirections->content)
+				{
+					ft_printf(STDOUT_FILENO, "redirections[%d]: %s:%d\n", i, ((t_redirection *)(cmd_content->redirections->content))->file, ((t_redirection *)(cmd_content->redirections->content))->type);
+					cmd_content->redirections = cmd_content->redirections->next;
+					i++;
+				}
 				tokens = tokens->next;
 			}
 		}

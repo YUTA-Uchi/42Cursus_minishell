@@ -33,16 +33,18 @@ t_list	*create_token(t_token_type type, const char value)
 	if (!token)
 		return (NULL);
 	token->type = type;
-	token->len = 1;
+	if (value == '\0')
+		token->len = 0;
+	else
+		token->len = 1;
 	token->capacity = INITIAL_TOKEN_BUF_SIZE;
-	token->value = malloc(token->capacity);
+	token->value = ft_calloc(token->capacity, sizeof(char));
 	if (!token->value)
 	{
 		free(token);
 		return (NULL);
 	}
 	token->value[0] = value;
-	token->value[1] = '\0';
 	return (ft_lstnew(token));
 }
 
@@ -58,7 +60,10 @@ bool	append_char_to_token(t_state *state, t_list **head, char c)
 	if (*state == STATE_NONE)
 	{
 		// ft_printf(STDOUT_FILENO, "append_char:%c\n", c);
-		ft_lstadd_back(head, create_token(TOKEN_WORD, c));
+		if (c == '\'' || c == '\"')
+			ft_lstadd_back(head, create_token(TOKEN_WORD, '\0'));
+		else
+			ft_lstadd_back(head, create_token(TOKEN_WORD, c));
 		return (true);
 	}
 	token_content = (t_token *)(current->content);
@@ -89,7 +94,11 @@ bool	tokenize_state_none(t_state *state, t_list **head, char c)
 	t_list	*token;
 
 	// ft_printf(STDOUT_FILENO, "tokenize_state_none\n");
-	if (c == '<' || c == '>' || c == '|')
+	if (isspace(c))
+	{
+		*state = STATE_NONE;
+	}
+	else if (c == '<' || c == '>' || c == '|')
 	{
 		token = create_token(get_token_type(c), c);
 		ft_lstadd_back(head, token);
@@ -177,7 +186,7 @@ t_list	*tokenize_line(const char *line)
 
 	while (line[i])
 	{
-		ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
+		// ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
 		if (state == STATE_NONE)
 		{
 			if (!tokenize_state_none(&state, &head, line[i]))
@@ -198,7 +207,7 @@ t_list	*tokenize_line(const char *line)
 			if (!tokenize_state_in_double_quote(&state, &head, line[i]))
 				return (NULL);
 		}
-		ft_printf(STDOUT_FILENO, "state:%d\n", state);
+		// ft_printf(STDOUT_FILENO, "state:%d\n", state);
 		i++;
 	}
 	if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)
