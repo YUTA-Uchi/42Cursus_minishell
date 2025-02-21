@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 19:15:34 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 10:43:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,7 @@ t_list	*create_cmd(void)
 	cmd->args = ft_calloc(1, sizeof(char *));
 	if (!cmd->args)
 		return (free_cmd(cmd), NULL);
-	cmd->redirections = ft_calloc(1, sizeof(t_list));
-	if (!cmd->redirections)
-		return (free_cmd(cmd), NULL);
+	cmd->redirections = NULL;
 	cmd->pid = 0;
 	return (ft_lstnew(cmd));
 }

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 16:31:33 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 11:42:40 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,14 @@ struct s_executor
 {
 	t_list				*cmds;
 	const t_builtins	*builtins_list;
-	int					(*excute)(t_executor *, t_error_handler *);
+	int					(*execute)(t_executor *, t_error_handler *);
+};
+
+typedef struct s_pipes	t_pipes;
+struct s_pipes
+{
+	int		prev_pipe[2];
+	int		next_pipe[2];
 };
 
 t_executor	*create_executor(void);

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 19:36:49 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/21 12:53:11 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	ft_execvp(t_cmd *cmd)
 	return (fatal_error("", strerror(errno)), get_err_status());
 }
 
-void print_cmd(t_list *cmds)
+void	print_cmd(t_list *cmds)
 {
 	int		i;
 	t_cmd	*cmd_content;
@@ -74,7 +74,8 @@ void print_cmd(t_list *cmds)
 			i++;
 		}
 		i = 0;
-		while ((t_redirection *)cmd_content->redirections->content)
+		ft_printf(STDOUT_FILENO, "redir:%p\n", (cmd_content->redirections));
+		while (cmd_content->redirections)
 		{
 			ft_printf(STDOUT_FILENO, "redirections[%d]: %s:%d\n", i, ((t_redirection *)(cmd_content->redirections->content))->file, ((t_redirection *)(cmd_content->redirections->content))->type);
 			cmd_content->redirections = cmd_content->redirections->next;
@@ -84,40 +85,107 @@ void print_cmd(t_list *cmds)
 	}
 }
 
-int	excute(t_executor *self, t_error_handler *error_handler)
+void	execute_child_process(t_executor *self, t_error_handler *error_handler)
 {
-	int		status;
-	int		exec_ret;
 	t_cmd	*cmd_content;
+	int		exec_ret;
 
-	print_cmd(self->cmds);
 	cmd_content = (t_cmd *)(self->cmds->content);
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
-		exec_ret = lookup_builtin(cmd_content->cmd_name, \
-				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler);
-		return (exec_ret);
+		exit(lookup_builtin(cmd_content->cmd_name, \
+			self->builtins_list)->func(cmd_content, error_handler));
 	}
-	cmd_content->pid = fork();
-	if (cmd_content->pid == -1)
-		fatal_error("fork: ", strerror(errno));
-	else if (cmd_content->pid == 0)
-	{
-		if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
-			exec_ret = execve_in_absolute_path((t_cmd *)(self->cmds->content));
-		else
-			exec_ret = ft_execvp((t_cmd *)(self->cmds->content));
-		ft_printf(STDOUT_FILENO, "minishell: %i\n", exec_ret);
-		if (exec_ret != 0)
-			return (exec_ret);
-		fatal_error("", COMMAND_NOT_FOUND);
-	}
+	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
+		exec_ret = execve_in_absolute_path(cmd_content);
 	else
+		exec_ret = ft_execvp(cmd_content);
+	ft_printf(STDOUT_FILENO, "minishell: %i\n", exec_ret);
+	if (exec_ret != 0)
+		exit(exec_ret);
+	fatal_error("", COMMAND_NOT_FOUND);
+	exit(1);
+}
+
+t_pipes	*create_pipes(void)
+{
+	t_pipes	*pipes;
+
+	pipes = malloc(sizeof(t_pipes));
+	if (!pipes)
+		return (NULL);
+	pipes->prev_pipe[0] = -1;
+	pipes->prev_pipe[1] = -1;
+	pipes->next_pipe[0] = -1;
+	pipes->next_pipe[1] = -1;
+	return (pipes);
+}
+
+void	parent_process(t_pipes *pipes)
+{
+	if (pipes->prev_pipe[0] != -1)
+		close(pipes->prev_pipe[0]);
+	if (pipes->prev_pipe[1] != -1)
+		close(pipes->prev_pipe[1]);
+}
+
+int	execute(t_executor *self, t_error_handler *error_handler)
+{
+	int		status;
+	t_cmd	*cmd_content;
+	t_pipes	*pipes;
+	t_list	*head;
+
+	head = self->cmds;
+	// print_cmd(self->cmds);
+	cmd_content = (t_cmd *)(self->cmds->content);
+	while (!self->cmds->next)
 	{
-		waitpid(cmd_content->pid, &status, 0);
-		return (WEXITSTATUS(status));
+		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
+		{
+			return (lookup_builtin(cmd_content->cmd_name, \
+				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler));
+		}
 	}
-	return (1);
+	pipes = create_pipes();
+	while (self->cmds)
+	{
+		pipes->prev_pipe[0] = pipes->next_pipe[0];
+		pipes->prev_pipe[1] = pipes->next_pipe[1];
+		if (self->cmds->next)
+		{
+			if (pipe(pipes->next_pipe) == -1)
+				return (fatal_error("pipe", strerror(errno)), get_err_status());
+		}
+		cmd_content = (t_cmd *)(self->cmds->content);
+		cmd_content->pid = fork();
+		if (cmd_content->pid == -1)
+			return (fatal_error("", strerror(errno)), get_err_status());
+		else if (cmd_content->pid > 0)
+		{
+			parent_process(pipes);
+			self->cmds = self->cmds->next;
+			continue ;
+		}
+		if (self->cmds != head)
+		{
+			close(STDIN_FILENO);
+			dup2(pipes->prev_pipe[0], STDIN_FILENO);
+			close(pipes->prev_pipe[0]);
+			close(pipes->prev_pipe[1]);
+		}
+		if (self->cmds->next)
+		{
+			close(pipes->next_pipe[0]);
+			close(STDOUT_FILENO);
+			dup2(pipes->next_pipe[1], STDOUT_FILENO);
+			close(pipes->next_pipe[1]);
+		}
+		execute_child_process(self, error_handler);
+	}
+	waitpid(cmd_content->pid, &status, 0);
+	// ft_printf(STDERR_FILENO, "pid:%d status: %d\n", cmd_content->pid, WEXITSTATUS(status));
+	return (WEXITSTATUS(status));
 }
 
 t_executor	*create_executor(void)
@@ -128,7 +196,7 @@ t_executor	*create_executor(void)
 	if (!executor)
 		return (NULL);
 	executor->cmds = NULL;
-	executor->excute = excute;
+	executor->execute = execute;
 	executor->builtins_list = create_builtins_list();
 	return (executor);
 }
