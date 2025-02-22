@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 18:13:50 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 18:42:06 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
 	return (line);
 }
 
-t_list	*parse(t_parser *parser, t_error_handler *error_handler)
+t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list)
 {
 	char	*line;
 	t_list	*cmd;
@@ -152,6 +152,7 @@ t_list	*parse(t_parser *parser, t_error_handler *error_handler)
 
 	line = parser->line;
 	token_list = tokenize_line(line);
+	// TODO env_expansion(token_list, env_list);
 	cmd = parse_tokens(token_list, error_handler);
 	return (cmd);
 }

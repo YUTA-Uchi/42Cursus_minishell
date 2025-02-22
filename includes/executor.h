@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 14:20:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 18:44:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ struct s_executor
 	t_pipes				*pipes;
 	int					original_stdin;
 	int					original_stdout;
-	int					(*execute)(t_executor *, t_error_handler *);
+	int					(*execute)(t_executor *, t_error_handler *, t_list *);
 };
 
 struct s_pipes

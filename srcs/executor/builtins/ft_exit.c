@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 12:44:15 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 18:58:58 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@ bool	ft_isdigit_str(char *str)
 /*
 * need to think about the error handling
 */
-int	ft_exit(t_cmd *cmd, t_error_handler *error_handler)
+int	ft_exit(t_cmd *cmd, t_error_handler *error_handler, t_list *env_list)
 {
 	int		exit_status;
 
+	(void)env_list;
 	// TODO is this correct? 
 	if (cmd->args[1] == NULL)
 		exit_status = 0;

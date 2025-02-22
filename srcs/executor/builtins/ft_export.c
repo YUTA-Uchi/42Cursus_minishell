@@ -6,11 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 17:00:06 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 19:01:59 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "environment.h"
 #include "builtin.h"
 
 int	ft_setenv(char *key, char *value, int overwrite)
@@ -38,7 +39,7 @@ char	*ft_strndup(const char *s, size_t n)
 	return (new_str);
 }
 
-int	ft_export(t_cmd *cmd, t_error_handler *error_handler)
+int	ft_export(t_cmd *cmd, t_error_handler *error_handler, t_list *env_list)
 {
 	int		i;
 	char	*key;
@@ -51,12 +52,8 @@ int	ft_export(t_cmd *cmd, t_error_handler *error_handler)
 		{
 			key = ft_strndup(cmd->args[i], ft_strchr(cmd->args[i], '=') - cmd->args[i]);
 			value = ft_strdup(ft_strchr(cmd->args[i], '=') + 1);
-			if (key == NULL || value == NULL)
-				return (set_error(error_handler, E_GENERAL_ERR, "malloc error"), 1);
-			if (ft_setenv(key, value, 1) == -1)
+			if (!add_env(env_list, key, value))
 				return (set_error(error_handler, E_GENERAL_ERR, strerror(errno)), 1);
-			free(key);
-			free(value);
 		}
 		else
 		{
