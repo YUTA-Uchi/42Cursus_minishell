@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 15:29:53 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:21:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 	t_list	*head;
 
 	head = self->cmds;
-	// print_cmd(self->cmds);
+	print_cmd(self->cmds);
 	cmd_content = (t_cmd *)(self->cmds->content);
 	if (!self->cmds->next)
 	{

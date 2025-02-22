@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 14:43:43 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:33:18 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	main(void)
 		if (!executor)
 			fatal_error("main", "malloc failed");
 		executor->cmds = parser->parse(parser, error_handler);
+		// TODO here_doc(executor->cmds, error_handler);
 		free_parser(parser);
 		running_status = executor->execute(executor, error_handler);
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
