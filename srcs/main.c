@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 12:33:18 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 14:36:46 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,14 @@ int	main(void)
 	t_error_handler	*error_handler;
 	t_parser		*parser;
 	t_executor		*executor;
+	t_list			*env_list;
+	extern char		**environ; // TODO remove
 
 	error_handler = create_error_handler();
 	if (!error_handler)
+		fatal_error("main", "malloc failed");
+	env_list = create_env_list(environ);
+	if (!env_list)
 		fatal_error("main", "malloc failed");
 	running_status = 0;
 	while (!running_status)
