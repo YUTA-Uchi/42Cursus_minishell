@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 14:36:46 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 16:50:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "error_handler.h"
 #include "parser.h"
 #include "executor.h"
+#include "environment.h"
 
 int	main(void)
 {
