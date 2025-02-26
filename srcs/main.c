@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 12:33:18 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 19:15:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,23 @@
 #include "error_handler.h"
 #include "parser.h"
 #include "executor.h"
+#include "environment.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **environ)
 {
 	int				running_status;
 	t_error_handler	*error_handler;
 	t_parser		*parser;
 	t_executor		*executor;
+	t_list			*env_list;
 
+	(void)argc;
+	(void)argv;
 	error_handler = create_error_handler();
 	if (!error_handler)
+		fatal_error("main", "malloc failed");
+	env_list = create_env_list(environ);
+	if (!env_list)
 		fatal_error("main", "malloc failed");
 	running_status = 0;
 	while (!running_status)
@@ -34,10 +41,10 @@ int	main(void)
 		executor = create_executor();
 		if (!executor)
 			fatal_error("main", "malloc failed");
-		executor->cmds = parser->parse(parser, error_handler);
+		executor->cmds = parser->parse(parser, error_handler, env_list);
 		// TODO here_doc(executor->cmds, error_handler);
 		free_parser(parser);
-		running_status = executor->execute(executor, error_handler);
+		running_status = executor->execute(executor, error_handler, env_list);
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 		repair_std_io(executor);
 		free_executor(executor);

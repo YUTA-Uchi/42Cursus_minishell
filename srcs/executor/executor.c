@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 12:21:17 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 18:51:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	print_cmd(t_list *cmds)
 	}
 }
 
-void	execute_child_process(t_executor *self, t_error_handler *error_handler)
+void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	t_cmd	*cmd_content;
 	int		exec_ret;
@@ -94,7 +94,7 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler)
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
 		exit(lookup_builtin(cmd_content->cmd_name, \
-			self->builtins_list)->func(cmd_content, error_handler));
+			self->builtins_list)->func(cmd_content, error_handler, env_list));
 	}
 	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
 		exec_ret = execve_in_absolute_path(cmd_content);
@@ -210,7 +210,7 @@ void	parent_process(t_pipes *pipes)
 		close(pipes->prev_pipe[1]);
 }
 
-int	execute(t_executor *self, t_error_handler *error_handler)
+int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	int		status;
 	t_cmd	*cmd_content;
@@ -224,7 +224,7 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		{
 			return (lookup_builtin(cmd_content->cmd_name, \
-				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler));
+				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler, env_list));
 		}
 	}
 	while (self->cmds)
@@ -248,7 +248,7 @@ int	execute(t_executor *self, t_error_handler *error_handler)
 		}
 		set_pipes(self, head, error_handler);
 		set_redirections(self, error_handler);
-		execute_child_process(self, error_handler);
+		execute_child_process(self, error_handler, env_list);
 	}
 	waitpid(cmd_content->pid, &status, 0);
 	// ft_printf(STDERR_FILENO, "pid:%d status: %d\n", cmd_content->pid, WEXITSTATUS(status));

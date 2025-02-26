@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 14:35:10 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/22 18:42:51 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ typedef struct s_parser	t_parser;
 struct s_parser
 {
 	char	*line;
-	t_list	*(*parse)(t_parser *, t_error_handler *);
+	t_list	*(*parse)(t_parser *, t_error_handler *, t_list *);
 };
 
 t_parser	*create_parser(t_error_handler *err_handler);

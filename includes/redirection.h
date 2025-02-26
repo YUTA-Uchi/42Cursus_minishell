@@ -6,12 +6,14 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:13 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 19:13:38 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:01:18 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REDIRECTION_H
 # define REDIRECTION_H
+
+# include "minishell.h"
 
 typedef enum e_redir_type
 {
@@ -26,8 +28,6 @@ struct s_redirection
 {
 	t_redir_type	type;
 	char			*file;
-	int				from_fd;
-	int				to_fd;
 };
 
 t_list	*create_redirection(char *file, t_redir_type type);
