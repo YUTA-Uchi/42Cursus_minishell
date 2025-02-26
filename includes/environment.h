@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 13:41:06 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 14:39:02 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:06:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,7 @@ int		set_env_value(t_list *env_list, char *key, char *value);
 int		add_env(t_list *env_list, char *key, char *value);
 int		remove_env(t_list *env_list, char *key);
 char	**env_list_to_array(t_list *env_list);
+// utils
+char	*ft_strndup(const char *s, size_t n);
 
 #endif

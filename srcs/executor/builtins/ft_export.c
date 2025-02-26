@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 19:01:59 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:05:15 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,7 @@ int	ft_setenv(char *key, char *value, int overwrite)
 	return (0);
 }
 
-char	*ft_strndup(const char *s, size_t n)
-{
-	char	*new_str;
-	size_t	i;
 
-	new_str = (char *)malloc(n + 1);
-	if (!new_str)
-		return (NULL);
-	i = 0;
-	while (i < n)
-	{
-		new_str[i] = s[i];
-		i++;
-	}
-	new_str[i] = '\0';
-	return (new_str);
-}
 
 int	ft_export(t_cmd *cmd, t_error_handler *error_handler, t_list *env_list)
 {

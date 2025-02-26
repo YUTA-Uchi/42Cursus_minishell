@@ -6,11 +6,29 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 13:52:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 14:35:48 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:05:52 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "environment.h"
+
+char	*ft_strndup(const char *s, size_t n)
+{
+	char	*new_str;
+	size_t	i;
+
+	new_str = (char *)malloc(n + 1);
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	while (i < n)
+	{
+		new_str[i] = s[i];
+		i++;
+	}
+	new_str[i] = '\0';
+	return (new_str);
+}
 
 t_list	*create_env_list(char **envp)
 {
