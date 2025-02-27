@@ -6,19 +6,21 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 19:53:34 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:50:01 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtin.h"
 
-int	ft_pwd(t_cmd *self, t_error_handler *error_handler, t_list *env_list)
+int	ft_pwd(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	char	*absolute_path_buff;
+	t_cmd	*cmd_content;
 
 	(void)env_list;
-	if (self->args[1] != NULL)
+	cmd_content = (t_cmd *)(self->cmds->content);
+	if (cmd_content->args[1] != NULL)
 	{
 		set_error(error_handler, E_GENERAL_ERR, PWD_TOO_MANY_ARGS);
 		return (1);

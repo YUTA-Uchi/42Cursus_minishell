@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 19:54:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:49:49 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 #include "environment.h"
 #include "builtin.h"
 
-int	ft_unset(t_cmd *cmd, t_error_handler *error_handler, t_list *env_list)
+int	ft_unset(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	int		i;
+	t_cmd	*cmd;
 
 	i = 1;
+	cmd = (t_cmd *)(self->cmds->content);
 	(void)env_list;
 	while (cmd->args[i])
 	{

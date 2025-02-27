@@ -6,12 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:54:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 19:03:34 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:51:10 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "executor.h"
+#include "builtin.h"
 
 const t_builtins	*create_builtins_list(void)
 {

@@ -6,12 +6,13 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 18:51:54 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:53:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "executor.h"
+#include "builtin.h"
 
 static char	*create_path(char *env_path, char *cmd)
 {
@@ -94,7 +95,7 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_l
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
 		exit(lookup_builtin(cmd_content->cmd_name, \
-			self->builtins_list)->func(cmd_content, error_handler, env_list));
+			self->builtins_list)->func(self, error_handler, env_list));
 	}
 	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
 		exec_ret = execve_in_absolute_path(cmd_content);
@@ -217,14 +218,14 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 	t_list	*head;
 
 	head = self->cmds;
-	print_cmd(self->cmds);
+	// print_cmd(self->cmds);
 	cmd_content = (t_cmd *)(self->cmds->content);
 	if (!self->cmds->next)
 	{
 		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		{
 			return (lookup_builtin(cmd_content->cmd_name, \
-				self->builtins_list)->func((t_cmd *)(self->cmds->content), error_handler, env_list));
+				self->builtins_list)->func(self, error_handler, env_list));
 		}
 	}
 	while (self->cmds)

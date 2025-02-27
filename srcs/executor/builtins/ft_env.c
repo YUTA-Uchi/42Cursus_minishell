@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:34:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 18:57:46 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:50:07 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 #include "environment.h"
 #include "builtin.h"
 
-int	ft_env(t_cmd *cmd, t_error_handler *error_handler, t_list *env_list)
+int	ft_env(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	t_list	*current;
+	t_cmd	*cmd;
 
 	current = env_list;
+	cmd = (t_cmd *)(self->cmds->content);
 	if (cmd->args[1] != NULL)
 	{
 		set_error(error_handler, E_GENERAL_ERR, ENV_TOO_MANY_ARGS);

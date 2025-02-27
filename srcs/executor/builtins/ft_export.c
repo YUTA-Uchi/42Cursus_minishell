@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/26 15:05:15 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:50:33 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,15 @@ int	ft_setenv(char *key, char *value, int overwrite)
 
 
 
-int	ft_export(t_cmd *cmd, t_error_handler *error_handler, t_list *env_list)
+int	ft_export(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	int		i;
 	char	*key;
 	char	*value;
+	t_cmd	*cmd;
 
 	i = 1;
+	cmd = (t_cmd *)(self->cmds->content);
 	while (cmd->args[i])
 	{
 		if (ft_strchr(cmd->args[i], '='))

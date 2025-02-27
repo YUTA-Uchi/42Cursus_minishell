@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:16 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 18:55:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:50:15 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 #include "environment.h"
 #include "builtin.h"
 
-int	ft_cd(t_cmd *self, t_error_handler *error_handler, t_list *env_list)
+int	ft_cd(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	char	*path;
+	t_cmd	*cmd;
 
-	if (self->args[1] == NULL)
+	cmd = (t_cmd *)(self->cmds->content);
+	if (cmd->args[1] == NULL)
 	{
 		path = get_env_value(env_list, "HOME");
 		if (path == NULL)
@@ -27,10 +29,10 @@ int	ft_cd(t_cmd *self, t_error_handler *error_handler, t_list *env_list)
 	}
 	else
 	{
-		if (self->args[2] != NULL)
+		if (cmd->args[2] != NULL)
 			return (set_error(error_handler, E_GENERAL_ERR, CD_TOO_MANY_ARGS) \
 					, 1);
-		path = self->args[1];
+		path = cmd->args[1];
 	}
 	if (chdir(path) == -1)
 		return (set_error(error_handler, E_GENERAL_ERR, strerror(errno)) \

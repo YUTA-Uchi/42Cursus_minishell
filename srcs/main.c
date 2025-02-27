@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 19:15:56 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 15:37:49 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	main(int argc, char **argv, char **environ)
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 		repair_std_io(executor);
 		free_executor(executor);
-		ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
+		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 	}
 	free_error_handler(error_handler);
 	exit(0);

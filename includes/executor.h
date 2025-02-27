@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 18:44:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/02/27 17:49:14 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 # include "minishell.h"
 # include "command.h"
 # include "error_handler.h"
-# include "builtin.h"
 
+typedef struct s_builtins	t_builtins;
 typedef struct s_pipes		t_pipes;
 typedef struct s_executor	t_executor;
 struct s_executor
@@ -34,6 +34,12 @@ struct s_pipes
 {
 	int		prev_pipe[2];
 	int		next_pipe[2];
+};
+
+struct s_builtins
+{
+	char	*name;
+	int		(*func)(t_executor *, t_error_handler *, t_list *);
 };
 
 t_executor	*create_executor(void);
