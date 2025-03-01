@@ -32,16 +32,22 @@ const t_builtins	*create_builtins_list(void)
 const t_builtins	*lookup_builtin(char *cmd_name, \
 									const t_builtins *builtins_list)
 {
-	int					i;
 	const t_builtins	*ret;
+	int					builtin_len;
+	int					cmd_len;
+	int					search_len;
 
-	i = 0;
 	ret = builtins_list;
+	cmd_len = ft_strlen(cmd_name);
 	while (ret->name)
 	{
-		if (strcmp(ret->name, cmd_name) == 0)
+		builtin_len = ft_strlen(ret->name);
+		if (cmd_len < builtin_len)
+			search_len = builtin_len;
+		else
+			search_len = cmd_len;
+		if (ft_strncmp(ret->name, cmd_name, search_len) == 0)
 			break ;
-		i++;
 		ret++;
 	}
 	return (ret);

@@ -227,6 +227,8 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 			return (lookup_builtin(cmd_content->cmd_name, \
 				self->builtins_list)->func(self, error_handler, env_list));
 		}
+		else
+			return (fatal_error("", COMMAND_NOT_FOUND), get_err_status());
 	}
 	while (self->cmds)
 	{
@@ -253,6 +255,7 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 	}
 	waitpid(cmd_content->pid, &status, 0);
 	// ft_printf(STDERR_FILENO, "pid:%d status: %d\n", cmd_content->pid, WEXITSTATUS(status));
+	// set_shell_varialbe("?", ft_itoa(WEXITSTATUS(status)));
 	return (WEXITSTATUS(status));
 }
 
