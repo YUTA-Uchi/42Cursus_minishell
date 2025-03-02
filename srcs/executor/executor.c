@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 18:25:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 18:57:02 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,8 +233,10 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_l
 	if (exec_ret == -1)
 	{
 		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, strerror(errno));
+		ft_printf(STDERR_FILENO, "errno1: %d\n", errno);
 		all_clear_exit(self, error_handler, env_list, 1);
 	}
+	ft_printf(STDERR_FILENO, "errno2: %d\n", errno);
 	all_clear_exit(self, error_handler, env_list, get_err_status());
 }
 

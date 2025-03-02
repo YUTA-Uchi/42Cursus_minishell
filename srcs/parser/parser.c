@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 18:05:27 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 19:07:14 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,7 @@ t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list
 	cmd = parse_tokens(token_list, error_handler);
 	if (!cmd)
 		return (ft_lstclear(&token_list, free_token), NULL);
+	ft_lstclear(&token_list, free_token);
 	return (cmd);
 }
 
