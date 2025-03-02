@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/19 19:03:09 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 15:12:43 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ int	get_err_status(void)
 	return (E_NOTFOUND);
 }
 
-void	set_error(t_error_handler *error_handler, int error, const char *msg)
+void	set_error(t_error_handler *self, int error, const char *msg)
 {
-	error_handler->error = error;
-	error_handler->msg = msg;
+	self->error = error;
+	self->msg = msg;
 }
 
 t_error_handler	*create_error_handler(void)

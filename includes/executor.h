@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/27 17:49:14 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 17:59:52 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,6 @@ struct s_builtins
 
 t_executor	*create_executor(void);
 void		free_executor(t_executor *executor);
-void		repair_std_io(t_executor *self);
+bool		repair_std_io(t_executor *self);
 
 #endif

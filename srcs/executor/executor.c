@@ -6,13 +6,23 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/27 17:53:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 18:04:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "executor.h"
+#include "environment.h"
 #include "builtin.h"
+
+void	all_clear_exit(t_executor *executor, t_error_handler *error_handler, t_list *env_list, int status)
+{
+	free_executor(executor);
+	free_error_handler(error_handler);
+	free_env_list(env_list);
+	exit(status);
+}
+
 
 static char	*create_path(char *env_path, char *cmd)
 {
@@ -25,22 +35,22 @@ static char	*create_path(char *env_path, char *cmd)
 	return (exec_path);
 }
 
-int	execve_in_absolute_path(t_cmd *cmd)
+int	execve_in_absolute_path(t_cmd *cmd, t_list *env_list)
 {
 	if (access(cmd->cmd_name, F_OK) == 0)
-		return (execve(cmd->cmd_name, cmd->args, __environ));
-	return (fatal_error("", strerror(errno)), get_err_status());
+		return (execve(cmd->cmd_name, cmd->args, (char *const *)env_list_to_array(env_list)));
+	return (ft_printf(STDERR_FILENO, "executor: %s\n", strerror(errno)), get_err_status());
 }
 
-int	ft_execvp(t_cmd *cmd)
+int	ft_execvp(t_cmd *cmd, t_list *env_list)
 {
 	int				i;
 	char			**env_pathes;
 	char			*exec_path;
 
-	env_pathes = ft_split(getenv("PATH"), ':');
+	env_pathes = ft_split(get_env_value(env_list, "PATH"), ':');
 	if (env_pathes == NULL)
-		return (fatal_error("ft_split: ", strerror(errno)), get_err_status());
+		return (ft_printf(STDERR_FILENO, "executor: %s\n", strerror(errno)), get_err_status());
 	i = 0;
 	while (env_pathes[i])
 	{
@@ -48,13 +58,13 @@ int	ft_execvp(t_cmd *cmd)
 		if (access(exec_path, F_OK) == 0)
 		{
 			free_arr(env_pathes);
-			return (execve(exec_path, cmd->args, __environ));
+			return (execve(exec_path, cmd->args, (char *const *)env_list_to_array(env_list)));
 		}
 		free(exec_path);
 		i++;
 	}
 	free_arr(env_pathes);
-	return (fatal_error("", strerror(errno)), get_err_status());
+	return (ft_printf(STDERR_FILENO, "executor: %s\n", strerror(errno)), get_err_status());
 }
 
 void	print_cmd(t_list *cmds)
@@ -86,28 +96,6 @@ void	print_cmd(t_list *cmds)
 	}
 }
 
-void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_list *env_list)
-{
-	t_cmd	*cmd_content;
-	int		exec_ret;
-
-	cmd_content = (t_cmd *)(self->cmds->content);
-	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
-	{
-		exit(lookup_builtin(cmd_content->cmd_name, \
-			self->builtins_list)->func(self, error_handler, env_list));
-	}
-	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
-		exec_ret = execve_in_absolute_path(cmd_content);
-	else
-		exec_ret = ft_execvp(cmd_content);
-	ft_printf(STDERR_FILENO, "minishell: %i\n", exec_ret);
-	if (exec_ret != 0)
-		exit(exec_ret);
-	fatal_error("", COMMAND_NOT_FOUND);
-	exit(E_NOTFOUND);
-}
-
 t_pipes	*create_pipes(void)
 {
 	t_pipes	*pipes;
@@ -122,23 +110,32 @@ t_pipes	*create_pipes(void)
 	return (pipes);
 }
 
-void	set_pipes(t_executor *self, t_list *head, t_error_handler *error_handler)
+bool	set_pipes(t_executor *self, t_list *current_cmd, t_error_handler *error_handler)
 {
 	(void)error_handler;
-	if (self->cmds != head)
+	if (current_cmd != self->cmds)
 	{
-		close(STDIN_FILENO);
-		dup2(self->pipes->prev_pipe[0], STDIN_FILENO);
-		close(self->pipes->prev_pipe[0]);
-		close(self->pipes->prev_pipe[1]);
+		if (close(STDIN_FILENO) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+		if (dup2(self->pipes->prev_pipe[0], STDIN_FILENO) == -1)
+			return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+		if (close(self->pipes->prev_pipe[0]) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+		if (close(self->pipes->prev_pipe[1]) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 	}
-	if (self->cmds->next)
+	if (current_cmd->next)
 	{
-		close(self->pipes->next_pipe[0]);
-		close(STDOUT_FILENO);
-		dup2(self->pipes->next_pipe[1], STDOUT_FILENO);
-		close(self->pipes->next_pipe[1]);
+		if (close(self->pipes->next_pipe[0]) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+		if (close(STDOUT_FILENO) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+		if (dup2(self->pipes->next_pipe[1], STDOUT_FILENO) == -1)
+			return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+		if (close(self->pipes->next_pipe[1]) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 	}
+	return (true);
 }
 
 void	free_pipes(t_pipes *pipes)
@@ -146,7 +143,7 @@ void	free_pipes(t_pipes *pipes)
 	free(pipes);
 }
 
-void	set_redirections(t_executor *self, t_error_handler *error_handler)
+bool	set_redirections(t_executor *self, t_error_handler *error_handler)
 {
 	t_cmd	*cmd_content;
 	t_list	*redirections;
@@ -159,56 +156,101 @@ void	set_redirections(t_executor *self, t_error_handler *error_handler)
 	{
 		if (((t_redirection *)(redirections->content))->type == REDIR_IN)
 		{
-			close(STDIN_FILENO);
+			if (close(STDIN_FILENO) == -1)
+				return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			fd = open(((t_redirection *)(redirections->content))->file, O_RDONLY);
 			if (fd == -1)
-				fatal_error("open", strerror(errno));
+				return (ft_printf(STDERR_FILENO, "open: %s\n", strerror(errno)), false);
 			if (fd != STDIN_FILENO)
 			{
-				dup2(fd, STDIN_FILENO);
-				close(fd);
+				if (dup2(fd, STDIN_FILENO) == -1)
+					return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+				if (close(fd) == -1)
+					return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			}
 			redirections = redirections->next;
 			continue ;
 		}
 		if (((t_redirection *)(redirections->content))->type == REDIR_OUT)
 		{
-			close(STDOUT_FILENO);
+			if (close(STDOUT_FILENO) == -1)
+				return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			fd = open(((t_redirection *)(redirections->content))->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd == -1)
-				fatal_error("open", strerror(errno));
+				return (ft_printf(STDERR_FILENO, "open: %s\n", strerror(errno)), false);
 			if (fd != STDOUT_FILENO)
 			{
-				dup2(fd, STDOUT_FILENO);
-				close(fd);
+				if (dup2(fd, STDOUT_FILENO) == -1)
+					return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+				if (close(fd) == -1)
+					return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			}
 			redirections = redirections->next;
 			continue ;
 		}
 		if (((t_redirection *)(redirections->content))->type == REDIR_APPEND)
 		{
-			close(STDOUT_FILENO);
+			if (close(STDOUT_FILENO) == -1)
+				return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			fd = open(((t_redirection *)(redirections->content))->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd == -1)
-				fatal_error("open", strerror(errno));
+				return (ft_printf(STDERR_FILENO, "open: %s\n", strerror(errno)), false);
 			if (fd != STDOUT_FILENO)
 			{
-				dup2(fd, STDOUT_FILENO);
-				close(fd);
+				if (dup2(fd, STDOUT_FILENO) == -1)
+					return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+				if (close(fd) == -1)
+					return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			}
 			redirections = redirections->next;
 			continue ;
 		}
 		redirections = redirections->next;
 	}
+	return (true);
 }
 
-void	parent_process(t_pipes *pipes)
+void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_list *env_list, t_list *current_cmd)
+{
+	t_cmd	*cmd_content;
+	int		exec_ret;
+
+	if (!set_pipes(self, current_cmd, error_handler))
+		all_clear_exit(self, error_handler, env_list, 1);
+	if (!set_redirections(self, error_handler))
+		all_clear_exit(self, error_handler, env_list, 1);
+	cmd_content = (t_cmd *)(current_cmd->content);
+	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
+	{
+		exit(lookup_builtin(cmd_content->cmd_name, \
+			self->builtins_list)->func(self, error_handler, env_list));
+	}
+	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
+		exec_ret = execve_in_absolute_path(cmd_content, env_list);
+	else
+		exec_ret = ft_execvp(cmd_content, env_list);
+	// some error occured
+	if (exec_ret == -1)
+	{
+		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, strerror(errno));
+		all_clear_exit(self, error_handler, env_list, 1);
+	}
+	all_clear_exit(self, error_handler, env_list, get_err_status());
+}
+
+bool	parent_process(t_pipes *pipes)
 {
 	if (pipes->prev_pipe[0] != -1)
-		close(pipes->prev_pipe[0]);
+	{
+		if (close(pipes->prev_pipe[0]) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+	}
 	if (pipes->prev_pipe[1] != -1)
-		close(pipes->prev_pipe[1]);
+	{
+		if (close(pipes->prev_pipe[1]) == -1)
+			return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+	}
+	return (true);
 }
 
 int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
@@ -228,42 +270,48 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 				self->builtins_list)->func(self, error_handler, env_list));
 		}
 	}
-	while (self->cmds)
+	while (head)
 	{
 		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
-		if (self->cmds->next)
+		if (head->next)
 		{
 			if (pipe(self->pipes->next_pipe) == -1)
-				return (fatal_error("pipe", strerror(errno)), get_err_status());
+				return (ft_printf(STDERR_FILENO, "%s: %s\n", "pipe", strerror(errno)), get_err_status());
 		}
-		cmd_content = (t_cmd *)(self->cmds->content);
+		cmd_content = (t_cmd *)(head->content);
 		cmd_content->pid = fork();
 		if (cmd_content->pid == -1)
-			return (fatal_error("", strerror(errno)), get_err_status());
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "fork", strerror(errno)), get_err_status());
 		else if (cmd_content->pid > 0)
 		{
-			parent_process(self->pipes);
-			self->cmds = self->cmds->next;
+			if (!parent_process(self->pipes))
+				return (get_err_status());
+			head = head->next;
 			continue ;
 		}
-		set_pipes(self, head, error_handler);
-		set_redirections(self, error_handler);
-		execute_child_process(self, error_handler, env_list);
+		execute_child_process(self, error_handler, env_list, head);
 	}
 	waitpid(cmd_content->pid, &status, 0);
 	// ft_printf(STDERR_FILENO, "pid:%d status: %d\n", cmd_content->pid, WEXITSTATUS(status));
 	return (WEXITSTATUS(status));
 }
 
-void	repair_std_io(t_executor *self)
+bool	repair_std_io(t_executor *self)
 {
-	close(STDIN_FILENO);
-	dup2(self->original_stdin, STDIN_FILENO);
-	close(self->original_stdin);
-	close(STDOUT_FILENO);
-	dup2(self->original_stdout, STDOUT_FILENO);
-	close(self->original_stdout);
+	if (close(STDIN_FILENO) == -1)
+		return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+	if (dup2(self->original_stdin, STDIN_FILENO) == -1)
+		return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+	if (close(self->original_stdin) == -1)
+		return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+	if (close(STDOUT_FILENO) == -1)
+		return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+	if (dup2(self->original_stdout, STDOUT_FILENO) == -1)
+		return (ft_printf(STDERR_FILENO, "dup2: %s\n", strerror(errno)), false);
+	if (close(self->original_stdout) == -1)
+		return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
+	return (true);
 }
 
 t_executor	*create_executor(void)

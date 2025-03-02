@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 19:46:52 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 15:38:29 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,26 @@ bool	append_char_to_token(t_state *state, t_list **head, char c)
 	int		i;
 	t_list	*current;
 	t_token	*token_content;
+	t_list	*token;
 
-	current = *head;
-	current = ft_lstlast(current);
+	current = ft_lstlast(*head);
 	if (*state == STATE_NONE)
 	{
 		// ft_printf(STDOUT_FILENO, "append_char:%c\n", c);
 		if (c == '\'' || c == '\"')
-			ft_lstadd_back(head, create_token(TOKEN_WORD, '\0'));
+		{
+			token = create_token(TOKEN_WORD, '\0');
+			if (!token)
+				return (false);
+			ft_lstadd_back(head, token);
+		}
 		else
-			ft_lstadd_back(head, create_token(TOKEN_WORD, c));
+		{
+			token = create_token(TOKEN_WORD, c);
+			if (!token)
+				return (false);
+			ft_lstadd_back(head, token);
+		}
 		return (true);
 	}
 	token_content = (t_token *)(current->content);
@@ -101,12 +111,14 @@ bool	tokenize_state_none(t_state *state, t_list **head, char c)
 	else if (c == '<' || c == '>' || c == '|')
 	{
 		token = create_token(get_token_type(c), c);
+		if (!token)
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 		ft_lstadd_back(head, token);
 	}
 	else
 	{
 		if (!append_char_to_token(state, head, c))
-			return (false);
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 		if (c == '\'')
 			*state = STATE_IN_SINGLE_QUOTE;
 		else if (c == '\"')
@@ -129,6 +141,8 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 	else if (c == '<' || c == '>' || c == '|')
 	{
 		token = create_token(get_token_type(c), c);
+		if (!token)
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 		ft_lstadd_back(head, token);
 		*state = STATE_NONE;
 	}
@@ -139,7 +153,7 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 	else
 	{
 		if (!append_char_to_token(state, head, c))
-			return (false);
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	}
 	return (true);
 }
@@ -154,7 +168,7 @@ bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 	else
 	{
 		if (!append_char_to_token(state, head, c))
-			return (false);
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	}
 	return (true);
 }
@@ -169,9 +183,21 @@ bool	tokenize_state_in_double_quote(t_state *state, t_list **head, char c)
 	else
 	{
 		if (!append_char_to_token(state, head, c))
-			return (false);
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	}
 	return (true);
+}
+
+void	free_token(void *token)
+{
+	t_token	*token_ptr;
+
+	if (!token)
+		return ;
+	token_ptr = (t_token *)token;
+	if (token_ptr->value)
+		free(token_ptr->value);
+	free(token_ptr);
 }
 
 t_list	*tokenize_line(const char *line)
@@ -183,37 +209,36 @@ t_list	*tokenize_line(const char *line)
 	head = NULL;
 	state = STATE_NONE;
 	i = 0;
-
 	while (line[i])
 	{
 		// ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
 		if (state == STATE_NONE)
 		{
 			if (!tokenize_state_none(&state, &head, line[i]))
-				return (NULL);
+				return (ft_lstclear(&head, free_token), NULL);
 		}
 		else if (state == STATE_WORD)
 		{
 			if (!tokenize_state_word(&state, &head, line[i]))
-				return (NULL);
+				return (ft_lstclear(&head, free_token), NULL);
 		}
 		else if (state == STATE_IN_SINGLE_QUOTE)
 		{
 			if (!tokenize_state_in_single_quote(&state, &head, line[i]))
-				return (NULL);
+				return (ft_lstclear(&head, free_token), NULL);
 		}
 		else if (state == STATE_IN_DOUBLE_QUOTE)
 		{
 			if (!tokenize_state_in_double_quote(&state, &head, line[i]))
-				return (NULL);
+				return (ft_lstclear(&head, free_token), NULL);
 		}
 		// ft_printf(STDOUT_FILENO, "state:%d\n", state);
 		i++;
 	}
 	if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)
 	{
-		fprintf(stderr, "Error: Unclosed quote detected.\n");
-		return (NULL);
+		ft_printf(STDERR_FILENO, "minishell: Unclosed quote detected.\n");
+		return (ft_lstclear(&head, free_token), NULL);
 	}
 	return (head);
 }

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/22 18:42:51 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 15:43:30 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,6 @@ t_parser	*create_parser(t_error_handler *err_handler);
 void		free_parser(t_parser *parser);
 
 t_list		*tokenize_line(const char *line);
+void		free_token(void *token);
 
 #endif
