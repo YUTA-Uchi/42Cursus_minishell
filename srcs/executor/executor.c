@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 18:04:56 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/02 18:25:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,8 +269,6 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 			return (lookup_builtin(cmd_content->cmd_name, \
 				self->builtins_list)->func(self, error_handler, env_list));
 		}
-		else
-			return (fatal_error("", COMMAND_NOT_FOUND), get_err_status());
 	}
 	while (head)
 	{
