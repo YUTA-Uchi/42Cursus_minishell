@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "redirection.h"
 
 t_list	*create_redirection(char *file, t_redir_type type)

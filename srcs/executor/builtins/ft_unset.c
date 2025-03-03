@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "environment.h"
 #include "builtin.h"
 
 int	ft_unset(t_executor *self, t_error_handler *error_handler, t_list *env_list)

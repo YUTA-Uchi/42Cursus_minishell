@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "builtin.h"
 
 int	ft_echo(t_executor *self, t_error_handler *error_handler, t_list *env_list)

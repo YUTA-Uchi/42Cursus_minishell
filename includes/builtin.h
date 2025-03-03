@@ -13,6 +13,7 @@
 #ifndef BUILTIN_H
 # define BUILTIN_H
 
+# include "minishell.h"
 # include "command.h"
 # include "error_handler.h"
 # include "environment.h"

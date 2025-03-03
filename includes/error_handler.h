@@ -13,6 +13,8 @@
 #ifndef ERROR_HANDLER_H
 # define ERROR_HANDLER_H
 
+# include "minishell.h"
+
 # define ERR_HEADER "minishell: "
 # define COMMAND_NOT_FOUND "command not found"
 // builtin pwd error message

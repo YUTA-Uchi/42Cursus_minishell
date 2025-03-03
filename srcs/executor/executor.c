@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "executor.h"
-#include "environment.h"
 #include "builtin.h"
 
 void	all_clear_exit(t_executor *executor, t_error_handler *error_handler, t_list *env_list, int status)

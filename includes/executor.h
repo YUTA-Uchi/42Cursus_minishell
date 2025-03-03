@@ -16,6 +16,7 @@
 # include "minishell.h"
 # include "command.h"
 # include "error_handler.h"
+# include "environment.h"
 
 typedef struct s_builtins	t_builtins;
 typedef struct s_pipes		t_pipes;

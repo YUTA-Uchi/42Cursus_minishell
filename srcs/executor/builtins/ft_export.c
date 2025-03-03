@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "environment.h"
 #include "builtin.h"
 
 int	ft_setenv(char *key, char *value, int overwrite)

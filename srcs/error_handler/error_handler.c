@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "error_handler.h"
 
 void	fatal_error(const char *function_name, const char *msg)
