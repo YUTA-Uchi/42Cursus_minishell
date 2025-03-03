@@ -54,6 +54,11 @@ int	main(int argc, char **argv, char **environ)
 		executor->cmds = parser->parse(parser, error_handler, env_list);
 		// TODO here_doc(executor->cmds, error_handler);
 		free_parser(parser);
+		if (!executor->cmds)
+		{
+			free_executor(executor);
+			continue ;
+		}
 		shell_state->last_status = executor->execute(executor, error_handler, env_list);
 		ft_printf(STDERR_FILENO, "last_status: %d\n", shell_state->last_status);
 		repair_std_io(executor);

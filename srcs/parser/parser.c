@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "parser.h"
+#include "environment.h"
 
 bool	add_arg(char ***args, char *arg)
 {
@@ -149,6 +150,34 @@ static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
 	return (line);
 }
 
+// bool env_expansion(t_list *token_list, t_list *env_list)
+// {
+// 	t_list	*current;
+// 	t_token	*token;
+// 	t_env	*env;
+// 	char	*value;
+
+// 	current = token_list;
+// 	while (current)
+// 	{
+// 		token = (t_token *)(current->content);
+// 		if (token->type == TOKEN_WORD)
+// 		{
+// 			env = find_env(env_list, token->value);
+// 			if (env)
+// 			{
+// 				value = ft_strdup(env->value);
+// 				if (!value)
+// 					return (false);
+// 				free(token->value);
+// 				token->value = value;
+// 			}
+// 		}
+// 		current = current->next;
+// 	}
+// 	return (true);
+// }
+
 t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list)
 {
 	char	*line;
@@ -161,6 +190,8 @@ t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list
 		return (NULL);
 	(void)env_list;
 	// TODO env_expansion(token_list, env_list);
+	// if (!env_expansion(token_list, env_list))
+	// 	return (ft_lstclear(&token_list, free_token), NULL);
 	cmd = parse_tokens(token_list, error_handler);
 	if (!cmd)
 		return (ft_lstclear(&token_list, free_token), NULL);

@@ -59,20 +59,20 @@ bool	append_char_to_token(t_state *state, t_list **head, char c)
 	if (*state == STATE_NONE)
 	{
 		// ft_printf(STDOUT_FILENO, "append_char:%c\n", c);
-		if (c == '\'' || c == '\"')
-		{
-			token = create_token(TOKEN_WORD, '\0');
-			if (!token)
-				return (false);
-			ft_lstadd_back(head, token);
-		}
-		else
-		{
+		// if (c == '\'' || c == '\"')
+		// {
+		// 	token = create_token(TOKEN_WORD, '\0');
+		// 	if (!token)
+		// 		return (false);
+		// 	ft_lstadd_back(head, token);
+		// }
+		// else
+		// {
 			token = create_token(TOKEN_WORD, c);
 			if (!token)
 				return (false);
 			ft_lstadd_back(head, token);
-		}
+		// }
 		return (true);
 	}
 	token_content = (t_token *)(current->content);
@@ -144,15 +144,15 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 		ft_lstadd_back(head, token);
 		*state = STATE_NONE;
-	}
-	else if (c == '\'')
-		*state = STATE_IN_SINGLE_QUOTE;
-	else if (c == '\"')
-		*state = STATE_IN_DOUBLE_QUOTE;
+	} 
 	else
 	{
 		if (!append_char_to_token(state, head, c))
 			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+		if (c == '\'')
+			*state = STATE_IN_SINGLE_QUOTE;
+		else if (c == '\"')
+			*state = STATE_IN_DOUBLE_QUOTE;
 	}
 	return (true);
 }
@@ -160,14 +160,11 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 {
 	// ft_printf(STDOUT_FILENO, "tokenize_state_in_single_quote\n");
+	if (!append_char_to_token(state, head, c))
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	if (c == '\'')
 	{
 		*state = STATE_WORD;
-	}
-	else
-	{
-		if (!append_char_to_token(state, head, c))
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	}
 	return (true);
 }
@@ -175,14 +172,11 @@ bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 bool	tokenize_state_in_double_quote(t_state *state, t_list **head, char c)
 {
 	// ft_printf(STDOUT_FILENO, "tokenize_state_in_double_quote\n");
+	if (!append_char_to_token(state, head, c))
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	if (c == '\"')
 	{
 		*state = STATE_WORD;
-	}
-	else
-	{
-		if (!append_char_to_token(state, head, c))
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	}
 	return (true);
 }
