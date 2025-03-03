@@ -96,6 +96,8 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 			{
 				redirection = create_redirection(((t_token *)(tokens->next->content))->value \
 										, get_redir_type(token_content->type, false));
+				// ft_printf(STDOUT_FILENO, "redir:%s:%s\n", ((t_token *)(tokens->next->content))->value 
+				// 		, ((t_redirection *)(redirection->content))->file);
 				if (!redirection)
 					return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
 				ft_lstadd_back(&(cmd_content->redirections), redirection);
@@ -107,7 +109,7 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 				if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
 				{
 					redirection = create_redirection(((t_token *)(tokens->next->content))->value \
-										, get_redir_type(token_content->type, false));
+										, get_redir_type(token_content->type, true));
 					if (!redirection)
 						return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
 					ft_lstadd_back(&(cmd_content->redirections), redirection);

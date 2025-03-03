@@ -48,7 +48,7 @@ int	ft_execvp(t_cmd *cmd, t_list *env_list)
 
 	env_pathes = ft_split(get_env_value(env_list, "PATH"), ':');
 	if (env_pathes == NULL)
-		return (ft_printf(STDERR_FILENO, "executor: %s\n", strerror(errno)), get_err_status());
+		return (ft_printf(STDERR_FILENO, "executor: %s\n", "malloc failed"), get_err_status());
 	i = 0;
 	while (env_pathes[i])
 	{
@@ -62,32 +62,34 @@ int	ft_execvp(t_cmd *cmd, t_list *env_list)
 		i++;
 	}
 	free_arr(env_pathes);
-	return (ft_printf(STDERR_FILENO, "executor: %s\n", strerror(errno)), get_err_status());
+	return (get_err_status());
 }
 
 void	print_cmd(t_list *cmds)
 {
 	int		i;
 	t_cmd	*cmd_content;
+	t_list	*redir_list;
 	t_list	*cmd_list;
 
 	cmd_list = cmds;
 	while (cmd_list)
 	{
 		cmd_content = (t_cmd *)(cmd_list->content);
-		ft_printf(STDOUT_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
+		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
 		i = 0;
 		while (cmd_content->args[i])
 		{
-			ft_printf(STDOUT_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
+			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
 			i++;
 		}
 		i = 0;
-		ft_printf(STDOUT_FILENO, "redir:%p\n", (cmd_content->redirections));
-		while (cmd_content->redirections)
+		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
+		redir_list = cmd_content->redirections;
+		while (redir_list)
 		{
-			ft_printf(STDOUT_FILENO, "redirections[%d]: %s:%d\n", i, ((t_redirection *)(cmd_content->redirections->content))->file, ((t_redirection *)(cmd_content->redirections->content))->type);
-			cmd_content->redirections = cmd_content->redirections->next;
+			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, ((t_redirection *)(redir_list->content))->file, ((t_redirection *)(redir_list->content))->type);
+			redir_list = redir_list->next;
 			i++;
 		}
 		cmd_list = cmd_list->next;
@@ -141,14 +143,15 @@ void	free_pipes(t_pipes *pipes)
 	free(pipes);
 }
 
-bool	set_redirections(t_executor *self, t_error_handler *error_handler)
+bool	set_redirections(t_executor *self, t_list *current_cmd, t_error_handler *error_handler)
 {
 	t_cmd	*cmd_content;
 	t_list	*redirections;
 	int		fd;
 
 	(void)error_handler;
-	cmd_content = (t_cmd *)(self->cmds->content);
+	(void)self;
+	cmd_content = (t_cmd *)(current_cmd->content);
 	redirections = cmd_content->redirections;
 	while (redirections)
 	{
@@ -158,7 +161,7 @@ bool	set_redirections(t_executor *self, t_error_handler *error_handler)
 				return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			fd = open(((t_redirection *)(redirections->content))->file, O_RDONLY);
 			if (fd == -1)
-				return (ft_printf(STDERR_FILENO, "open: %s\n", strerror(errno)), false);
+				return (ft_printf(STDERR_FILENO, "openin: %s: %s\n", ((t_redirection *)(redirections->content))->file, strerror(errno)), false);
 			if (fd != STDIN_FILENO)
 			{
 				if (dup2(fd, STDIN_FILENO) == -1)
@@ -175,7 +178,7 @@ bool	set_redirections(t_executor *self, t_error_handler *error_handler)
 				return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			fd = open(((t_redirection *)(redirections->content))->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd == -1)
-				return (ft_printf(STDERR_FILENO, "open: %s\n", strerror(errno)), false);
+				return (ft_printf(STDERR_FILENO, "openout: %s: %s\n", ((t_redirection *)(redirections->content))->file, strerror(errno)), false);
 			if (fd != STDOUT_FILENO)
 			{
 				if (dup2(fd, STDOUT_FILENO) == -1)
@@ -192,7 +195,7 @@ bool	set_redirections(t_executor *self, t_error_handler *error_handler)
 				return (ft_printf(STDERR_FILENO, "close: %s\n", strerror(errno)), false);
 			fd = open(((t_redirection *)(redirections->content))->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd == -1)
-				return (ft_printf(STDERR_FILENO, "open: %s\n", strerror(errno)), false);
+				return (ft_printf(STDERR_FILENO, "openap: %s: %s\n", ((t_redirection *)(redirections->content))->file, strerror(errno)), false);
 			if (fd != STDOUT_FILENO)
 			{
 				if (dup2(fd, STDOUT_FILENO) == -1)
@@ -215,7 +218,7 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_l
 
 	if (!set_pipes(self, current_cmd, error_handler))
 		all_clear_exit(self, error_handler, env_list, 1);
-	if (!set_redirections(self, error_handler))
+	if (!set_redirections(self, current_cmd, error_handler))
 		all_clear_exit(self, error_handler, env_list, 1);
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
@@ -231,10 +234,9 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_l
 	if (exec_ret == -1)
 	{
 		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, strerror(errno));
-		ft_printf(STDERR_FILENO, "errno1: %d\n", errno);
 		all_clear_exit(self, error_handler, env_list, 1);
 	}
-	ft_printf(STDERR_FILENO, "errno2: %d\n", errno);
+	ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, COMMAND_NOT_FOUND);
 	all_clear_exit(self, error_handler, env_list, get_err_status());
 }
 
@@ -260,9 +262,9 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 	t_list	*head;
 
 	head = self->cmds;
-	// print_cmd(self->cmds);
-	cmd_content = (t_cmd *)(self->cmds->content);
-	if (!self->cmds->next)
+	//print_cmd(head);
+	cmd_content = (t_cmd *)(head->content);
+	if (!head->next)
 	{
 		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		{

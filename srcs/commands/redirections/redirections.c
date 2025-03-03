@@ -19,7 +19,7 @@ t_list	*create_redirection(char *file, t_redir_type type)
 	redir = malloc(sizeof(t_redirection));
 	if (!redir)
 		return (NULL);
-	redir->file = file;
+	redir->file = ft_strdup(file);
 	redir->type = type;
 	return (ft_lstnew(redir));
 }

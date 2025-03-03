@@ -26,7 +26,8 @@ COMMON_SRCS		:=	main.c \
 					executor.c \
 					parser.c \
 					tokenizer.c \
-					environment.c
+					environment.c \
+					shell_state.c
 
 OBJ_DIR			:=	./obj
 OBJS			:=	$(COMMON_SRCS:%.c=$(OBJ_DIR)/%.o)
@@ -37,7 +38,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser:./srcs/environment:
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser:./srcs/environment:./srcs/shell_state:
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a

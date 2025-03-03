@@ -15,6 +15,7 @@
 #include "parser.h"
 #include "executor.h"
 #include "environment.h"
+#include "shell_state.h"
 
 int	main(int argc, char **argv, char **environ)
 {
@@ -22,6 +23,7 @@ int	main(int argc, char **argv, char **environ)
 	t_parser		*parser;
 	t_executor		*executor;
 	t_list			*env_list;
+	t_shell_state	*shell_state;
 
 	(void)argc;
 	(void)argv;
@@ -31,7 +33,10 @@ int	main(int argc, char **argv, char **environ)
 	env_list = create_env_list(environ);
 	if (!env_list)
 		ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
-	while (1)
+	shell_state = create_shell_state();
+	if (!shell_state)
+		ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
+	while (shell_state->running)
 	{
 		parser = create_parser(error_handler);
 		if (!parser)
@@ -49,8 +54,8 @@ int	main(int argc, char **argv, char **environ)
 		executor->cmds = parser->parse(parser, error_handler, env_list);
 		// TODO here_doc(executor->cmds, error_handler);
 		free_parser(parser);
-		executor->execute(executor, error_handler, env_list);
-		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
+		shell_state->last_status = executor->execute(executor, error_handler, env_list);
+		ft_printf(STDERR_FILENO, "last_status: %d\n", shell_state->last_status);
 		repair_std_io(executor);
 		free_executor(executor);
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
