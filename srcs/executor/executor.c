@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 18:57:02 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/04 11:04:37 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ void	all_clear_exit(t_executor *executor, t_error_handler *error_handler, t_list
 	free_env_list(env_list);
 	exit(status);
 }
-
 
 static char	*create_path(char *env_path, char *cmd)
 {

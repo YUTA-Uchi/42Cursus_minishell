@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 19:07:14 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/04 17:49:36 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,22 +39,16 @@ bool	add_arg(char ***args, char *arg)
 	return (true);
 }
 
-t_redir_type	get_redir_type(t_token_type token_type, bool is_double_char)
+t_redir_type	get_redir_type(t_token_type token_type)
 {
-	if (is_double_char)
-	{
-		if (token_type == TOKEN_REDIR_IN)
-			return (REDIR_HEREDOC);
-		else
-			return (REDIR_APPEND);
-	}
+	if (token_type == TOKEN_REDIR_IN)
+		return (REDIR_IN);
+	else if (token_type == TOKEN_REDIR_OUT)
+		return (REDIR_OUT);
+	else if (token_type == TOKEN_REDIR_APPEND)
+		return (REDIR_APPEND);
 	else
-	{
-		if (token_type == TOKEN_REDIR_IN)
-			return (REDIR_IN);
-		else
-			return (REDIR_OUT);
-	}
+		return (REDIR_HEREDOC);
 }
 
 t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
@@ -88,36 +82,17 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 				ft_lstadd_back(&head, current_cmd);
 		}
 		cmd_content = (t_cmd *)(current_cmd->content);
-		// ft_printf(STDOUT_FILENO, "token:%s:%d\n", token_content->value, token_content->type);
-		if (token_content->type == TOKEN_REDIR_IN || token_content->type == TOKEN_REDIR_OUT)
+		if (token_content->type == TOKEN_REDIR_IN || token_content->type == TOKEN_REDIR_OUT \
+			|| token_content->type == TOKEN_REDIR_APPEND)
 		{
-			// ft_printf(STDOUT_FILENO, "redir:%s:%d\n", token_content->value, token_content->type);
-			// ft_printf(STDOUT_FILENO, "redir:%s\n", ((t_token *)(tokens->next->content))->value);
 			if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
 			{
 				redirection = create_redirection(((t_token *)(tokens->next->content))->value \
-										, get_redir_type(token_content->type, false));
-				// ft_printf(STDOUT_FILENO, "redir:%s:%s\n", ((t_token *)(tokens->next->content))->value 
-				// 		, ((t_redirection *)(redirection->content))->file);
+										, get_redir_type(token_content->type));
 				if (!redirection)
 					return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
 				ft_lstadd_back(&(cmd_content->redirections), redirection);
 				tokens = tokens->next;
-			}
-			else if (tokens->next && ((t_token *)(tokens->next->content))->type == token_content->type)
-			{
-				tokens = tokens->next;
-				if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
-				{
-					redirection = create_redirection(((t_token *)(tokens->next->content))->value \
-										, get_redir_type(token_content->type, true));
-					if (!redirection)
-						return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
-					ft_lstadd_back(&(cmd_content->redirections), redirection);
-					tokens = tokens->next;
-				}
-				else
-					return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "syntax error"), NULL);
 			}
 			else
 				return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "syntax error"), NULL);
@@ -150,33 +125,157 @@ static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
 	return (line);
 }
 
-// bool env_expansion(t_list *token_list, t_list *env_list)
-// {
-// 	t_list	*current;
-// 	t_token	*token;
-// 	t_env	*env;
-// 	char	*value;
+bool	expand_state_in_env(t_expand_state *state, t_list **head, char c, t_list *env_list)
+{
+	static char	*env_key;
+	char		*env_value;
+	t_env		*env_content;
+	t_token		*token;
 
-// 	current = token_list;
-// 	while (current)
-// 	{
-// 		token = (t_token *)(current->content);
-// 		if (token->type == TOKEN_WORD)
-// 		{
-// 			env = find_env(env_list, token->value);
-// 			if (env)
-// 			{
-// 				value = ft_strdup(env->value);
-// 				if (!value)
-// 					return (false);
-// 				free(token->value);
-// 				token->value = value;
-// 			}
-// 		}
-// 		current = current->next;
-// 	}
-// 	return (true);
-// }
+	if (c == '\"')
+	{
+		env_value = get_env_value(env_list, env_key);
+		if (env_value)
+			append_string_to_token(head, env_value);
+		*state = EXPAND_IN_DOUBLE_QUOTE;
+	}
+	else if (c == '\'')
+	{
+		env_value = get_env_value(env_list, env_key);
+		if (env_value)
+			append_string_to_token(head, env_value);
+		*state = EXPAND_IN_SINGLE_QUOTE;
+	}
+	else if (c == '$')
+		*state = EXPAND_WORD;
+	else if (c == '?')
+	{
+		// TODO append exit status
+	}
+	else
+	{
+		if (!env_key)
+			env_key = ft_strdup(&c);
+		else
+		{
+			if (!append_char_to_str(&env_key, c))
+				return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+		}
+	}
+	return (true);
+}
+
+bool	expand_state_in_double_quote(t_expand_state *state, t_list **head, char c, t_list *env_list)
+{
+	if (c == '\"')
+		*state = EXPAND_WORD;
+	else if (c == '$')
+		*state = EXPAND_IN_ENV;
+	else
+	{
+		if (!append_char_to_token(head, c))
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+	}
+	return (true);
+}
+
+bool	expand_state_in_single_quote(t_expand_state *state, t_list **head, char c, t_list *env_list)
+{
+	if (c == '\'')
+		*state = EXPAND_WORD;
+	else
+	{
+		if (!append_char_to_token(head, c))
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+	}
+	return (true);
+}
+
+bool	expand_state_word(t_expand_state *state, t_list **head, char c, t_list *env_list)
+{
+	if (c == '\'')
+		*state = EXPAND_IN_SINGLE_QUOTE;
+	else if (c == '\"')
+		*state = EXPAND_IN_DOUBLE_QUOTE;
+	else if (c == '$')
+		*state = EXPAND_IN_ENV;
+	else
+	{
+		if (!append_char_to_token(head, c))
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+	}
+	return (true);
+}
+
+bool	expand_word(t_list **current, t_list *prev, t_list *env_list)
+{
+	t_list			*head;
+	t_expand_state	state;
+	t_token			*token;
+	t_list			*new_token;
+	int				i;
+
+	head = *current;
+	state = EXPAND_WORD;
+	token = (t_token *)(head->content);
+	new_token = create_token(TOKEN_WORD, "");
+	if (!new_token)
+		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+	i = 0;
+	while (token->value[i])
+	{
+		// ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
+		if (state == EXPAND_WORD)
+		{
+			if (!expand_state_word(&state, &new_token, token->value[i], env_list))
+				return (ft_lstclear(&head, free_token), false);
+		}
+		else if (state == EXPAND_IN_SINGLE_QUOTE)
+		{
+			if (!expand_state_in_single_quote(&state, &new_token, token->value[i], env_list))
+				return (ft_lstclear(&head, free_token), false);
+		}
+		else if (state == EXPAND_IN_DOUBLE_QUOTE)
+		{
+			if (!expand_state_in_double_quote(&state, &new_token, token->value[i], env_list))
+				return (ft_lstclear(&head, free_token), false);
+		}
+		else if (state == EXPAND_IN_ENV)
+		{
+			if (!expand_state_in_env(&state, &new_token, token->value[i], env_list))
+				return (ft_lstclear(&head, free_token), false);
+		}
+		i++;
+	}
+	prev->next = new_token;
+	new_token->next = head->next;
+	ft_lstdelone(&head, free_token);
+	*current = new_token;
+	return (true);
+}
+
+bool	expansion(t_list *token_list, t_list *env_list)
+{
+	t_list	*current;
+	t_list	*prev;
+	t_token	*token;
+	t_env	*env;
+	char	*value;
+
+	current = token_list;
+	prev = NULL;
+	while (current)
+	{
+		token = (t_token *)(current->content);
+		if (token->type == TOKEN_WORD)
+		{
+			expand_word(&current, prev, env_list);
+		}
+		prev = current;
+		current = current->next;
+	}
+	return (true);
+}
 
 t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list)
 {
