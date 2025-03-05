@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/04 17:49:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/05 17:31:51 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,8 @@ static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
 		add_history(line);
 	return (line);
 }
+
+
 
 bool	expand_state_in_env(t_expand_state *state, t_list **head, char c, t_list *env_list)
 {
@@ -246,6 +248,12 @@ bool	expand_word(t_list **current, t_list *prev, t_list *env_list)
 				return (ft_lstclear(&head, free_token), false);
 		}
 		i++;
+	}
+	if (state == EXPAND_IN_ENV)
+	{
+		env_value = get_env_value(env_list, env_key);
+		if (env_value)
+			append_string_to_token(head, env_value);
 	}
 	prev->next = new_token;
 	new_token->next = head->next;
