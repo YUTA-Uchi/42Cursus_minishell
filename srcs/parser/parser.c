@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/05 17:31:51 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/06 18:06:49 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 		}
 		else if (token_content->type == TOKEN_WORD)
 		{
+			// ft_printf(STDOUT_FILENO, "cmd_name:%s\n", cmd_content->cmd_name);
 			if (!cmd_content->cmd_name)
 				cmd_content->cmd_name = ft_strdup(token_content->value);
 			if (!cmd_content->cmd_name || !add_arg(&(cmd_content->args), ft_strdup(token_content->value)))
@@ -125,167 +126,299 @@ static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
 	return (line);
 }
 
-
-
-bool	expand_state_in_env(t_expand_state *state, t_list **head, char c, t_list *env_list)
+bool	append_char_to_env_key(t_expand *expand, char c)
 {
-	static char	*env_key;
-	char		*env_value;
-	t_env		*env_content;
-	t_token		*token;
+	char	*new_key;
 
-	if (c == '\"')
+	if (expand->env_key_len + 1 >= expand->env_key_capacity)
 	{
-		env_value = get_env_value(env_list, env_key);
-		if (env_value)
-			append_string_to_token(head, env_value);
-		*state = EXPAND_IN_DOUBLE_QUOTE;
+		expand->env_key_capacity *= 2;
+		new_key = malloc(sizeof(char) * (expand->env_key_capacity));
+		if (!new_key)
+			return (false);
+		ft_strlcpy(new_key, expand->env_key, expand->env_key_len + 1);
+		free(expand->env_key);
+		expand->env_key = new_key;
 	}
-	else if (c == '\'')
+	expand->env_key[expand->env_key_len++] = c;
+	expand->env_key[expand->env_key_len] = '\0';
+	return (true);
+}
+
+bool	append_char_to_str(t_expand *expand, char c)
+{
+	char	*new_value;
+
+	if (expand->len + 1 >= expand->capacity)
 	{
-		env_value = get_env_value(env_list, env_key);
-		if (env_value)
-			append_string_to_token(head, env_value);
-		*state = EXPAND_IN_SINGLE_QUOTE;
+		expand->capacity *= 2;
+		new_value = malloc(sizeof(char) * (expand->capacity));
+		if (!new_value)
+			return (false);
+		ft_strlcpy(new_value, expand->value, expand->len + 1);
+		free(expand->value);
+		expand->value = new_value;
 	}
-	else if (c == '$')
-		*state = EXPAND_WORD;
-	else if (c == '?')
+	expand->value[expand->len++] = c;
+	expand->value[expand->len] = '\0';
+	return (true);
+}
+
+bool	append_last_status_to_str(t_expand *expand)
+{
+	char	*status_str;
+	int		i;
+
+	status_str = ft_itoa(expand->shell_state->last_status);
+	if (!status_str)
+		return (false);
+	i = 0;
+	while (status_str[i])
 	{
-		// TODO append exit status
-	}
-	else
-	{
-		if (!env_key)
-			env_key = ft_strdup(&c);
-		else
+		if (!append_char_to_str(expand, status_str[i]))
 		{
-			if (!append_char_to_str(&env_key, c))
-				return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+			free(status_str);
+			return (false);
+		}
+		i++;
+	}
+	free(status_str);
+	return (true);
+}
+
+bool	set_env_value_to_str(t_expand *expand_context, t_list *env_list)
+{
+	char	*env_value;
+	int		i;
+
+	env_value = get_env_value(env_list, expand_context->env_key);
+	if (env_value)
+	{
+		i = 0;
+		while (env_value[i])
+		{
+			if (!append_char_to_str(expand_context, env_value[i++]))
+				return (false);
 		}
 	}
 	return (true);
 }
 
-bool	expand_state_in_double_quote(t_expand_state *state, t_list **head, char c, t_list *env_list)
+bool	expand_state_in_env(t_expand *expand_context, char c, t_list *env_list)
 {
 	if (c == '\"')
-		*state = EXPAND_WORD;
+	{
+		if (!set_env_value_to_str(expand_context, env_list))
+			return (false);
+		expand_context->state = expand_context->prev_state;
+	}
+	else if (c == '\'')
+	{
+		if (!set_env_value_to_str(expand_context, env_list))
+			return (false);
+		if (expand_context->prev_state == EXPAND_IN_DOUBLE_QUOTE)
+		{
+			if (!append_char_to_str(expand_context, c))
+				return (false);
+		}
+		expand_context->state = expand_context->prev_state;
+	}
 	else if (c == '$')
-		*state = EXPAND_IN_ENV;
+		expand_context->state = EXPAND_WORD;
+	else if (c == '?')
+	{
+		if (!append_last_status_to_str(expand_context))
+			return (false);
+		expand_context->state = expand_context->prev_state;
+	}
 	else
 	{
-		if (!append_char_to_token(head, c))
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+		if (!append_char_to_env_key(expand_context, c))
+			return (false);
 	}
 	return (true);
 }
 
-bool	expand_state_in_single_quote(t_expand_state *state, t_list **head, char c, t_list *env_list)
+bool	expand_state_in_double_quote(t_expand *expand_context, char c, t_list *env_list)
 {
-	if (c == '\'')
-		*state = EXPAND_WORD;
+	(void)env_list;
+	if (c == '\"')
+	{
+		expand_context->state = EXPAND_WORD;
+		expand_context->prev_state = EXPAND_WORD;
+	}
+	else if (c == '$')
+	{
+		expand_context->state = EXPAND_IN_ENV;
+		expand_context->prev_state = EXPAND_IN_DOUBLE_QUOTE;
+	}
 	else
 	{
-		if (!append_char_to_token(head, c))
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+		if (!append_char_to_str(expand_context, c))
+			return (false);
 	}
 	return (true);
 }
 
-bool	expand_state_word(t_expand_state *state, t_list **head, char c, t_list *env_list)
+bool	expand_state_in_single_quote(t_expand *expand_context, char c, t_list *env_list)
 {
+	(void)env_list;
 	if (c == '\'')
-		*state = EXPAND_IN_SINGLE_QUOTE;
+		expand_context->state = EXPAND_WORD;
+	else
+	{
+		if (!append_char_to_str(expand_context, c))
+			return (false);
+	}
+	return (true);
+}
+
+bool	expand_state_word(t_expand *expand_context, char c, t_list *env_list)
+{
+	(void)env_list;
+	if (c == '\'')
+		expand_context->state = EXPAND_IN_SINGLE_QUOTE;
 	else if (c == '\"')
-		*state = EXPAND_IN_DOUBLE_QUOTE;
+		expand_context->state = EXPAND_IN_DOUBLE_QUOTE;
 	else if (c == '$')
-		*state = EXPAND_IN_ENV;
+		expand_context->state = EXPAND_IN_ENV;
 	else
 	{
-		if (!append_char_to_token(head, c))
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+		if (!append_char_to_str(expand_context, c))
+			return (false);
 	}
 	return (true);
 }
 
-bool	expand_word(t_list **current, t_list *prev, t_list *env_list)
+bool	handle_expand_state(t_expand *expand, char c, t_list *env_list)
 {
-	t_list			*head;
-	t_expand_state	state;
+	const t_expand_state_handler	expand_state_handler[4] = {\
+		expand_state_word, \
+		expand_state_in_single_quote, \
+		expand_state_in_double_quote, \
+		expand_state_in_env
+	};
+
+	return (expand_state_handler[expand->state](expand, c, env_list));
+}
+
+t_expand	*create_expand(t_shell_state *shell_state)
+{
+	t_expand	*expand;
+
+	expand = malloc(sizeof(t_expand));
+	if (!expand)
+		return (NULL);
+	expand->state = EXPAND_WORD;
+	expand->prev_state = EXPAND_WORD;
+	expand->shell_state = shell_state;
+	expand->value = malloc(sizeof(char) * 1);
+	if (!expand->value)
+		return (free(expand), NULL);
+	expand->value[0] = '\0';
+	expand->len = 0;
+	expand->capacity = 1;
+	expand->env_key = malloc(sizeof(char) * 1);
+	if (!expand->env_key)
+		return (free(expand->value), free(expand), NULL);
+	expand->env_key[0] = '\0';
+	expand->env_key_len = 0;
+	expand->env_key_capacity = 1;
+	return (expand);
+}
+
+void	free_expand(t_expand *expand)
+{
+	if (expand->value)
+		free(expand->value);
+	if (expand->env_key)
+		free(expand->env_key);
+	free(expand);
+}
+
+
+bool	finalize_expand(t_expand *expand, t_list *env_list)
+{
+	if (expand->state == EXPAND_IN_ENV)
+	{
+		if (!set_env_value_to_str(expand, env_list))
+			return (false);
+	}
+	return (true);
+}
+
+t_list	*set_token_value(t_list *token, t_expand *expand)
+{
+	t_token	*token_content;
+
+	if (!token || !expand->value || !token->content)
+		return (NULL);
+	token_content = (t_token *)(token->content);
+	free(token_content->value);
+	token_content->value = ft_strdup(expand->value);
+	if (!token_content->value)
+		return (NULL);
+	token_content->len = expand->len;
+	token_content->capacity = expand->capacity;
+	return (token);
+}
+
+bool	expand_word(t_list **current, t_list *prev, t_list *env_list, t_shell_state *shell_state)
+{
+	t_expand		*expand;
 	t_token			*token;
 	t_list			*new_token;
 	int				i;
 
-	head = *current;
-	state = EXPAND_WORD;
-	token = (t_token *)(head->content);
-	new_token = create_token(TOKEN_WORD, "");
-	if (!new_token)
-		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
+	token = (t_token *)((*current)->content);
+	expand = create_expand(shell_state);
 	i = 0;
 	while (token->value[i])
 	{
-		// ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
-		if (state == EXPAND_WORD)
-		{
-			if (!expand_state_word(&state, &new_token, token->value[i], env_list))
-				return (ft_lstclear(&head, free_token), false);
-		}
-		else if (state == EXPAND_IN_SINGLE_QUOTE)
-		{
-			if (!expand_state_in_single_quote(&state, &new_token, token->value[i], env_list))
-				return (ft_lstclear(&head, free_token), false);
-		}
-		else if (state == EXPAND_IN_DOUBLE_QUOTE)
-		{
-			if (!expand_state_in_double_quote(&state, &new_token, token->value[i], env_list))
-				return (ft_lstclear(&head, free_token), false);
-		}
-		else if (state == EXPAND_IN_ENV)
-		{
-			if (!expand_state_in_env(&state, &new_token, token->value[i], env_list))
-				return (ft_lstclear(&head, free_token), false);
-		}
-		i++;
+		if (!handle_expand_state(expand, token->value[i++], env_list))
+			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer1", "malloc failed"), false);
 	}
-	if (state == EXPAND_IN_ENV)
-	{
-		env_value = get_env_value(env_list, env_key);
-		if (env_value)
-			append_string_to_token(head, env_value);
-	}
-	prev->next = new_token;
-	new_token->next = head->next;
-	ft_lstdelone(&head, free_token);
+	if (!finalize_expand(expand, env_list))
+		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer2", "malloc failed"), false);
+	new_token = set_token_value(create_token(TOKEN_WORD, '\0'), expand);
+	if (!new_token)
+		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer3", "malloc failed"), false);
+	free_expand(expand);
+	if (prev)
+		prev->next = new_token;
+	new_token->next = (*current)->next;
+	ft_lstdelone((*current), free_token);
 	*current = new_token;
 	return (true);
 }
 
-bool	expansion(t_list *token_list, t_list *env_list)
+bool	expansion(t_list **token_list, t_list *env_list, t_shell_state *shell_state)
 {
 	t_list	*current;
 	t_list	*prev;
+	t_list	*next;
 	t_token	*token;
-	t_env	*env;
-	char	*value;
 
-	current = token_list;
+	current = *token_list;
 	prev = NULL;
 	while (current)
 	{
+		next = current->next;
 		token = (t_token *)(current->content);
 		if (token->type == TOKEN_WORD)
 		{
-			expand_word(&current, prev, env_list);
+			if (!expand_word(&current, prev, env_list, shell_state))
+				return (false);
 		}
+		if (!prev)
+			*token_list = current;
 		prev = current;
-		current = current->next;
+		current = next;
 	}
 	return (true);
 }
 
-t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list)
+t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list, t_shell_state *shell_state)
 {
 	char	*line;
 	t_list	*cmd;
@@ -295,10 +428,8 @@ t_list	*parse(t_parser *parser, t_error_handler *error_handler, t_list *env_list
 	token_list = tokenize_line(line);
 	if (!token_list)
 		return (NULL);
-	(void)env_list;
-	// TODO env_expansion(token_list, env_list);
-	// if (!env_expansion(token_list, env_list))
-	// 	return (ft_lstclear(&token_list, free_token), NULL);
+	if (!expansion(&token_list, env_list, shell_state))
+		return (ft_lstclear(&token_list, free_token), NULL);
 	cmd = parse_tokens(token_list, error_handler);
 	if (!cmd)
 		return (ft_lstclear(&token_list, free_token), NULL);

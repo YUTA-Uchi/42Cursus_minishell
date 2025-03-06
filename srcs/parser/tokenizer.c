@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/04 15:09:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/06 14:40:43 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ t_list	*create_token(t_token_type type, const char value)
 bool	append_char_to_token(t_list **head, char c)
 {
 	char	*new_buffer;
-	int		i;
 	t_list	*current;
 	t_token	*token_content;
 
@@ -62,17 +61,11 @@ bool	append_char_to_token(t_list **head, char c)
 		new_buffer = malloc(token_content->capacity);
 		if (!new_buffer)
 			return (false);
-		i = 0;
-		while (i < token_content->len)
-		{
-			new_buffer[i] = token_content->value[i];
-			i++;
-		}
+		ft_strlcpy(new_buffer, token_content->value, token_content->len + 1);
 		free(token_content->value);
 		token_content->value = new_buffer;
 	}
-	token_content->value[token_content->len] = c;
-	token_content->len++;
+	token_content->value[token_content->len++] = c;
 	token_content->value[token_content->len] = '\0';
 	// ft_printf(STDOUT_FILENO, "append_char:%c\n", c);
 	return (true);
@@ -80,19 +73,13 @@ bool	append_char_to_token(t_list **head, char c)
 
 bool	tokenize_state_none(t_state *state, t_list **head, char c)
 {
-	t_list	*token;
-
-	// ft_printf(STDOUT_FILENO, "tokenize_state_none\n");
 	if (isspace(c))
 	{
 		*state = STATE_NONE;
 	}
 	else if (c == '<' || c == '>' || c == '|')
 	{
-		token = create_token(get_token_type(c), c);
-		if (!token)
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
-		ft_lstadd_back(head, token);
+		ft_lstadd_back(head, create_token(get_token_type(c), c));
 		if (c == '<')
 			*state = STATE_REDIR_IN;
 		else if (c == '>')
@@ -100,10 +87,7 @@ bool	tokenize_state_none(t_state *state, t_list **head, char c)
 	}
 	else
 	{
-		token = create_token(get_token_type(c), c);
-		if (!token)
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
-		ft_lstadd_back(head, token);
+		ft_lstadd_back(head, create_token(get_token_type(c), c));
 		if (c == '\'')
 			*state = STATE_IN_SINGLE_QUOTE;
 		else if (c == '\"')
@@ -116,25 +100,19 @@ bool	tokenize_state_none(t_state *state, t_list **head, char c)
 
 bool	tokenize_state_word(t_state *state, t_list **head, char c)
 {
-	t_list	*token;
-
-	// ft_printf(STDOUT_FILENO, "tokenize_state_word\n");
 	if (isspace(c))
 	{
 		*state = STATE_NONE;
 	}
 	else if (c == '<' || c == '>' || c == '|')
 	{
-		token = create_token(get_token_type(c), c);
-		if (!token)
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
-		ft_lstadd_back(head, token);
+		ft_lstadd_back(head, create_token(get_token_type(c), c));
 		*state = STATE_NONE;
 		if (c == '<')
 			*state = STATE_REDIR_IN;
 		else if (c == '>')
 			*state = STATE_REDIR_OUT;
-	} 
+	}
 	else
 	{
 		if (!append_char_to_token(head, c))
@@ -149,7 +127,6 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 
 bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 {
-	// ft_printf(STDOUT_FILENO, "tokenize_state_in_single_quote\n");
 	if (!append_char_to_token(head, c))
 			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	if (c == '\'')
@@ -161,7 +138,6 @@ bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 
 bool	tokenize_state_in_double_quote(t_state *state, t_list **head, char c)
 {
-	// ft_printf(STDOUT_FILENO, "tokenize_state_in_double_quote\n");
 	if (!append_char_to_token(head, c))
 			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer", "malloc failed"), false);
 	if (c == '\"')
@@ -237,6 +213,20 @@ bool	tokenize_state_in_redir_out(t_state *state, t_list **head, char c)
 	return (true);
 }
 
+bool	handle_tokenize_state(t_state *state, t_list **head, char c)
+{
+	const t_token_state_handler	handlers[6] = {\
+		tokenize_state_none, \
+		tokenize_state_word, \
+		tokenize_state_in_single_quote, \
+		tokenize_state_in_double_quote, \
+		tokenize_state_in_redir_in, \
+		tokenize_state_in_redir_out
+	};
+
+	return (handlers[*state](state, head, c));
+}
+
 void	free_token(void *token)
 {
 	t_token	*token_ptr;
@@ -261,36 +251,8 @@ t_list	*tokenize_line(const char *line)
 	while (line[i])
 	{
 		// ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
-		if (state == STATE_NONE)
-		{
-			if (!tokenize_state_none(&state, &head, line[i]))
-				return (ft_lstclear(&head, free_token), NULL);
-		}
-		else if (state == STATE_WORD)
-		{
-			if (!tokenize_state_word(&state, &head, line[i]))
-				return (ft_lstclear(&head, free_token), NULL);
-		}
-		else if (state == STATE_IN_SINGLE_QUOTE)
-		{
-			if (!tokenize_state_in_single_quote(&state, &head, line[i]))
-				return (ft_lstclear(&head, free_token), NULL);
-		}
-		else if (state == STATE_IN_DOUBLE_QUOTE)
-		{
-			if (!tokenize_state_in_double_quote(&state, &head, line[i]))
-				return (ft_lstclear(&head, free_token), NULL);
-		}
-		else if (state == STATE_REDIR_IN)
-		{
-			if (!tokenize_state_in_redir_in(&state, &head, line[i]))
-				return (ft_lstclear(&head, free_token), NULL);
-		}
-		else if (state == STATE_REDIR_OUT)
-		{
-			if (!tokenize_state_in_redir_out(&state, &head, line[i]))
-				return (ft_lstclear(&head, free_token), NULL);
-		}
+		if (!handle_tokenize_state(&state, &head, line[i]))
+			return (ft_lstclear(&head, free_token), NULL);
 		// ft_printf(STDOUT_FILENO, "state:%d\n", state);
 		i++;
 	}

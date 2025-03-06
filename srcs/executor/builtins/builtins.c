@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:54:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/27 17:51:10 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/06 13:09:37 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 const t_builtins	*create_builtins_list(void)
 {
-	static const t_builtins	builtins_list[] = {\
+	static const t_builtins	builtins_list[8] = {\
 		{BUILTIN_ECHO, ft_echo}, \
 		{BUILTIN_CD, ft_cd}, \
 		{BUILTIN_PWD, ft_pwd}, \

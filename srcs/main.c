@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 18:44:05 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/06 16:28:50 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	main(int argc, char **argv, char **environ)
 			ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
 			continue ;
 		}
-		executor->cmds = parser->parse(parser, error_handler, env_list);
+		executor->cmds = parser->parse(parser, error_handler, env_list, shell_state);
 		// TODO here_doc(executor->cmds, error_handler);
 		free_parser(parser);
 		if (!executor->cmds)
