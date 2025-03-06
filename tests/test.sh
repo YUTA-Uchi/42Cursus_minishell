@@ -46,4 +46,11 @@ assert './a.out'
 assert 'a.out'
 assert 'nosuchfile'
 
+assert 'echo hello'
+assert 'echo hello world'
+assert 'echo "$HOME"'
+assert 'echo $HOME'
+assert 'echo "sss$PATH $?"'
+assert 'echo "sss$PATH $?" | cat -e'
+
 cleanup

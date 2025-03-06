@@ -114,12 +114,13 @@ static char	*ft_readline(t_error_handler *error_handler, const char *prompt)
 {
 	char	*line;
 
+	(void)error_handler;
 	rl_outstream = stderr;
 	line = readline(prompt);
 	if (!line)
 	{
 		// TODO error handling
-		return (ft_printf(STDERR_FILENO, "input again!\n"), ft_readline(error_handler, prompt));
+		return (NULL);
 	}
 	if (*line)
 		add_history(line);

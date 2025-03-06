@@ -18,6 +18,7 @@ void	all_clear_exit(t_executor *executor, t_error_handler *error_handler, t_list
 	free_executor(executor);
 	free_error_handler(error_handler);
 	free_env_list(env_list);
+
 	exit(status);
 }
 
@@ -232,8 +233,11 @@ void	execute_child_process(t_executor *self, t_error_handler *error_handler, t_l
 	// some error occured
 	if (exec_ret == -1)
 	{
-		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, strerror(errno));
-		all_clear_exit(self, error_handler, env_list, 1);
+		if (errno == EACCES)
+			ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, COMMAND_NOT_FOUND);
+		else
+			ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, strerror(errno));
+		all_clear_exit(self, error_handler, env_list, get_err_status());
 	}
 	ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name, COMMAND_NOT_FOUND);
 	all_clear_exit(self, error_handler, env_list, get_err_status());

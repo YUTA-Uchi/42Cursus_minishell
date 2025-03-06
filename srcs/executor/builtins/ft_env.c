@@ -32,8 +32,8 @@ int	ft_env(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 	while (current)
 	{
 		ft_printf(STDOUT_FILENO, "%s=%s\n" \
-				, ((t_env *)(env_list->content))->key \
-				, ((t_env *)(env_list->content))->value);
+				, ((t_env *)(current->content))->key \
+				, ((t_env *)(current->content))->value);
 		current = current->next;
 	}
 	return (0);

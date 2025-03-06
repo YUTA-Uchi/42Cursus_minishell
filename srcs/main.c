@@ -60,10 +60,17 @@ int	main(int argc, char **argv, char **environ)
 			continue ;
 		}
 		shell_state->last_status = executor->execute(executor, error_handler, env_list);
-		ft_printf(STDERR_FILENO, "last_status: %d\n", shell_state->last_status);
+		//ft_printf(STDERR_FILENO, "last_status: %d\n", shell_state->last_status);
 		repair_std_io(executor);
+		if (!isatty(STDIN_FILENO))
+		{
+			shell_state->running = false;
+			shell_state->last_status = E_NOTFOUND;
+			break ;
+		}
 		free_executor(executor);
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 	}
+	all_clear_exit(executor, error_handler, env_list, shell_state->last_status);
 	return (0);
 }
