@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/04 11:04:37 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/06 18:46:49 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,9 +254,37 @@ bool	parent_process(t_pipes *pipes)
 	return (true);
 }
 
-int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
+int	wait_all_children(t_list *cmd_list)
 {
 	int		status;
+	int		last_status;
+	t_list	*current_cmd;
+	t_cmd	*cmd_content;
+
+	current_cmd = cmd_list;
+	while (current_cmd)
+	{
+		cmd_content = (t_cmd *)(current_cmd->content);
+		if (waitpid(cmd_content->pid, &status, 0) != -1)
+		{
+			if (WIFEXITED(status))
+				last_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				last_status = WTERMSIG(status) + E_SIGTERM;
+		}
+		current_cmd = current_cmd->next;
+	}
+	if (errno != 0 && errno != ECHILD)
+	{
+		if (errno != EACCES)
+			ft_printf(STDERR_FILENO, "waitpid: %s\n", strerror(errno));
+		last_status = E_GENERAL_ERR;
+	}
+	return (last_status);
+}
+
+int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
+{
 	t_cmd	*cmd_content;
 	t_list	*head;
 
@@ -293,10 +321,9 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 		}
 		execute_child_process(self, error_handler, env_list, head);
 	}
-	waitpid(cmd_content->pid, &status, 0);
 	// ft_printf(STDERR_FILENO, "pid:%d status: %d\n", cmd_content->pid, WEXITSTATUS(status));
 	// set_shell_varialbe("?", ft_itoa(WEXITSTATUS(status)));
-	return (WEXITSTATUS(status));
+	return (wait_all_children(self->cmds));
 }
 
 bool	repair_std_io(t_executor *self)
