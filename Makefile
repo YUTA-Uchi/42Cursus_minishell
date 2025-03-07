@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/02 19:15:11 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/07 11:58:35 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,12 @@ COMMON_SRCS		:=	main.c \
 					executor.c \
 					parser.c \
 					tokenizer.c \
+					tokenizer_state_handler_normal.c \
+					tokenizer_state_handler_meta_character.c \
+					expander.c \
+					expander_string_handler.c \
+					expander_state_handler.c \
+					expander_constructor.c \
 					environment.c \
 					shell_state.c
 
