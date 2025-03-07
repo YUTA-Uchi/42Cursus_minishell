@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/06 16:28:50 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/07 15:20:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,6 @@ int	main(int argc, char **argv, char **environ)
 		free_executor(executor);
 		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 	}
-	all_clear_exit(executor, error_handler, env_list, shell_state->last_status);
+	all_clear_exit(executor, env_list, error_handler, shell_state->last_status);
 	return (0);
 }

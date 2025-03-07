@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/07 11:58:35 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/07 15:05:11 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,11 @@ COMMON_SRCS		:=	main.c \
 					builtins.c \
 					error_handler.c \
 					executor.c \
+					executor_pipe_handler.c \
+					executor_redirection_handler.c \
+					executor_process_handler.c \
 					parser.c \
+					parser_parse.c \
 					tokenizer.c \
 					tokenizer_state_handler_normal.c \
 					tokenizer_state_handler_meta_character.c \

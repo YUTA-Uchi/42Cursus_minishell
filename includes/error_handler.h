@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/26 12:21:37 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/07 14:22:27 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,6 @@ void			free_error_handler(t_error_handler *error_handler);
 void			fatal_error(const char *function_name, const char *msg) \
 							__attribute__((noreturn));
 int				get_err_status(void);
-void			set_error(t_error_handler *error_handler, int error, const char *msg);
+void			set_error(t_error_handler *self, int error, const char *msg);
+void			print_strerror(char *funcname);
 #endif

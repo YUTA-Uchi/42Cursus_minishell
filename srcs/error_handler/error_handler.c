@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/02 15:12:43 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/07 14:22:16 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@ void	set_error(t_error_handler *self, int error, const char *msg)
 {
 	self->error = error;
 	self->msg = msg;
+}
+
+void	print_strerror(char *funcname)
+{
+	ft_printf(STDERR_FILENO, "%s%s: %s\n", ERR_HEADER, \
+			funcname, strerror(errno));
 }
 
 t_error_handler	*create_error_handler(void)
