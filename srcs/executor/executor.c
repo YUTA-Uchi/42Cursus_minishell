@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 15:21:05 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/10 19:19:40 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,38 @@ int	wait_all_children(t_list *cmd_list)
 	return (last_status);
 }
 
+bool	set_heredoc(t_executor *self, t_list *current_cmd)
+{
+	t_cmd			*cmd_content;
+	t_list			*redir_list;
+	t_redirection	*redir_content;
+	char			*line;
+	char			*deliminater;
+
+	cmd_content = (t_cmd *)(current_cmd->content);
+	redir_list = cmd_content->redirections;
+	redir_content = (t_redirection *)(redir_list->content);
+	if (pipe(self->pipes->next_pipe) == -1)
+		return (print_strerror("pipe"), false);
+	deliminater = ft_strdup(redir_content->file);
+	if (!deliminater)
+		return (print_strerror("ft_strdup"), false);
+	while (true)
+	{
+		line = readline("heredoc> ");
+		if (!line)
+			break ;
+		if (ft_strncmp(line, deliminater, ft_strlen(deliminater) + 1) == 0)
+		{
+			free(line);
+			break ;
+		}
+		ft_putendl_fd(line, self->pipes->next_pipe[1]);
+		free(line);
+	}
+	return (true);
+}
+
 int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 {
 	t_cmd	*cmd_content;
@@ -103,6 +135,12 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 	}
 	while (head)
 	{
+		//here_doc?
+		if (((t_redirection *)(cmd_content->redirections->content))->type == REDIR_HEREDOC)
+		{
+			if (!set_heredoc(self, head))
+				return (get_err_status());
+		}
 		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
 		if (head->next)
