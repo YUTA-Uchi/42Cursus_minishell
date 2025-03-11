@@ -85,48 +85,39 @@ int	wait_all_children(t_list *cmd_list)
 	return (last_status);
 }
 
-bool	set_heredoc(t_executor *self, t_redirection *redir_content)
+bool	set_heredoc(t_redirection *redir_content)
 {
 	char			*line;
-	char			*deliminater;
+	char			*delimiter;
+	int				here_doc_pipe[2];
 
-	if (self->pipes->next_pipe[0] > -1 && is_fd_open(self->pipes->next_pipe[0]))
-	{
-		if (close(self->pipes->next_pipe[0]) == -1)
-			return (print_strerror("close"), false);
-	}
-	if (self->pipes->next_pipe[1] > -1 && is_fd_open(self->pipes->next_pipe[1]))
-	{
-		if (close(self->pipes->next_pipe[1]) == -1)
-			return (print_strerror("close"), false);
-	}
-	if (pipe(self->pipes->next_pipe) == -1)
+	if (pipe(here_doc_pipe) == -1)
 		return (print_strerror("pipe"), false);
-	deliminater = ft_strdup(redir_content->file);
-	if (!deliminater)
+	delimiter = ft_strdup(redir_content->file);
+	if (!delimiter)
 		return (print_strerror("ft_strdup"), false);
 	while (true)
 	{
 		line = readline("heredoc> ");
 		if (!line)
 			break ;
-		if (ft_strncmp(line, deliminater, ft_strlen(deliminater) + 1) == 0)
+		if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
 		{
 			free(line);
 			break ;
 		}
-		ft_printf(self->pipes->next_pipe[1], "%s\n", line);
+		ft_printf(here_doc_pipe[1], "%s\n", line);
 		free(line);
 	}
-	redir_content->fd = self->pipes->next_pipe[0];
+	redir_content->fd = here_doc_pipe[0];
 	// ft_printf(STDERR_FILENO, "heredoc:%d:%d\n", self->pipes->next_pipe[0], self->pipes->next_pipe[1]);
-	if (close(self->pipes->next_pipe[1]) == -1)
+	if (close(here_doc_pipe[1]) == -1)
 		return (print_strerror("close"), false);
-	free(deliminater);
+	free(delimiter);
 	return (true);
 }
 
-bool	open_redirections(t_executor *self, t_cmd *cmd_content)
+bool	open_redirections(t_cmd *cmd_content)
 {
 	t_list			*redir_list;
 	t_redirection	*redir_content;
@@ -143,7 +134,7 @@ bool	open_redirections(t_executor *self, t_cmd *cmd_content)
 			redir_content->fd = open(redir_content->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else if (redir_content->type == REDIR_HEREDOC)
 		{
-			if (!set_heredoc(self, redir_content))
+			if (!set_heredoc(redir_content))
 				return (false);
 		}
 		if (redir_content->fd == -1)
@@ -171,7 +162,7 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 	}
 	while (head)
 	{
-		open_redirections(self, (t_cmd *)(head->content));
+		open_redirections((t_cmd *)(head->content));
 		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
 		if (head->next)

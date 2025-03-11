@@ -19,7 +19,7 @@ static bool	set_redirection_in(t_redirection *redir)
 		if (close(STDIN_FILENO) == -1)
 			return (print_strerror("close"), false);
 		if (dup2(redir->fd, STDIN_FILENO) == -1)
-			return (print_strerror("dup2 ggg"), false);
+			return (print_strerror("dup2"), false);
 		if (close(redir->fd) == -1)
 			return (print_strerror("close"), false);
 	}
@@ -56,7 +56,7 @@ static bool	set_redirection_heredoc(t_redirection *redir)
 		if (close(STDIN_FILENO) == -1)
 			return (print_strerror("close"), false);
 		if (dup2(redir->fd, STDIN_FILENO) == -1)
-			return (print_strerror("dup2 ggg"), false);
+			return (print_strerror("dup2"), false);
 		if (close(redir->fd) == -1)
 			return (print_strerror("close"), false);
 	}

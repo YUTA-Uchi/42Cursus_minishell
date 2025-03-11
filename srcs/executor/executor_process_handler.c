@@ -41,8 +41,7 @@ static int	ft_execvp(t_cmd *cmd, t_list *env_list)
 
 	env_pathes = ft_split(get_env_value(env_list, "PATH"), ':');
 	if (env_pathes == NULL)
-		return (ft_printf(STDERR_FILENO, "executor: %s\n" \
-				, "malloc failed"), get_err_status());
+		return (errno = 2, -1);
 	i = 0;
 	while (env_pathes[i])
 	{

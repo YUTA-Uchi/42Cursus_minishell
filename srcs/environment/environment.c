@@ -91,17 +91,17 @@ int	set_env_value(t_list *env_list, char *key, char *value)
 {
 	t_list	*current;
 	t_env	*env;
-	size_t	key_len;
+	// size_t	key_len;
 
 	current = env_list;
 	while (current)
 	{
 		env = (t_env *)(current->content);
-		if (ft_strlen(key) > ft_strlen(env->key))
-			key_len = ft_strlen(key);
-		else
-			key_len = ft_strlen(env->key);
-		if (ft_strncmp(env->key, key, key_len) == 0)
+		// if (ft_strlen(key) > ft_strlen(env->key))
+		// 	key_len = ft_strlen(key);
+		// else
+		// 	key_len = ft_strlen(env->key);
+		if (ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
 		{
 			free(env->value);
 			env->value = ft_strdup(value);
@@ -116,8 +116,8 @@ int	add_env(t_list *env_list, char *key, char *value)
 {
 	t_env	*env;
 
-	if (get_env_value(env_list, key))
-		return (set_env_value(env_list, key, value));
+	if (set_env_value(env_list, key, value))
+		return (1);
 	env = malloc(sizeof(t_env));
 	if (!env)
 		return (0);
@@ -132,18 +132,18 @@ int	remove_env(t_list *env_list, char *key)
 	t_list	*current;
 	t_list	*prev;
 	t_env	*env;
-	size_t	key_len;
+	// size_t	key_len;
 
 	current = env_list;
 	prev = NULL;
 	while (current)
 	{
 		env = (t_env *)(current->content);
-		if (ft_strlen(key) > ft_strlen(env->key))
-			key_len = ft_strlen(key);
-		else
-			key_len = ft_strlen(env->key);
-		if (ft_strncmp(env->key, key, key_len) == 0)
+		// if (ft_strlen(key) > ft_strlen(env->key))
+		// 	key_len = ft_strlen(key);
+		// else
+		// 	key_len = ft_strlen(env->key);
+		if (ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
 		{
 			if (prev)
 				prev->next = current->next;

@@ -38,11 +38,8 @@ int	ft_export(t_executor *self, t_error_handler *error_handler, t_list *env_list
 			value = ft_strdup(ft_strchr(cmd->args[i], '=') + 1);
 			if (!add_env(env_list, key, value))
 				return (set_error(error_handler, E_GENERAL_ERR, strerror(errno)), 1);
-		}
-		else
-		{
-			if (ft_setenv(cmd->args[i], "", 1) == -1)
-				return (set_error(error_handler, E_GENERAL_ERR, strerror(errno)), 1);
+			free(key);
+			free(value);
 		}
 		i++;
 	}
