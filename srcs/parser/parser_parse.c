@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:04:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 13:09:37 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:25:32 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,8 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 		cmd_content = (t_cmd *)(current_cmd->content);
 		if (token_content->type == TOKEN_REDIR_IN \
 			|| token_content->type == TOKEN_REDIR_OUT \
-			|| token_content->type == TOKEN_REDIR_APPEND)
+			|| token_content->type == TOKEN_REDIR_APPEND \
+			|| token_content->type == TOKEN_REDIR_HEREDOC)
 		{
 			if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
 			{

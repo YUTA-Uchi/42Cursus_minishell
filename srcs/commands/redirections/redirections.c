@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/20 19:12:45 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/11 14:24:55 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,13 @@ t_list	*create_redirection(char *file, t_redir_type type)
 	if (!redir)
 		return (NULL);
 	redir->file = ft_strdup(file);
+	if (!redir->file)
+	{
+		free(redir);
+		return (NULL);
+	}
 	redir->type = type;
+	redir->fd = -1;
 	return (ft_lstnew(redir));
 }
 

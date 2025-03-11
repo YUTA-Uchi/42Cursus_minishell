@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:52:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 14:48:29 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:37:32 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,13 @@
 
 static bool	set_redirection_in(t_redirection *redir)
 {
-	int	fd;
-
-	if (close(STDIN_FILENO) == -1)
-		return (print_strerror("close"), false);
-	fd = open(redir->file, O_RDONLY);
-	if (fd == -1)
-		return (print_strerror(redir->file), false);
-	if (fd != STDIN_FILENO)
+	if (is_fd_open(redir->fd))
 	{
-		if (dup2(fd, STDIN_FILENO) == -1)
-			return (print_strerror("dup2"), false);
-		if (close(fd) == -1)
+		if (close(STDIN_FILENO) == -1)
+			return (print_strerror("close"), false);
+		if (dup2(redir->fd, STDIN_FILENO) == -1)
+			return (print_strerror("dup2 ggg"), false);
+		if (close(redir->fd) == -1)
 			return (print_strerror("close"), false);
 	}
 	return (true);
@@ -33,37 +28,36 @@ static bool	set_redirection_in(t_redirection *redir)
 
 static bool	set_redirection_out(t_redirection *redir)
 {
-	int	fd;
-
 	if (close(STDOUT_FILENO) == -1)
 		return (print_strerror("close"), false);
-	fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-		return (print_strerror(redir->file), false);
-	if (fd != STDOUT_FILENO)
-	{
-		if (dup2(fd, STDOUT_FILENO) == -1)
-			return (print_strerror("dup2"), false);
-		if (close(fd) == -1)
-			return (print_strerror("close"), false);
-	}
+	if (dup2(redir->fd, STDOUT_FILENO) == -1)
+		return (print_strerror("dup2"), false);
+	if (close(redir->fd) == -1)
+		return (print_strerror("close"), false);
 	return (true);
 }
 
 static bool	set_redirection_append(t_redirection *redir)
 {
-	int	fd;
-
 	if (close(STDOUT_FILENO) == -1)
 		return (print_strerror("close"), false);
-	fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (fd == -1)
-		return (print_strerror(redir->file), false);
-	if (fd != STDOUT_FILENO)
+	if (dup2(redir->fd, STDOUT_FILENO) == -1)
+		return (print_strerror("dup2"), false);
+	if (close(redir->fd) == -1)
+		return (print_strerror("close"), false);
+	return (true);
+}
+
+static bool	set_redirection_heredoc(t_redirection *redir)
+{
+	// ft_printf(STDERR_FILENO, "heredoc:%d\n", redir->fd);
+	if (is_fd_open(redir->fd))
 	{
-		if (dup2(fd, STDOUT_FILENO) == -1)
-			return (print_strerror("dup2"), false);
-		if (close(fd) == -1)
+		if (close(STDIN_FILENO) == -1)
+			return (print_strerror("close"), false);
+		if (dup2(redir->fd, STDIN_FILENO) == -1)
+			return (print_strerror("dup2 ggg"), false);
+		if (close(redir->fd) == -1)
 			return (print_strerror("close"), false);
 	}
 	return (true);
@@ -71,30 +65,23 @@ static bool	set_redirection_append(t_redirection *redir)
 
 bool	set_redirections(t_list *current_cmd)
 {
-	t_cmd			*cmd_content;
-	t_list			*redir_list;
-	t_redirection	*redir;
+	const t_redirection_handler	handlers[4] = {\
+		set_redirection_in, \
+		set_redirection_out, \
+		set_redirection_append, \
+		set_redirection_heredoc
+	};
+	t_cmd						*cmd_content;
+	t_list						*redir_list;
+	t_redirection				*redir_content;
 
 	cmd_content = (t_cmd *)(current_cmd->content);
 	redir_list = cmd_content->redirections;
 	while (redir_list)
 	{
-		redir = (t_redirection *)(redir_list->content);
-		if (redir->type == REDIR_IN)
-		{
-			if (!set_redirection_in(redir))
-				return (false);
-		}
-		else if (redir->type == REDIR_OUT)
-		{
-			if (!set_redirection_out(redir))
-				return (false);
-		}
-		else if (redir->type == REDIR_APPEND)
-		{
-			if (!set_redirection_append(redir))
-				return (false);
-		}
+		redir_content = (t_redirection *)(redir_list->content);
+		if (!handlers[redir_content->type](redir_content))
+			return (false);
 		redir_list = redir_list->next;
 	}
 	return (true);

@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/07 15:05:11 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/11 18:25:56 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,8 @@ COMMON_SRCS		:=	main.c \
 					expander_state_handler.c \
 					expander_constructor.c \
 					environment.c \
-					shell_state.c
+					shell_state.c \
+					fd_manager.c 
 
 OBJ_DIR			:=	./obj
 OBJS			:=	$(COMMON_SRCS:%.c=$(OBJ_DIR)/%.o)

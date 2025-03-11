@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 15:21:45 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/11 18:25:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,12 @@ void	execute_child_process(t_executor *self, t_list *env_list \
 
 bool	parent_process(t_pipes *pipes)
 {
-	if (pipes->prev_pipe[0] != -1)
+	if (pipes->prev_pipe[0] > -1 && is_fd_open(pipes->prev_pipe[0]))
 	{
 		if (close(pipes->prev_pipe[0]) == -1)
 			return (print_strerror("close"), false);
 	}
-	if (pipes->prev_pipe[1] != -1)
+	if (pipes->prev_pipe[1] > -1 && is_fd_open(pipes->prev_pipe[1]))
 	{
 		if (close(pipes->prev_pipe[1]) == -1)
 			return (print_strerror("close"), false);

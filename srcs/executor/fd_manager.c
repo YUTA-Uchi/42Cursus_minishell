@@ -1,36 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirection.h                                      :+:      :+:    :+:   */
+/*   fd_manager.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/18 15:27:13 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/11 14:24:23 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/03/11 18:19:59 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/03/11 18:22:06 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REDIRECTION_H
-# define REDIRECTION_H
+#include "executor.h"
 
-# include "minishell.h"
-
-typedef enum e_redir_type
+bool	is_fd_open(int fd)
 {
-	REDIR_IN = 0,
-	REDIR_OUT,
-	REDIR_APPEND,
-	REDIR_HEREDOC
-}	t_redir_type;
+	struct stat	statbuf;
 
-typedef struct s_redirection	t_redirection;
-struct s_redirection
-{
-	t_redir_type	type;
-	char			*file;
-	int				fd;
-};
-
-t_list	*create_redirection(char *file, t_redir_type type);
-void	free_redirection(t_list **redir);
-#endif
+	return (fstat(fd, &statbuf) == 0);
+}
