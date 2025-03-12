@@ -23,7 +23,7 @@ clean:
 	rm -f $(TARGET) *.gcda *.gcno
 
 run: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) --xml=test_results.xml
 
 coverage: run
 	lcov --capture --directory . --directory ../src --output-file coverage.info
