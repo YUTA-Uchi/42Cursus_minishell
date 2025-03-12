@@ -21,7 +21,7 @@ int	ft_unset(t_executor *self, t_shell_state *shell_state)
 	cmd = (t_cmd *)(self->cmds->content);
 	while (cmd->args[i])
 	{
-		if (remove_env(shell_state->env_list, cmd->args[i]) == -1)
+		if (remove_env(&shell_state->env_list, cmd->args[i]) == -1)
 			return (set_error(shell_state->error_handler, E_GENERAL_ERR, strerror(errno)), 1);
 		i++;
 	}

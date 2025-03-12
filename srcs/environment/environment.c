@@ -127,14 +127,14 @@ int	add_env(t_list *env_list, char *key, char *value)
 	return (1);
 }
 
-int	remove_env(t_list *env_list, char *key)
+int	remove_env(t_list **env_list, char *key)
 {
 	t_list	*current;
 	t_list	*prev;
 	t_env	*env;
 	// size_t	key_len;
 
-	current = env_list;
+	current = *env_list;
 	prev = NULL;
 	while (current)
 	{
@@ -148,7 +148,7 @@ int	remove_env(t_list *env_list, char *key)
 			if (prev)
 				prev->next = current->next;
 			else
-				env_list = current->next;
+				*env_list = current->next;
 			return (ft_lstdelone(current, free_env), 1);
 		}
 		prev = current;

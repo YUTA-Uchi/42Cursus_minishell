@@ -26,7 +26,7 @@ void	free_env_list(t_list *env_list);
 char	*get_env_value(t_list *env_list, char *key);
 int		set_env_value(t_list *env_list, char *key, char *value);
 int		add_env(t_list *env_list, char *key, char *value);
-int		remove_env(t_list *env_list, char *key);
+int		remove_env(t_list **env_list, char *key);
 char	**env_list_to_array(t_list *env_list);
 // utils
 char	*ft_strndup(const char *s, size_t n);

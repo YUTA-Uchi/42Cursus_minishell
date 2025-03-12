@@ -1,19 +1,21 @@
-CC = gcc
-LIBFT_DIR	=	../libft
-CFLAGS = -Wall -Wextra -I../includes -I$(LIBFT_DIR) -fprofile-arcs -ftest-coverage
-LD_FLAGS	=	-L$(LIBFT_DIR)
-LDFLAGS = -lft -lcriterion -lgcov --coverage -lreadline
+TARGET		:=	run_tests
+SRCS		:=	tokenizer.c \
+				tokenizer_state_handler_normal.c \
+				tokenizer_state_handler_meta_character.c
 
-SOURCES =	test_parse.c \
-			../srcs/parser/tokenizer.c \
-			../srcs/parser/tokenizer_state_handler_normal.c \
-			../srcs/parser/tokenizer_state_handler_meta_character.c
+TESTS_SRCS	:=	test_parse.c 
 
-TARGET = run_tests
+CC			:=	cc
+LIBFT_DIR	:=	../libft
+CFLAGS		:=	-Wall -Wextra -I../includes -I$(LIBFT_DIR) -fprofile-arcs -ftest-coverage
+LD_FLAGS	:=	-L$(LIBFT_DIR)
+LDFLAGS		:=	-lft -lcriterion -lgcov --coverage -lreadline
+
+vpath %.c ../srcs/parser
 
 all: $(TARGET)
 
-$(TARGET): $(SOURCES) $(LIBFT_DIR)/libft.a
+$(TARGET): $(SRCS) $(TESTS_SRCS) $(LIBFT_DIR)/libft.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LD_FLAGS) $(LDFLAGS)
 
 $(LIBFT_DIR)/libft.a: $(LIBFT_DIR)
