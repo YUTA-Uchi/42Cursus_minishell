@@ -1,0 +1,62 @@
+name: C Unit Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        sudo apt-get install -y libcriterion-dev
+      
+    - name: Build project
+      run: make
+      
+    - name: Run tests
+      run: |
+        cd tests
+        make
+        make run
+        
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: tests/*.xml
+        
+    - name: Install coverage tools
+      run: |
+          sudo apt-get install -y lcov
+    - name: Generate coverage report
+      run: |
+          cd tests
+          make coverage
+          
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+          name: coverage-report
+          path: tests/coverage_report/
+          
+    - name: Install Valgrind
+      run: sudo apt-get install -y valgrind
+        
+    - name: Run memory check
+      run: |
+        cd tests
+        valgrind --leak-check=full --error-exitcode=1 ./run_tests
+    - name: Install static analysis tools
+      run: sudo apt-get install -y cppcheck
+        
+    - name: Run static analysis
+      run: cppcheck --enable=all --suppress=missingIncludeSystem src/
