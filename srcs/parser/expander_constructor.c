@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:18:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 11:20:46 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:02:48 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,17 @@ t_expand	*create_expand(t_shell_state *shell_state)
 	expand->env_key_len = 0;
 	expand->env_key_capacity = 1;
 	return (expand);
+}
+
+bool	initialize_env_key(t_expand *expand_context)
+{
+	free(expand_context->env_key);
+	expand_context->env_key = malloc(sizeof(char) * 1);
+	if (!expand_context->env_key)
+		return (false);
+	expand_context->env_key_len = 0;
+	expand_context->env_key_capacity = 1;
+	return (true);
 }
 
 void	free_expand(t_expand *expand)

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/21 10:43:54 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:47:29 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,21 +43,22 @@ void	free_arr(char **data)
 
 void	free_cmd(void *cmd)
 {
-	t_cmd	*cmd_ptr;
+	t_cmd	*cmd_content;
 
 	if (!cmd)
 		return ;
-	cmd_ptr = (t_cmd *)cmd;
-	if (cmd_ptr->cmd_name)
-		free(cmd_ptr->cmd_name);
-	if (cmd_ptr->args)
-		free_arr(cmd_ptr->args);
-	if (cmd_ptr->redirections)
-		free_redirection(&cmd_ptr->redirections);
-	free(cmd_ptr);
+	cmd_content = (t_cmd *)cmd;
+	if (cmd_content->cmd_name)
+		free(cmd_content->cmd_name);
+	if (cmd_content->args)
+		free_arr(cmd_content->args);
+	if (cmd_content->redirections)
+		ft_lstclear(&cmd_content->redirections, free_redirection);
+	free(cmd_content);
 }
 
-void	free_cmd_list(t_list **cmds)
+void	free_cmd_list(t_list **cmd_list)
 {
-	ft_lstclear(cmds, free_cmd);
+	ft_lstclear(cmd_list, free_cmd);
 }
+

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/26 11:17:04 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:46:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,6 @@ struct s_cmd
 t_list	*create_cmd(void);
 void	free_cmd(void *cmd);
 void	free_arr(char **data);
-void	free_cmd_list(t_list **cmds);
+void	free_cmd_list(t_list **cmd_list);
 
 #endif

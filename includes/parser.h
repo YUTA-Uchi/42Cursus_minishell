@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:18:11 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:03:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ bool			tokenize_state_in_redir_out(t_state *state \
 // expander
 t_expand		*create_expand(t_shell_state *shell_state);
 void			free_expand(t_expand *expand);
+bool			initialize_env_key(t_expand *expand_context);
 bool			expansion(t_list **token_list, t_shell_state *shell_state);
 bool			handle_expand_state(t_expand *expand, char c, t_list *env_list);
 // expander string handler

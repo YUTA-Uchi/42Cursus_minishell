@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:33:33 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:37:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,13 @@ void	add_redirection(t_list **redirections, t_redirection *redir)
 	ft_lstadd_back(redirections, ft_lstnew(redir));
 }
 
-void	free_redirection(t_list **redir)
+void	free_redirection(void *redir)
 {
-	ft_lstclear(redir, free);
+	t_redirection	*redir_content;
+
+	redir_content = (t_redirection *)redir;
+	free(redir_content->file);
+	free(redir_content);
 }
 
 bool	set_heredoc(t_redirection *redir_content)

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:20:07 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 12:08:12 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:03:25 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,12 @@ bool	set_env_value_to_str(t_expand *expand_context, t_list *env_list)
 	char	*env_value;
 	int		i;
 
+	if (expand_context->env_key_len == 0)
+	{
+		if (!append_char_to_str(expand_context, '$'))
+			return (false);
+		return (true);
+	}
 	env_value = get_env_value(env_list, expand_context->env_key);
 	if (env_value)
 	{
@@ -88,11 +94,7 @@ bool	set_env_value_to_str(t_expand *expand_context, t_list *env_list)
 				return (false);
 		}
 	}
-	free(expand_context->env_key);
-	expand_context->env_key = malloc(sizeof(char) * 1);
-	if (!expand_context->env_key)
+	if (!initialize_env_key(expand_context))
 		return (false);
-	expand_context->env_key_len = 0;
-	expand_context->env_key_capacity = 1;
 	return (true);
 }
