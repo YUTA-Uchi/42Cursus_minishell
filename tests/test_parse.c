@@ -1,4 +1,5 @@
 #include <criterion/criterion.h>
+#include <criterion/new/assert.h>
 #include "parser.h"
 
 Test(test_parse, test_parse)
