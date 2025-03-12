@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive  # サブモジュールを再帰的に初期化
       
     - name: Install dependencies
       run: |
