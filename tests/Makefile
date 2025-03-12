@@ -26,5 +26,5 @@ run: $(TARGET)
 	./$(TARGET) --xml=test_results.xml
 
 coverage: run
-	lcov --capture --directory . --directory ../src --output-file coverage.info
+	lcov --capture --directory . --directory ../srcs --output-file coverage.info
 	genhtml coverage.info --output-directory coverage_report
