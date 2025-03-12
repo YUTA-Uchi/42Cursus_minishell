@@ -4,9 +4,10 @@ CFLAGS = -Wall -Wextra -I../includes -I$(LIBFT_DIR) -fprofile-arcs -ftest-covera
 LD_FLAGS	=	-L$(LIBFT_DIR)
 LDFLAGS = -lft -lcriterion -lgcov --coverage -lreadline
 
-SOURCES = test_parse.c ../src/parser/tokenizer.c \
-			../src/parser/tokenizer_state_handler_normal.c \
-			../src/parser/tokenizer_state_handler_meta_character.c
+SOURCES =	test_parse.c \
+			../srcs/parser/tokenizer.c \
+			../srcs/parser/tokenizer_state_handler_normal.c \
+			../srcs/parser/tokenizer_state_handler_meta_character.c
 
 TARGET = run_tests
 
