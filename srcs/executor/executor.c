@@ -6,55 +6,52 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/11 19:38:40 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:52:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
 #include "builtin.h"
 
-void	all_clear_exit(t_executor *executor, t_list *env_list \
-						, t_error_handler *error_handler, int status)
+void	all_clear_exit(t_executor *executor, t_shell_state *sh_state, int status)
 {
 	free_executor(executor);
-	free_error_handler(error_handler);
-	free_env_list(env_list);
-
+	free_shell_state(sh_state);
 	exit(status);
 }
 
-void	print_cmd(t_list *cmds)
-{
-	int		i;
-	t_cmd	*cmd_content;
-	t_list	*redir_list;
-	t_list	*cmd_list;
+// void	print_cmd(t_list *cmds)
+// {
+// 	int		i;
+// 	t_cmd	*cmd_content;
+// 	t_list	*redir_list;
+// 	t_list	*cmd_list;
 
-	cmd_list = cmds;
-	while (cmd_list)
-	{
-		cmd_content = (t_cmd *)(cmd_list->content);
-		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
-		i = 0;
-		while (cmd_content->args[i])
-		{
-			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
-			i++;
-		}
-		i = 0;
-		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
-		redir_list = cmd_content->redirections;
-		while (redir_list)
-		{
-			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, 
-((t_redirection *)(redir_list->content))->file, ((t_redirection *)
-(redir_list->content))->type);
-			redir_list = redir_list->next;
-			i++;
-		}
-		cmd_list = cmd_list->next;
-	}
-}
+// 	cmd_list = cmds;
+// 	while (cmd_list)
+// 	{
+// 		cmd_content = (t_cmd *)(cmd_list->content);
+// 		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
+// 		i = 0;
+// 		while (cmd_content->args[i])
+// 		{
+// 			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
+// 			i++;
+// 		}
+// 		i = 0;
+// 		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
+// 		redir_list = cmd_content->redirections;
+// 		while (redir_list)
+// 		{
+// 			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, 
+// ((t_redirection *)(redir_list->content))->file, ((t_redirection *)
+// (redir_list->content))->type);
+// 			redir_list = redir_list->next;
+// 			i++;
+// 		}
+// 		cmd_list = cmd_list->next;
+// 	}
+// }
 
 int	wait_all_children(t_list *cmd_list)
 {
@@ -85,66 +82,9 @@ int	wait_all_children(t_list *cmd_list)
 	return (last_status);
 }
 
-bool	set_heredoc(t_redirection *redir_content)
-{
-	char			*line;
-	char			*delimiter;
-	int				here_doc_pipe[2];
 
-	if (pipe(here_doc_pipe) == -1)
-		return (print_strerror("pipe"), false);
-	delimiter = ft_strdup(redir_content->file);
-	if (!delimiter)
-		return (print_strerror("ft_strdup"), false);
-	while (true)
-	{
-		line = readline("heredoc> ");
-		if (!line)
-			break ;
-		if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-		{
-			free(line);
-			break ;
-		}
-		ft_printf(here_doc_pipe[1], "%s\n", line);
-		free(line);
-	}
-	redir_content->fd = here_doc_pipe[0];
-	// ft_printf(STDERR_FILENO, "heredoc:%d:%d\n", self->pipes->next_pipe[0], self->pipes->next_pipe[1]);
-	if (close(here_doc_pipe[1]) == -1)
-		return (print_strerror("close"), false);
-	free(delimiter);
-	return (true);
-}
 
-bool	open_redirections(t_cmd *cmd_content)
-{
-	t_list			*redir_list;
-	t_redirection	*redir_content;
-
-	redir_list = cmd_content->redirections;
-	while (redir_list)
-	{
-		redir_content = (t_redirection *)(redir_list->content);
-		if (redir_content->type == REDIR_IN)
-			redir_content->fd = open(redir_content->file, O_RDONLY);
-		else if (redir_content->type == REDIR_OUT)
-			redir_content->fd = open(redir_content->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir_content->type == REDIR_APPEND)
-			redir_content->fd = open(redir_content->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		else if (redir_content->type == REDIR_HEREDOC)
-		{
-			if (!set_heredoc(redir_content))
-				return (false);
-		}
-		if (redir_content->fd == -1)
-			return (print_strerror("open"), false);
-		redir_list = redir_list->next;
-	}
-	return (true);
-}
-
-int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
+int	execute(t_executor *self, t_shell_state *shell_state)
 {
 	t_cmd	*cmd_content;
 	t_list	*head;
@@ -157,12 +97,12 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		{
 			return (lookup_builtin(cmd_content->cmd_name, \
-				self->builtins_list)->func(self, error_handler, env_list));
+				self->builtins_list)->func(self, shell_state));
 		}
 	}
 	while (head)
 	{
-		open_redirections((t_cmd *)(head->content));
+		open_redirections(((t_cmd *)(head->content))->redirections);
 		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
 		if (head->next)
@@ -181,7 +121,7 @@ int	execute(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 			head = head->next;
 			continue ;
 		}
-		execute_child_process(self, env_list, head, error_handler);
+		execute_child_process(self, head, shell_state);
 	}
 	return (wait_all_children(self->cmds));
 }

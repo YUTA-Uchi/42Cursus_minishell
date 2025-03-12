@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/11 18:25:19 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:25:44 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,24 +59,24 @@ static int	ft_execvp(t_cmd *cmd, t_list *env_list)
 	return (get_err_status());
 }
 
-void	execute_child_process(t_executor *self, t_list *env_list \
-					, t_list *current_cmd, t_error_handler *error_handler)
+void	execute_child_process(t_executor *self, t_list *current_cmd \
+							, t_shell_state *shell_state)
 {
 	t_cmd	*cmd_content;
 	int		exec_ret;
 
-	if (!set_pipes(self, current_cmd, error_handler))
-		all_clear_exit(self, env_list, error_handler, errno);
+	if (!set_pipes(self, current_cmd, shell_state->error_handler))
+		all_clear_exit(self, shell_state, errno);
 	if (!set_redirections(current_cmd))
-		all_clear_exit(self, env_list, error_handler, errno);
+		all_clear_exit(self, shell_state, errno);
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		exit(lookup_builtin(cmd_content->cmd_name, \
-			self->builtins_list)->func(self, error_handler, env_list));
+			self->builtins_list)->func(self, shell_state));
 	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
-		exec_ret = execve_in_absolute_path(cmd_content, env_list);
+		exec_ret = execve_in_absolute_path(cmd_content, shell_state->env_list);
 	else
-		exec_ret = ft_execvp(cmd_content, env_list);
+		exec_ret = ft_execvp(cmd_content, shell_state->env_list);
 	if (exec_ret == -1)
 	{
 		if (errno == EACCES)
@@ -85,11 +85,11 @@ void	execute_child_process(t_executor *self, t_list *env_list \
 		else
 			ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
 					, strerror(errno));
-		all_clear_exit(self, env_list, error_handler, get_err_status());
+		all_clear_exit(self, shell_state, get_err_status());
 	}
 	ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
 			, COMMAND_NOT_FOUND);
-	all_clear_exit(self, env_list, error_handler, get_err_status());
+	all_clear_exit(self, shell_state, get_err_status());
 }
 
 bool	parent_process(t_pipes *pipes)

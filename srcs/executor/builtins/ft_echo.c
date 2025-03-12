@@ -6,13 +6,13 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:31:24 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/27 17:50:20 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:39:52 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 
-int	ft_echo(t_executor *self, t_error_handler *error_handler, t_list *env_list)
+int	ft_echo(t_executor *self, t_shell_state *shell_state)
 {
 	int		i;
 	bool	is_option_n;
@@ -20,8 +20,7 @@ int	ft_echo(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 
 	i = 1;
 	cmd = (t_cmd *)(self->cmds->content);
-	(void)error_handler;
-	(void)env_list;
+	(void)shell_state;
 	is_option_n = false;
 	if (cmd->args[i] != NULL && ft_strncmp(cmd->args[i], "-n", 2) == 0)
 	{

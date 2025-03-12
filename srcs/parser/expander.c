@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:10:06 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 11:35:52 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:16:57 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static t_list	*set_token_value(t_list *token, t_expand *expand)
 }
 
 static bool	expand_word(t_list **current, t_list *prev \
-						, t_list *env_list, t_shell_state *shell_state)
+						, t_shell_state *shell_state)
 {
 	t_expand		*expand;
 	t_token			*token;
@@ -52,10 +52,10 @@ static bool	expand_word(t_list **current, t_list *prev \
 	i = 0;
 	while (token->value[i])
 	{
-		if (!handle_expand_state(expand, token->value[i++], env_list))
+		if (!handle_expand_state(expand, token->value[i++], shell_state->env_list))
 			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer1", "malloc failed"), false);
 	}
-	if (!finalize_expand(expand, env_list))
+	if (!finalize_expand(expand, shell_state->env_list))
 		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer2", "malloc failed"), false);
 	new_token = set_token_value(create_token(TOKEN_WORD, '\0'), expand);
 	if (!new_token)
@@ -69,8 +69,7 @@ static bool	expand_word(t_list **current, t_list *prev \
 	return (true);
 }
 
-bool	expansion(t_list **token_list, t_list *env_list \
-				, t_shell_state *shell_state)
+bool	expansion(t_list **token_list, t_shell_state *shell_state)
 {
 	t_list	*current;
 	t_list	*prev;
@@ -85,7 +84,7 @@ bool	expansion(t_list **token_list, t_list *env_list \
 		token = (t_token *)(current->content);
 		if (token->type == TOKEN_WORD)
 		{
-			if (!expand_word(&current, prev, env_list, shell_state))
+			if (!expand_word(&current, prev, shell_state))
 				return (false);
 		}
 		if (!prev)

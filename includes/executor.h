@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/11 18:21:55 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:27:27 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "command.h"
 # include "error_handler.h"
 # include "environment.h"
+# include "shell_state.h"
 
 typedef struct s_builtins	t_builtins;
 typedef struct s_pipes		t_pipes;
@@ -28,7 +29,7 @@ struct s_executor
 	t_pipes				*pipes;
 	int					original_stdin;
 	int					original_stdout;
-	int					(*execute)(t_executor *, t_error_handler *, t_list *);
+	int					(*execute)(t_executor *, t_shell_state *);
 };
 
 struct s_pipes
@@ -40,7 +41,7 @@ struct s_pipes
 struct s_builtins
 {
 	char	*name;
-	int		(*func)(t_executor *, t_error_handler *, t_list *);
+	int		(*func)(t_executor *, t_shell_state *);
 };
 
 typedef bool				(*t_redirection_handler)(t_redirection *);
@@ -48,13 +49,13 @@ typedef bool				(*t_redirection_handler)(t_redirection *);
 
 t_executor	*create_executor(void);
 void		free_executor(t_executor *executor);
-void		all_clear_exit(t_executor *executor, t_list *env_list \
-					, t_error_handler *error_handler, int status);
+void		all_clear_exit(t_executor *executor, t_shell_state *sh_state \
+				, int status);
 bool		repair_std_io(t_executor *self);
 bool		set_redirections(t_list *current_cmd);
 
-void		execute_child_process(t_executor *self, t_list *env_list \
-				, t_list *current_cmd, t_error_handler *error_handler);
+void		execute_child_process(t_executor *self, t_list *current_cmd \
+								, t_shell_state *shell_state);
 bool		parent_process(t_pipes *pipes);
 
 t_pipes		*create_pipes(void);

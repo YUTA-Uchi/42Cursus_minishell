@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/27 17:50:28 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:41:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ bool	ft_isdigit_str(char *str)
 /*
 * need to think about the error handling
 */
-int	ft_exit(t_executor *self, t_error_handler *error_handler, t_list *env_list)
+int	ft_exit(t_executor *self, t_shell_state *shell_state)
 {
 	int		exit_status;
 	t_cmd	*cmd;
 
-	(void)env_list;
+	(void)shell_state->env_list;
 	cmd = (t_cmd *)(self->cmds->content);
 	// TODO is this correct? 
 	if (cmd->args[1] == NULL)
@@ -43,7 +43,7 @@ int	ft_exit(t_executor *self, t_error_handler *error_handler, t_list *env_list)
 		exit_status = ft_atoi(cmd->args[1]); // TODO it should be the num 0~255
 	else
 	{
-		set_error(error_handler, E_GENERAL_ERR, "numeric argument required");
+		set_error(shell_state->error_handler, E_GENERAL_ERR, "numeric argument required");
 		return (1);
 	}
 	//free_cmd(cmd); // TODO exit should free all the memory

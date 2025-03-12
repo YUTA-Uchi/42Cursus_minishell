@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 15:20:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:29:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,60 +17,57 @@
 #include "environment.h"
 #include "shell_state.h"
 
+
+bool	preprocess(t_shell_state **sh_state, char **environ)
+{
+	*sh_state = create_shell_state(environ);
+	if (!*sh_state)
+		return (false);
+	return (true);
+}
+
 int	main(int argc, char **argv, char **environ)
 {
-	t_error_handler	*error_handler;
 	t_parser		*parser;
 	t_executor		*executor;
-	t_list			*env_list;
-	t_shell_state	*shell_state;
+	t_shell_state	*sh_state;
 
 	(void)argc;
 	(void)argv;
-	error_handler = create_error_handler();
-	if (!error_handler)
-		ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
-	env_list = create_env_list(environ);
-	if (!env_list)
-		ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
-	shell_state = create_shell_state();
-	if (!shell_state)
-		ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
-	while (shell_state->running)
+	if (!preprocess(&sh_state, environ))
+		return (fatal_error("main", "malloc failed", errno), E_GENERAL_ERR);
+	while (sh_state->running)
 	{
-		parser = create_parser(error_handler);
+		parser = create_parser(sh_state);
 		if (!parser)
 		{
-			ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
+			print_strerror("main");
 			continue ;
 		}
 		executor = create_executor();
 		if (!executor)
 		{
 			free_parser(parser);
-			ft_printf(STDERR_FILENO, "%s: %s\n", "main", "malloc failed");
+			print_strerror("main");
 			continue ;
 		}
-		executor->cmds = parser->parse(parser, error_handler, env_list, shell_state);
-		// TODO here_doc(executor->cmds, error_handler);
+		executor->cmds = parser->parse(parser, sh_state);
 		free_parser(parser);
 		if (!executor->cmds)
 		{
 			free_executor(executor);
 			continue ;
 		}
-		shell_state->last_status = executor->execute(executor, error_handler, env_list);
-		//ft_printf(STDERR_FILENO, "last_status: %d\n", shell_state->last_status);
+		sh_state->last_status = executor->execute(executor, sh_state);
 		repair_std_io(executor);
 		if (!isatty(STDIN_FILENO))
 		{
-			shell_state->running = false;
-			shell_state->last_status = E_NOTFOUND;
+			sh_state->running = false;
+			sh_state->last_status = E_NOTFOUND;
 			break ;
 		}
 		free_executor(executor);
-		// ft_printf(STDOUT_FILENO, "running_status: %d\n", running_status);
 	}
-	all_clear_exit(executor, env_list, error_handler, shell_state->last_status);
+	all_clear_exit(executor, sh_state, sh_state->last_status);
 	return (0);
 }

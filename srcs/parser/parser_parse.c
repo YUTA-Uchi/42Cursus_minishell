@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:04:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/11 15:25:32 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:18:22 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_redir_type	get_redir_type(t_token_type token_type)
 		return (REDIR_HEREDOC);
 }
 
-t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
+t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
 {
 	t_list	*head;
 	t_list	*current_cmd;
@@ -59,7 +59,7 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 	t_cmd	*cmd_content;
 	t_list	*redirection;
 
-	(void)err_handler;
+	(void)shell_state;
 	head = NULL;
 	current_cmd = NULL;
 	while (tokens)
@@ -112,8 +112,7 @@ t_list	*parse_tokens(t_list *tokens, t_error_handler *err_handler)
 	return (head);
 }
 
-t_list	*parse(t_parser *parser, t_error_handler *error_handler \
-				, t_list *env_list, t_shell_state *shell_state)
+t_list	*parse(t_parser *parser, t_shell_state *shell_state)
 {
 	char	*line;
 	t_list	*cmd;
@@ -123,9 +122,9 @@ t_list	*parse(t_parser *parser, t_error_handler *error_handler \
 	token_list = tokenize_line(line);
 	if (!token_list)
 		return (NULL);
-	if (!expansion(&token_list, env_list, shell_state))
+	if (!expansion(&token_list, shell_state))
 		return (ft_lstclear(&token_list, free_token), NULL);
-	cmd = parse_tokens(token_list, error_handler);
+	cmd = parse_tokens(token_list, shell_state);
 	if (!cmd)
 		return (ft_lstclear(&token_list, free_token), NULL);
 	ft_lstclear(&token_list, free_token);

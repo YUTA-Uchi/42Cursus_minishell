@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 13:05:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:18:11 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,14 +79,12 @@ typedef struct s_parser	t_parser;
 struct s_parser
 {
 	char		*line;
-	t_list		*(*parse)(t_parser *, t_error_handler *\
-						, t_list *, t_shell_state *);
+	t_list		*(*parse)(t_parser *, t_shell_state *);
 };
 
-t_parser		*create_parser(t_error_handler *err_handler);
+t_parser		*create_parser(t_shell_state *sh_state);
 void			free_parser(t_parser *parser);
-t_list			*parse(t_parser *parser, t_error_handler *error_handler \
-				, t_list *env_list, t_shell_state *shell_state);
+t_list			*parse(t_parser *parser, t_shell_state *shell_state);
 
 // tokenizer
 t_list			*tokenize_line(const char *line);
@@ -110,8 +108,7 @@ bool			tokenize_state_in_redir_out(t_state *state \
 // expander
 t_expand		*create_expand(t_shell_state *shell_state);
 void			free_expand(t_expand *expand);
-bool			expansion(t_list **token_list, t_list *env_list \
-					, t_shell_state *shell_state);
+bool			expansion(t_list **token_list, t_shell_state *shell_state);
 bool			handle_expand_state(t_expand *expand, char c, t_list *env_list);
 // expander string handler
 bool			append_char_to_env_key(t_expand *expand, char c);

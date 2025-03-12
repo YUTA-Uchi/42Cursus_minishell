@@ -6,17 +6,17 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 14:22:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/12 11:16:42 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "error_handler.h"
 
-void	fatal_error(const char *function_name, const char *msg)
+void	fatal_error(const char *function_name, const char *msg, int status)
 {
 	ft_printf(STDERR_FILENO, "%s%sFatal Error: %s\n", ERR_HEADER, \
 			function_name, msg);
-	exit(1);
+	exit(status);
 }
 
 int	get_err_status(void)
