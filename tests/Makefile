@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -I../includes -fprofile-arcs -ftest-coverage
 LIBFT_DIR	=	../libft
+CFLAGS = -Wall -Wextra -I../includes -I$(LIBFT_DIR) -fprofile-arcs -ftest-coverage
 LD_FLAGS	=	-L$(LIBFT_DIR)
 LDFLAGS = -lft -lcriterion -lgcov --coverage -lreadline
 
