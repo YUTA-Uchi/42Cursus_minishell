@@ -68,4 +68,4 @@ jobs:
       run: sudo apt-get install -y cppcheck
         
     - name: Run static analysis
-      run: cppcheck --enable=all --suppress=missingIncludeSystem src/
+      run: cppcheck --enable=all --suppress=missingIncludeSystem srcs/
