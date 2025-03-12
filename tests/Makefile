@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -I../includes -fprofile-arcs -ftest-coverage
 LIBFT_DIR	=	../libft
 LD_FLAGS	=	-L$(LIBFT_DIR)
-LDFLAGS = -lft -lcriterion -lgcov --coverage
+LDFLAGS = -lft -lcriterion -lgcov --coverage -lreadline
 
 SOURCES = test_parse.c ../src/parser/tokenizer.c \
 			../src/parser/tokenizer_state_handler_normal.c \
