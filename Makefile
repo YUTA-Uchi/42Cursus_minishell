@@ -71,8 +71,6 @@ test:	all
 
 coverage:
 	$(MAKE) CFLAGS="-g -O0 -fprofile-arcs -ftest-coverage -Wall -Wextra -Werror" LDFLAGS="-fprofile-arcs -ftest-coverage -L$(LIBFT_DIR) -lft -lcriterion -lgcov --coverage -lreadline"
-	lcov --capture --directory . --directory ../srcs --output-file coverage.info --ignore-errors mismatch --ignore-errors empty
-	genhtml coverage.info --output-directory coverage_report
 
 clean:
 	$(RM) -r $(OBJS) $(OBJ_DIR)
