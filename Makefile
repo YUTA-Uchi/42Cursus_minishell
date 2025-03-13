@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/11 18:25:56 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/13 18:57:32 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,8 @@ COMMON_SRCS		:=	main.c \
 					expander_constructor.c \
 					environment.c \
 					shell_state.c \
-					fd_manager.c 
+					fd_manager.c \
+					signal_handler.c 
 
 OBJ_DIR			:=	./obj
 OBJS			:=	$(COMMON_SRCS:%.c=$(OBJ_DIR)/%.o)
@@ -49,7 +50,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser:./srcs/environment:./srcs/shell_state:
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser:./srcs/environment:./srcs/shell_state:./srcs/signals
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a
