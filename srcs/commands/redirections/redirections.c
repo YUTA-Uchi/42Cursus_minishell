@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 13:37:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/13 13:53:45 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ bool	open_redirections(t_list *redir_list)
 				return (false);
 		}
 		if (redir_content->fd == -1)
-			return (print_strerror("open"), false);
+			return (print_strerror(redir_content->file), false);
 		current_redir = current_redir->next;
 	}
 	return (true);

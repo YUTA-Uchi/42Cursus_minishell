@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:29:19 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/13 13:52:59 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "executor.h"
 #include "environment.h"
 #include "shell_state.h"
-
 
 bool	preprocess(t_shell_state **sh_state, char **environ)
 {
