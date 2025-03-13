@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:52:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/13 13:25:55 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,8 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 	}
 	while (head)
 	{
-		open_redirections(((t_cmd *)(head->content))->redirections);
+		if (open_redirections(((t_cmd *)(head->content))->redirections))
+			return (get_err_status());
 		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
 		if (head->next)
