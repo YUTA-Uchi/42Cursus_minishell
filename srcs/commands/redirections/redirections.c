@@ -6,11 +6,13 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/13 13:53:45 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/14 20:33:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "redirection.h"
+
+extern volatile sig_atomic_t	g_signal;
 
 t_list	*create_redirection(char *file, t_redir_type type)
 {
@@ -58,7 +60,22 @@ bool	set_heredoc(t_redirection *redir_content)
 	while (true)
 	{
 		line = readline("heredoc> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+		if (!line || g_signal == SIGINT)
+		{
+			if (line)
+				free(line);
+			if (g_signal == SIGINT)
+				g_signal = 0;
+			else
+				ft_printf(STDOUT_FILENO, "minishell:warning:here_doc\n");
+			free(delimiter);
+			if (close(here_doc_pipe[1]) == -1)
+				return (print_strerror("close"), false);
+			if (close(here_doc_pipe[0]) == -1)
+				return (print_strerror("close"), false);
+			return (false);
+		}
+		if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
 		{
 			free(line);
 			break ;

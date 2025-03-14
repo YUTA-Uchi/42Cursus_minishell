@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:35:35 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/13 18:48:20 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/14 20:28:15 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@
 # include <sys/wait.h>
 # include "libft.h"
 
-# define PATH_MAX 4096
+# ifndef PATH_MAX
+#  define PATH_MAX	4096
+# endif
 # define PROMPT "minishell$ "
 
 #endif

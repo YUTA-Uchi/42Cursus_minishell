@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 13:52:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/26 15:05:52 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:02:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,4 +181,21 @@ char	**env_list_to_array(t_list *env_list)
 	}
 	envp[i] = NULL;
 	return (envp);
+}
+
+void	print_env(t_list *env_list)
+{
+	t_list	*current;
+	t_env	*env;
+
+	current = env_list;
+	while (current)
+	{
+		env = (t_env *)(current->content);
+		if (env->value)
+			ft_printf(STDOUT_FILENO, "%s=%s\n", env->key, env->value);
+		else
+			ft_printf(STDOUT_FILENO, "%s\n", env->key);
+		current = current->next;
+	}
 }

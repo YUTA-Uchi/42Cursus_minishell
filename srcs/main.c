@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/13 13:52:59 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/14 19:55:12 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,21 @@
 #include "executor.h"
 #include "environment.h"
 #include "shell_state.h"
+#include "signals.h"
+
+extern volatile sig_atomic_t	g_signal;
 
 bool	preprocess(t_shell_state **sh_state, char **environ)
 {
 	*sh_state = create_shell_state(environ);
 	if (!*sh_state)
 		return (false);
+	if (!set_signal_handler())
+	{
+		free_shell_state(*sh_state);
+		return (false);
+	}
+	rl_event_hook = check_signals;
 	return (true);
 }
 
@@ -37,19 +46,12 @@ int	main(int argc, char **argv, char **environ)
 		return (fatal_error("main", "malloc failed", errno), E_GENERAL_ERR);
 	while (sh_state->running)
 	{
-		parser = create_parser(sh_state);
-		if (!parser)
-		{
-			print_strerror("main");
-			continue ;
-		}
 		executor = create_executor();
 		if (!executor)
-		{
-			free_parser(parser);
-			print_strerror("main");
 			continue ;
-		}
+		parser = create_parser(sh_state);
+		if (!parser)
+			continue ;
 		executor->cmds = parser->parse(parser, sh_state);
 		free_parser(parser);
 		if (!executor->cmds)
