@@ -6,12 +6,13 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 15:57:14 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/15 18:27:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
 #include "builtin.h"
+#include "signals.h"
 
 void	all_clear_exit(t_executor *executor, t_shell_state *sh_state, int status)
 {
@@ -60,24 +61,43 @@ int	wait_all_children(t_list *cmd_list)
 	int		last_status;
 	t_list	*current_cmd;
 	t_cmd	*cmd_content;
+	pid_t	wait_result;
+	bool	sigint_displayed;
+	bool	sigquit_displayed;
 
+	sigint_displayed = false;
+	sigquit_displayed = false;
 	current_cmd = cmd_list;
 	while (current_cmd)
 	{
 		cmd_content = (t_cmd *)(current_cmd->content);
-		if (waitpid(cmd_content->pid, &status, 0) != -1)
+		wait_result = waitpid(cmd_content->pid, &status, 0);
+		if (wait_result == -1 && errno == EINTR)
+			continue ;
+		if (wait_result != -1)
 		{
 			if (WIFEXITED(status))
 				last_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
+			{
 				last_status = WTERMSIG(status) + E_SIGTERM;
+				if (WTERMSIG(status) == SIGINT && !sigint_displayed)
+				{
+					ft_printf(STDERR_FILENO, "\n");
+					sigint_displayed = true;
+				}
+				else if (WTERMSIG(status) == SIGQUIT && !sigquit_displayed)
+				{
+					ft_printf(STDERR_FILENO, "Quit (core dumped)\n");
+					sigquit_displayed = true;
+				}
+			}
 		}
 		current_cmd = current_cmd->next;
 	}
-	if (errno != 0 && errno != ECHILD)
+	if (errno != 0 && errno != ECHILD && errno != EINTR)
 	{
-		if (errno != EACCES)
-			ft_printf(STDERR_FILENO, "waitpid: %s\n", strerror(errno));
+		ft_printf(STDERR_FILENO, "waitpid: %s\n", strerror(errno));
 		last_status = E_GENERAL_ERR;
 	}
 	return (last_status);
@@ -89,43 +109,48 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 {
 	t_cmd	*cmd_content;
 	t_list	*head;
+	int		status;
 
+	// ft_printf(STDERR_FILENO, "signal execute start: %d\n", g_signal);
+	set_exec_signal_handler();
 	head = self->cmds;
-	//print_cmd(head);
 	cmd_content = (t_cmd *)(head->content);
-	if (!head->next)
+	if (!head->next && lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
-		if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
-		{
-			return (lookup_builtin(cmd_content->cmd_name, \
-				self->builtins_list)->func(self, shell_state));
-		}
+		status = lookup_builtin(cmd_content->cmd_name, self->builtins_list)->func(self, shell_state);
 	}
-	while (head)
+	else
 	{
-		if (!open_redirections(((t_cmd *)(head->content))->redirections))
-			return (get_err_status());
-		self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
-		self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
-		if (head->next)
+		while (head)
 		{
-			if (pipe(self->pipes->next_pipe) == -1)
-				return (print_strerror("pipe"), errno);
-		}
-		cmd_content = (t_cmd *)(head->content);
-		cmd_content->pid = fork();
-		if (cmd_content->pid == -1)
-			return (print_strerror("fork"), errno);
-		else if (cmd_content->pid > 0)
-		{
+			if (!open_redirections(((t_cmd *)(head->content))->redirections))
+				return (set_interactive_signal_handler(), get_err_status());
+			self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
+			self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
+			if (head->next)
+			{
+				if (pipe(self->pipes->next_pipe) == -1)
+					return (print_strerror("pipe"), errno);
+			}
+			cmd_content = (t_cmd *)(head->content);
+			cmd_content->pid = fork();
+			if (cmd_content->pid == -1)
+				return (print_strerror("fork"), errno);
+			else if (cmd_content->pid == 0)
+			{
+				// ft_printf(STDERR_FILENO, "signal execute child: %d\n", g_signal);
+				set_child_signal_handler();
+				execute_child_process(self, head, shell_state);
+			}
 			if (!parent_process(self->pipes))
-				return (get_err_status());
+				return (set_interactive_signal_handler(), get_err_status());
 			head = head->next;
-			continue ;
 		}
-		execute_child_process(self, head, shell_state);
+		status = wait_all_children(self->cmds);
 	}
-	return (wait_all_children(self->cmds));
+	// ft_printf(STDERR_FILENO, "signal execute end: %d\n", g_signal);
+	set_interactive_signal_handler();
+	return (status);
 }
 
 bool	repair_std_io(t_executor *self)

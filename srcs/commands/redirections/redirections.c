@@ -6,11 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 20:33:23 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/15 18:10:25 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "redirection.h"
+#include "signals.h"
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -48,45 +49,78 @@ void	free_redirection(void *redir)
 
 bool	set_heredoc(t_redirection *redir_content)
 {
-	char	*line;
 	char	*delimiter;
 	int		here_doc_pipe[2];
+	pid_t	pid;
+	int		status;
+	char	*line;
 
-	if (pipe(here_doc_pipe) == -1)
-		return (print_strerror("pipe"), false);
 	delimiter = ft_strdup(redir_content->file);
 	if (!delimiter)
-		return (print_strerror("ft_strdup"), false);
-	while (true)
+		exit(EXIT_FAILURE);
+	if (pipe(here_doc_pipe) == -1)
+		return (print_strerror("pipe"), false);
+	pid = fork();
+	if (pid == -1)
 	{
-		line = readline("heredoc> ");
-		if (!line || g_signal == SIGINT)
+		free(delimiter);
+		close(here_doc_pipe[0]);
+		close(here_doc_pipe[1]);
+		return (print_strerror("fork"), false);
+	}
+	if (pid == 0)
+	{
+		// ft_printf(STDERR_FILENO, "signalheredoc before: %d\n", g_signal);
+		close(here_doc_pipe[0]);
+		if (!set_heredoc_signal_handler())
+			exit(EXIT_FAILURE);
+		while (true)
 		{
-			if (line)
+			line = readline("heredoc> ");
+			if (!line || g_signal == SIGINT)
+			{
+				free(delimiter);
+				close(here_doc_pipe[1]);
+				// ft_printf(STDERR_FILENO, "signalheredocing: %d\n", g_signal);
+				if (g_signal == SIGINT)
+					exit(130);
+				exit(EXIT_SUCCESS);
+			}
+			if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+			{
 				free(line);
-			if (g_signal == SIGINT)
-				g_signal = 0;
-			else
-				ft_printf(STDOUT_FILENO, "minishell:warning:here_doc\n");
-			free(delimiter);
-			if (close(here_doc_pipe[1]) == -1)
-				return (print_strerror("close"), false);
-			if (close(here_doc_pipe[0]) == -1)
-				return (print_strerror("close"), false);
-			return (false);
-		}
-		if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-		{
+				free(delimiter);
+				close(here_doc_pipe[1]);
+				exit(EXIT_SUCCESS);
+			}
+			ft_printf(here_doc_pipe[1], "%s\n", line);
 			free(line);
-			break ;
 		}
-		ft_printf(here_doc_pipe[1], "%s\n", line);
-		free(line);
+	}
+	free(delimiter);
+	close(here_doc_pipe[1]);
+	// ft_printf(STDERR_FILENO, "signalheredoc after: %d\n", g_signal);
+	while (waitpid(pid, &status, 0) == -1)
+	{
+		if (errno == EINTR)
+			continue ;
+		close(here_doc_pipe[0]);
+		return (print_strerror("waitpid"), false);
+	}
+	if (WIFSIGNALED(status))
+	{
+		g_signal = WTERMSIG(status);
+		close(here_doc_pipe[0]);
+		return (false);
+	}
+	else if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+	{
+		if (WEXITSTATUS(status) == 130)
+			g_signal = SIGINT;
+		close(here_doc_pipe[0]);
+		return (false);
 	}
 	redir_content->fd = here_doc_pipe[0];
-	if (close(here_doc_pipe[1]) == -1)
-		return (print_strerror("close"), false);
-	free(delimiter);
 	return (true);
 }
 

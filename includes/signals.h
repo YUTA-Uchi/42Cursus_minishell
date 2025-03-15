@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 13:53:14 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 19:57:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:52:24 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,16 @@
 
 # include "minishell.h"
 
-bool	set_signal_handler(void);
+extern volatile sig_atomic_t	g_signal;
+
 int		check_signals(void);
+
+/*
+** シグナルハンドラ設定関数
+*/
+bool	set_interactive_signal_handler(void);
+bool	set_heredoc_signal_handler(void);
+bool	set_exec_signal_handler(void);
+bool	set_child_signal_handler(void);
 
 #endif

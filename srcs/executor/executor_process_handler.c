@@ -6,12 +6,14 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:25:44 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/15 17:23:48 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
 #include "builtin.h"
+
+extern volatile sig_atomic_t	g_signal;
 
 static char	*create_path(char *env_path, char *cmd)
 {
@@ -49,6 +51,7 @@ static int	ft_execvp(t_cmd *cmd, t_list *env_list)
 		if (access(exec_path, F_OK) == 0)
 		{
 			free_arr(env_pathes);
+			// ft_printf(STDERR_FILENO, "signal child end: %d\n", g_signal);
 			return (execve(exec_path, cmd->args \
 					, (char *const *)env_list_to_array(env_list)));
 		}
