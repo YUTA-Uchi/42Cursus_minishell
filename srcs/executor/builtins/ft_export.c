@@ -22,7 +22,7 @@ int	ft_export(t_executor *self, t_shell_state *shell_state)
 	i = 1;
 	cmd = (t_cmd *)(self->cmds->content);
 	// if (!cmd->args[i])
-	// 	return (print_env(shell_state->env_list), 0);
+	// 	return (print_env(shell_state->env_list), 0); // todo
 	while (cmd->args[i])
 	{
 		if (ft_strchr(cmd->args[i], '='))

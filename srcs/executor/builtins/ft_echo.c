@@ -21,6 +21,7 @@ int	ft_echo(t_executor *self, t_shell_state *shell_state)
 	i = 1;
 	cmd = (t_cmd *)(self->cmds->content);
 	(void)shell_state;
+	// todo redirection
 	is_option_n = false;
 	if (cmd->args[i] != NULL && ft_strncmp(cmd->args[i], "-n", 2) == 0)
 	{

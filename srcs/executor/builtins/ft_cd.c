@@ -33,7 +33,7 @@ int	ft_cd(t_executor *self, t_shell_state *shell_state)
 		path = cmd->args[1];
 	}
 	if (chdir(path) == -1)
-		return (set_error(shell_state->error_handler, E_GENERAL_ERR, strerror(errno)) \
+		return (print_strerror(path) \
 				, 1);
 	return (0);
 }
