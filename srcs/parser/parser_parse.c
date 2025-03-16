@@ -67,6 +67,8 @@ t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
 		token_content = (t_token *)(tokens->content);
 		if (token_content->type == TOKEN_PIPE)
 		{
+			if (!current_cmd)
+				return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "syntax error near the '|'"), NULL);
 			current_cmd = NULL;
 			tokens = tokens->next;
 			continue ;

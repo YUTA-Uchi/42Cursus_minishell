@@ -22,38 +22,38 @@ void	all_clear_exit(t_executor *executor, t_shell_state *sh_state, int status)
 	exit(status);
 }
 
-// void	print_cmd(t_list *cmds)
-// {
-// 	int		i;
-// 	t_cmd	*cmd_content;
-// 	t_list	*redir_list;
-// 	t_list	*cmd_list;
+void	print_cmd(t_list *cmds)
+{
+	int		i;
+	t_cmd	*cmd_content;
+	t_list	*redir_list;
+	t_list	*cmd_list;
 
-// 	cmd_list = cmds;
-// 	while (cmd_list)
-// 	{
-// 		cmd_content = (t_cmd *)(cmd_list->content);
-// 		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
-// 		i = 0;
-// 		while (cmd_content->args[i])
-// 		{
-// 			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
-// 			i++;
-// 		}
-// 		i = 0;
-// 		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
-// 		redir_list = cmd_content->redirections;
-// 		while (redir_list)
-// 		{
-// 			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, 
-// ((t_redirection *)(redir_list->content))->file, ((t_redirection *)
-// (redir_list->content))->type);
-// 			redir_list = redir_list->next;
-// 			i++;
-// 		}
-// 		cmd_list = cmd_list->next;
-// 	}
-// }
+	cmd_list = cmds;
+	while (cmd_list)
+	{
+		cmd_content = (t_cmd *)(cmd_list->content);
+		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
+		i = 0;
+		while (cmd_content->args[i])
+		{
+			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
+			i++;
+		}
+		i = 0;
+		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
+		redir_list = cmd_content->redirections;
+		while (redir_list)
+		{
+			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, 
+((t_redirection *)(redir_list->content))->file, ((t_redirection *)
+(redir_list->content))->type);
+			redir_list = redir_list->next;
+			i++;
+		}
+		cmd_list = cmd_list->next;
+	}
+}
 
 int	wait_all_children(t_list *cmd_list)
 {
@@ -113,9 +113,10 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 
 	// ft_printf(STDERR_FILENO, "signal execute start: %d\n", g_signal);
 	set_exec_signal_handler();
+	// print_cmd(self->cmds);
 	head = self->cmds;
 	cmd_content = (t_cmd *)(head->content);
-	if (!head->next && lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
+	if (!head->next && cmd_content->cmd_name && lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
 		status = lookup_builtin(cmd_content->cmd_name, self->builtins_list)->func(self, shell_state);
 	}
@@ -133,6 +134,8 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 					return (print_strerror("pipe"), errno);
 			}
 			cmd_content = (t_cmd *)(head->content);
+			if (!cmd_content->cmd_name)
+				return (set_interactive_signal_handler(), E_GENERAL_ERR);
 			cmd_content->pid = fork();
 			if (cmd_content->pid == -1)
 				return (print_strerror("fork"), errno);
