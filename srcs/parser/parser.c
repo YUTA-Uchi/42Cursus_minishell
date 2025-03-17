@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 20:34:19 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:32:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,13 @@ static char	*ft_readline(t_shell_state *sh_state, const char *prompt)
 	if (!line)
 	{
 		sh_state->running = false;
-		sh_state->last_status = sh_state->last_status | 128; // is this correct?
+		sh_state->last_status = E_SUCCESS;
 		ft_printf(STDOUT_FILENO, "exit\n");
 		return (NULL);
+	}
+	if (g_signal == SIGINT)
+	{
+		sh_state->last_status = SIGINT | 128;
 	}
 	if (*line)
 	{

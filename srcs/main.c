@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/15 18:10:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:18:51 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@ extern volatile sig_atomic_t	g_signal;
 
 bool	preprocess(t_shell_state **sh_state, char **environ)
 {
-	// struct termios	term;
-
 	*sh_state = create_shell_state(environ);
 	if (!*sh_state)
 		return (false);
@@ -33,9 +31,6 @@ bool	preprocess(t_shell_state **sh_state, char **environ)
 		return (false);
 	}
 	rl_event_hook = check_signals;
-	// tcgetattr(STDIN_FILENO, &term);
-	// term.c_lflag &= ~ECHOCTL;
-	// tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	return (true);
 }
 
@@ -51,13 +46,10 @@ int	main(int argc, char **argv, char **environ)
 		return (fatal_error("main", "malloc failed", errno), E_GENERAL_ERR);
 	while (sh_state->running)
 	{
-		// ft_printf(STDERR_FILENO, "signalmain start: %d\n", g_signal);
 		executor = create_executor();
 		if (!executor)
 			continue ;
-		// ft_printf(STDERR_FILENO, "signal parser start: %d\n", g_signal);
 		parser = create_parser(sh_state);
-		// ft_printf(STDERR_FILENO, "signal parser end: %d\n", g_signal);
 		if (!parser)
 			continue ;
 		executor->cmds = parser->parse(parser, sh_state);

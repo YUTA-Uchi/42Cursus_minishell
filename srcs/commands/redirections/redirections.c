@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/15 18:10:25 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:20:24 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ bool	set_heredoc(t_redirection *redir_content)
 	}
 	if (pid == 0)
 	{
-		// ft_printf(STDERR_FILENO, "signalheredoc before: %d\n", g_signal);
 		close(here_doc_pipe[0]);
 		if (!set_heredoc_signal_handler())
 			exit(EXIT_FAILURE);
@@ -81,7 +80,6 @@ bool	set_heredoc(t_redirection *redir_content)
 			{
 				free(delimiter);
 				close(here_doc_pipe[1]);
-				// ft_printf(STDERR_FILENO, "signalheredocing: %d\n", g_signal);
 				if (g_signal == SIGINT)
 					exit(130);
 				exit(EXIT_SUCCESS);
@@ -99,7 +97,6 @@ bool	set_heredoc(t_redirection *redir_content)
 	}
 	free(delimiter);
 	close(here_doc_pipe[1]);
-	// ft_printf(STDERR_FILENO, "signalheredoc after: %d\n", g_signal);
 	while (waitpid(pid, &status, 0) == -1)
 	{
 		if (errno == EINTR)

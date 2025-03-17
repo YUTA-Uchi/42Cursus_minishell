@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/15 18:27:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 12:40:44 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 	cmd_content = (t_cmd *)(head->content);
 	if (!head->next && cmd_content->cmd_name && lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 	{
-		status = lookup_builtin(cmd_content->cmd_name, self->builtins_list)->func(self, shell_state);
+		status = lookup_builtin(cmd_content->cmd_name, self->builtins_list)->func(self, head, shell_state);
 	}
 	else
 	{

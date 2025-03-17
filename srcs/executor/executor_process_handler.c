@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/15 17:23:48 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:51:12 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ static int	execve_in_absolute_path(t_cmd *cmd, t_list *env_list)
 	if (access(cmd->cmd_name, F_OK) == 0)
 		return (execve(cmd->cmd_name, cmd->args \
 				, (char *const *)env_list_to_array(env_list)));
-	return (ft_printf(STDERR_FILENO, "executor: %s\n" \
-			, strerror(errno)), get_err_status());
+	return (-1);
 }
 
 static int	ft_execvp(t_cmd *cmd, t_list *env_list)
@@ -75,7 +74,7 @@ void	execute_child_process(t_executor *self, t_list *current_cmd \
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		exit(lookup_builtin(cmd_content->cmd_name, \
-			self->builtins_list)->func(self, shell_state));
+			self->builtins_list)->func(self, current_cmd, shell_state));
 	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
 		exec_ret = execve_in_absolute_path(cmd_content, shell_state->env_list);
 	else

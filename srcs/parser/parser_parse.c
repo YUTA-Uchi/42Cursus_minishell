@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:04:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:18:22 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:28:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
 		if (token_content->type == TOKEN_PIPE)
 		{
 			if (!current_cmd)
-				return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "syntax error near the '|'"), NULL);
+				return (free_cmd_list(&head), print_const_error(SYNERR_NEAR_PIPE, 0), NULL);
 			current_cmd = NULL;
 			tokens = tokens->next;
 			continue ;
@@ -77,7 +77,7 @@ t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
 		{
 			current_cmd = create_cmd();
 			if (!current_cmd)
-				return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
+				return (free_cmd_list(&head), print_const_error(MALLOCF, 0), NULL);
 			if (!head)
 				head = current_cmd;
 			else
@@ -94,12 +94,12 @@ t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
 				redirection = create_redirection(((t_token *)(tokens->next->content))->value \
 										, get_redir_type(token_content->type));
 				if (!redirection)
-					return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
+					return (free_cmd_list(&head), NULL);
 				ft_lstadd_back(&(cmd_content->redirections), redirection);
 				tokens = tokens->next;
 			}
 			else
-				return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "syntax error"), NULL);
+				return (free_cmd_list(&head), print_const_error(SYNERR, 0), NULL);
 		}
 		else if (token_content->type == TOKEN_WORD)
 		{
@@ -107,7 +107,7 @@ t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
 				cmd_content->cmd_name = ft_strdup(token_content->value);
 			if (!cmd_content->cmd_name \
 				|| !add_arg(&(cmd_content->args), ft_strdup(token_content->value)))
-				return (free_cmd_list(&head), ft_printf(STDERR_FILENO, "%s: %s\n", "parser", "malloc failed"), NULL);
+				return (free_cmd_list(&head), print_const_error(MALLOCF, 0), NULL);
 		}
 		tokens = tokens->next;
 	}

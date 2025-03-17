@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/07 11:46:02 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:55:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,8 @@ t_list	*tokenize_line(const char *line)
 	i = 0;
 	while (line[i])
 	{
-		// ft_printf(STDOUT_FILENO, "line[%d]:%c\n", i, line[i]);
 		if (!handle_tokenize_state(&state, &head, line[i]))
 			return (ft_lstclear(&head, free_token), NULL);
-		// ft_printf(STDOUT_FILENO, "state:%d\n", state);
 		i++;
 	}
 	if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 13:52:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 15:02:23 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:25:26 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,11 @@ int	set_env_value(t_list *env_list, char *key, char *value)
 {
 	t_list	*current;
 	t_env	*env;
-	// size_t	key_len;
 
 	current = env_list;
 	while (current)
 	{
 		env = (t_env *)(current->content);
-		// if (ft_strlen(key) > ft_strlen(env->key))
-		// 	key_len = ft_strlen(key);
-		// else
-		// 	key_len = ft_strlen(env->key);
 		if (ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
 		{
 			free(env->value);
@@ -132,17 +127,12 @@ int	remove_env(t_list **env_list, char *key)
 	t_list	*current;
 	t_list	*prev;
 	t_env	*env;
-	// size_t	key_len;
 
 	current = *env_list;
 	prev = NULL;
 	while (current)
 	{
 		env = (t_env *)(current->content);
-		// if (ft_strlen(key) > ft_strlen(env->key))
-		// 	key_len = ft_strlen(key);
-		// else
-		// 	key_len = ft_strlen(env->key);
 		if (ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
 		{
 			if (prev)
@@ -173,8 +163,16 @@ char	**env_list_to_array(t_list *env_list)
 	while (current)
 	{
 		env = (t_env *)(current->content);
-		temp = ft_strjoin(env->key, "=");
-		envp[i] = ft_strjoin(temp, env->value);
+		if (!env->value)
+		{
+			current = current->next;
+			continue ;
+		}
+		else
+		{
+			temp = ft_strjoin(env->key, "=");
+			envp[i] = ft_strjoin(temp, env->value);
+		}
 		free(temp);
 		i++;
 		current = current->next;
@@ -183,7 +181,7 @@ char	**env_list_to_array(t_list *env_list)
 	return (envp);
 }
 
-void	print_env(t_list *env_list)
+void	print_env(t_list *env_list, bool is_export)
 {
 	t_list	*current;
 	t_env	*env;
@@ -192,10 +190,20 @@ void	print_env(t_list *env_list)
 	while (current)
 	{
 		env = (t_env *)(current->content);
-		if (env->value)
-			ft_printf(STDOUT_FILENO, "%s=%s\n", env->key, env->value);
+		if (is_export)
+		{
+			if (env->value)
+				ft_printf(STDOUT_FILENO, "declare -x %s=\"%s\"\n"\
+					, env->key \
+					, env->value);
+			else
+				ft_printf(STDOUT_FILENO, "declare -x %s\n", env->key);
+		}
 		else
-			ft_printf(STDOUT_FILENO, "%s\n", env->key);
+		{
+			if (env->value)
+				ft_printf(STDOUT_FILENO, "%s=%s\n", env->key, env->value);
+		}
 		current = current->next;
 	}
 }

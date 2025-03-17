@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:10:06 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:16:57 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:47:32 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,13 @@ static bool	expand_word(t_list **current, t_list *prev \
 	while (token->value[i])
 	{
 		if (!handle_expand_state(expand, token->value[i++], shell_state->env_list))
-			return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer1", "malloc failed"), false);
+			return (print_const_error(MALLOCF, 0), false);
 	}
 	if (!finalize_expand(expand, shell_state->env_list))
-		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer2", "malloc failed"), false);
+		return (print_const_error(MALLOCF, 0), false);
 	new_token = set_token_value(create_token(TOKEN_WORD, '\0'), expand);
 	if (!new_token)
-		return (ft_printf(STDERR_FILENO, "%s: %s\n", "tokenizer3", "malloc failed"), false);
+		return (print_const_error(MALLOCF, 0), false);
 	free_expand(expand);
 	if (prev)
 		prev->next = new_token;

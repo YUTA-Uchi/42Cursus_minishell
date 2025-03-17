@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:56:27 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 12:43:17 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:38:35 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,12 @@ const t_builtins	*lookup_builtin(char *cmd_name, \
 									const t_builtins *builtins_list);
 
 // builtins
-int					ft_echo(t_executor *self, t_shell_state *shell_state);
-int					ft_cd(t_executor *self, t_shell_state *shell_state);
-int					ft_pwd(t_executor *self, t_shell_state *shell_state);
-int					ft_export(t_executor *self, t_shell_state *shell_state);
-int					ft_unset(t_executor *self, t_shell_state *shell_state);
-int					ft_env(t_executor *self, t_shell_state *shell_state);
-int					ft_exit(t_executor *self, t_shell_state *shell_state);
+int					ft_echo(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
+int					ft_cd(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
+int					ft_pwd(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
+int					ft_export(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
+int					ft_unset(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
+int					ft_env(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
+int					ft_exit(t_executor *self, t_list *current_cmd, t_shell_state *shell_state);
 
 #endif

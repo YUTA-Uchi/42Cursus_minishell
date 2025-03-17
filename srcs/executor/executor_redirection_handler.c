@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:52:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/11 19:37:32 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:29:45 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ static bool	set_redirection_append(t_redirection *redir)
 
 static bool	set_redirection_heredoc(t_redirection *redir)
 {
-	// ft_printf(STDERR_FILENO, "heredoc:%d\n", redir->fd);
 	if (is_fd_open(redir->fd))
 	{
 		if (close(STDIN_FILENO) == -1)

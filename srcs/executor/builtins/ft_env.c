@@ -6,35 +6,22 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:34:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 14:51:14 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:14:42 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 
-int	ft_env(t_executor *self, t_shell_state *shell_state)
+int	ft_env(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 {
-	t_list	*current;
-	t_cmd	*cmd;
+	t_cmd	*cmd_content;
 
-	current = shell_state->env_list;
-	cmd = (t_cmd *)(self->cmds->content);
-	if (cmd->args[1] != NULL)
-	{
-		set_error(shell_state->error_handler, E_GENERAL_ERR, ENV_TOO_MANY_ARGS);
-		return (1);
-	}
-	if (current == NULL)
-	{
-		set_error(shell_state->error_handler, E_GENERAL_ERR, ENV_NULL);
-		return (1);
-	}
-	while (current)
-	{
-		ft_printf(STDOUT_FILENO, "%s=%s\n" \
-				, ((t_env *)(current->content))->key \
-				, ((t_env *)(current->content))->value);
-		current = current->next;
-	}
+	(void)self;
+	cmd_content = (t_cmd *)(current_cmd->content);
+	if (cmd_content->args[1])
+		return (print_const_error(ENV_TOO_MANY_ARGS, E_GENERAL_ERR));
+	if (!shell_state->env_list)
+		return (print_const_error(ENV_NULL, E_GENERAL_ERR));
+	print_env(shell_state->env_list, false);
 	return (0);
 }

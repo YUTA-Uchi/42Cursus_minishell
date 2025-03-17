@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 11:21:08 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:58:27 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@
 # include "minishell.h"
 
 # define ERR_HEADER "minishell: "
+# define MALLOCF "malloc failed"
+# define SYNERR "syntax error"
+# define SYNERR_NEAR_PIPE "syntax error near unexpected token '|'"
+# define SYNERR_NEAR_RIN "syntax error near unexpected token '<'"
+# define SYNERR_NEAR_ROUT "syntax error near unexpected token '>'"
 # define COMMAND_NOT_FOUND "command not found"
 // builtin pwd error message
 # define BUFF_NULL "buff is null"
@@ -27,6 +32,10 @@
 # define ENV_TOO_MANY_ARGS "env: too many arguments"
 # define ENV_NULL "environment variables are NULL"
 // builtin unset error message
+# define UNSET_TOO_MANY_ARGS "unset: too many arguments"
+// builtin exit error message
+# define EXIT_TOO_MANY_ARGS "exit: too many arguments"
+# define EXIT_NUMERIC_ARG "exit: numeric argument required"
 
 typedef enum e_error	t_error;
 
@@ -52,4 +61,5 @@ void			fatal_error(const char *function_name, const char *msg \
 int				get_err_status(void);
 void			set_error(t_error_handler *self, int error, const char *msg);
 void			print_strerror(char *funcname);
+int				print_const_error(const char *msg, int status);
 #endif
