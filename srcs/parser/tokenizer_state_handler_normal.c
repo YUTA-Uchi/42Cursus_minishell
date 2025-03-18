@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:43:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:57:41 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 15:40:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,41 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 			*state = STATE_IN_DOUBLE_QUOTE;
 	}
 	return (true);
+}
+
+bool	append_char_to_token(t_list **head, char c)
+{
+	char	*new_buffer;
+	t_list	*current;
+	t_token	*token_content;
+
+	current = ft_lstlast(*head);
+	token_content = (t_token *)(current->content);
+	if (token_content->len + 1 >= token_content->capacity)
+	{
+		token_content->capacity *= 2;
+		new_buffer = malloc(token_content->capacity);
+		if (!new_buffer)
+			return (false);
+		ft_strlcpy(new_buffer, token_content->value, token_content->len + 1);
+		free(token_content->value);
+		token_content->value = new_buffer;
+	}
+	token_content->value[token_content->len++] = c;
+	token_content->value[token_content->len] = '\0';
+	return (true);
+}
+
+t_token_type	get_token_type(char c)
+{
+	if (c == '|')
+		return (TOKEN_PIPE);
+	else if (c == '<')
+		return (TOKEN_REDIR_IN);
+	else if (c == '>')
+		return (TOKEN_REDIR_OUT);
+	else
+		return (TOKEN_WORD);
 }
 
 bool	handle_tokenize_state(t_state *state, t_list **head, char c)

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:04:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:28:17 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:47:57 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,84 +51,87 @@ t_redir_type	get_redir_type(t_token_type token_type)
 		return (REDIR_HEREDOC);
 }
 
-t_list	*parse_tokens(t_list *tokens, t_shell_state *shell_state)
+bool	add_cmd_node_to_list(t_list **cmd_list, t_list **current_cmd)
 {
-	t_list	*head;
+	if (!(*current_cmd))
+	{
+		*current_cmd = create_cmd();
+		if (!(*current_cmd))
+			return (print_const_error(MALLOCF, 0), NULL);
+		ft_lstadd_back(cmd_list, *current_cmd);
+	}
+	return (true);
+}
+
+bool	parse_command_args(t_token *token_content, t_cmd *cmd_content)
+{
+	if (token_content->type == TOKEN_WORD)
+	{
+		if (!cmd_content->cmd_name)
+			cmd_content->cmd_name = ft_strdup(token_content->value);
+		if (!cmd_content->cmd_name \
+			|| !add_arg(&(cmd_content->args), ft_strdup(token_content->value)))
+			return (print_const_error(MALLOCF, 0), NULL);
+	}
+	return (true);
+}
+
+bool	parse_redirection(t_list **token_list, t_cmd *cmd_content)
+{
+	t_token	*token_content;
+	t_token	*next_token_content;
+	t_list	*redirection;
+
+	token_content = (t_token *)((*token_list)->content);
+	if (token_content->type >= TOKEN_REDIR_IN)
+	{
+		if ((*token_list)->next)
+			next_token_content = (t_token *)((*token_list)->next->content);
+		if ((*token_list)->next \
+			&& next_token_content->type == TOKEN_WORD)
+		{
+			redirection = create_redirection(next_token_content->value \
+									, get_redir_type(token_content->type));
+			if (!redirection)
+				return (false);
+			ft_lstadd_back(&(cmd_content->redirections), redirection);
+			*token_list = (*token_list)->next;
+		}
+		else
+			return (print_const_error(SYNERR, 0), false);
+	}
+	return (true);
+}
+
+t_list	*parse_tokens(t_list *token_list, t_shell_state *shell_state)
+{
+	t_list	*cmd_list;
 	t_list	*current_cmd;
 	t_token	*token_content;
 	t_cmd	*cmd_content;
-	t_list	*redirection;
 
 	(void)shell_state;
-	head = NULL;
+	cmd_list = NULL;
 	current_cmd = NULL;
-	while (tokens)
+	while (token_list)
 	{
-		token_content = (t_token *)(tokens->content);
+		token_content = (t_token *)(token_list->content);
 		if (token_content->type == TOKEN_PIPE)
 		{
 			if (!current_cmd)
-				return (free_cmd_list(&head), print_const_error(SYNERR_NEAR_PIPE, 0), NULL);
+				return (free_cmd_list(&cmd_list), print_const_error(SYNERR_NEAR_PIPE, 0), NULL);
 			current_cmd = NULL;
-			tokens = tokens->next;
+			token_list = token_list->next;
 			continue ;
 		}
-		if (!current_cmd)
-		{
-			current_cmd = create_cmd();
-			if (!current_cmd)
-				return (free_cmd_list(&head), print_const_error(MALLOCF, 0), NULL);
-			if (!head)
-				head = current_cmd;
-			else
-				ft_lstadd_back(&head, current_cmd);
-		}
+		if (!add_cmd_node_to_list(&cmd_list, &current_cmd))
+			return (free_cmd_list(&cmd_list), NULL);
 		cmd_content = (t_cmd *)(current_cmd->content);
-		if (token_content->type == TOKEN_REDIR_IN \
-			|| token_content->type == TOKEN_REDIR_OUT \
-			|| token_content->type == TOKEN_REDIR_APPEND \
-			|| token_content->type == TOKEN_REDIR_HEREDOC)
-		{
-			if (tokens->next && ((t_token *)(tokens->next->content))->type == TOKEN_WORD)
-			{
-				redirection = create_redirection(((t_token *)(tokens->next->content))->value \
-										, get_redir_type(token_content->type));
-				if (!redirection)
-					return (free_cmd_list(&head), NULL);
-				ft_lstadd_back(&(cmd_content->redirections), redirection);
-				tokens = tokens->next;
-			}
-			else
-				return (free_cmd_list(&head), print_const_error(SYNERR, 0), NULL);
-		}
-		else if (token_content->type == TOKEN_WORD)
-		{
-			if (!cmd_content->cmd_name)
-				cmd_content->cmd_name = ft_strdup(token_content->value);
-			if (!cmd_content->cmd_name \
-				|| !add_arg(&(cmd_content->args), ft_strdup(token_content->value)))
-				return (free_cmd_list(&head), print_const_error(MALLOCF, 0), NULL);
-		}
-		tokens = tokens->next;
+		if (!parse_redirection(&token_list, cmd_content))
+			return (free_cmd_list(&cmd_list), NULL);
+		if (!parse_command_args(token_content, cmd_content))
+			return (free_cmd_list(&cmd_list), NULL);
+		token_list = token_list->next;
 	}
-	return (head);
-}
-
-t_list	*parse(t_parser *parser, t_shell_state *shell_state)
-{
-	char	*line;
-	t_list	*cmd;
-	t_list	*token_list;
-
-	line = parser->line;
-	token_list = tokenize_line(line);
-	if (!token_list)
-		return (NULL);
-	if (!expansion(&token_list, shell_state))
-		return (ft_lstclear(&token_list, free_token), NULL);
-	cmd = parse_tokens(token_list, shell_state);
-	if (!cmd)
-		return (ft_lstclear(&token_list, free_token), NULL);
-	ft_lstclear(&token_list, free_token);
-	return (cmd);
+	return (cmd_list);
 }

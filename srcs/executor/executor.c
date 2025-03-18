@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 12:40:44 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 15:21:26 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,8 @@ t_executor	*create_executor(void)
 		return (free_executor(executor), NULL);
 	executor->original_stdin = dup(STDIN_FILENO);
 	executor->original_stdout = dup(STDOUT_FILENO);
+	if (executor->original_stdin == -1 || executor->original_stdout == -1)
+		return (free_executor(executor), NULL);
 	return (executor);
 }
 

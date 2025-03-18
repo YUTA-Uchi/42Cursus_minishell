@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/14 20:34:01 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:50:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ struct s_parser
 t_parser		*create_parser(t_shell_state *sh_state);
 void			free_parser(t_parser *parser);
 t_list			*parse(t_parser *parser, t_shell_state *shell_state);
+t_list			*parse_tokens(t_list *token_list, t_shell_state *shell_state);
 
 // tokenizer
 t_list			*tokenize_line(const char *line);
@@ -111,6 +112,8 @@ void			free_expand(t_expand *expand);
 bool			initialize_env_key(t_expand *expand_context);
 bool			expansion(t_list **token_list, t_shell_state *shell_state);
 bool			handle_expand_state(t_expand *expand, char c, t_list *env_list);
+bool			expand_state_in_env(t_expand *expand_context \
+									, char c, t_list *env_list);
 // expander string handler
 bool			append_char_to_env_key(t_expand *expand, char c);
 bool			append_char_to_str(t_expand *expand, char c);

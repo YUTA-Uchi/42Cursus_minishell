@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:18:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 14:02:48 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:27:31 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ t_expand	*create_expand(t_shell_state *shell_state)
 	expand->shell_state = shell_state;
 	expand->value = malloc(sizeof(char) * 1);
 	if (!expand->value)
-		return (free(expand), NULL);
+		return (free_expand(expand), NULL);
 	expand->value[0] = '\0';
 	expand->len = 0;
 	expand->capacity = 1;
 	expand->env_key = malloc(sizeof(char) * 1);
 	if (!expand->env_key)
-		return (free(expand->value), free(expand), NULL);
+		return (free_expand(expand), NULL);
 	expand->env_key[0] = '\0';
 	expand->env_key_len = 0;
 	expand->env_key_capacity = 1;

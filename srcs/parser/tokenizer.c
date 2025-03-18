@@ -6,23 +6,11 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:55:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 15:58:16 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
-
-t_token_type	get_token_type(char c)
-{
-	if (c == '|')
-		return (TOKEN_PIPE);
-	else if (c == '<')
-		return (TOKEN_REDIR_IN);
-	else if (c == '>')
-		return (TOKEN_REDIR_OUT);
-	else
-		return (TOKEN_WORD);
-}
 
 t_list	*create_token(t_token_type type, const char value)
 {
@@ -32,7 +20,7 @@ t_list	*create_token(t_token_type type, const char value)
 	if (!token)
 		return (NULL);
 	token->type = type;
-	if (value == '\0')
+	if (!value)
 		token->len = 0;
 	else
 		token->len = 1;
@@ -47,61 +35,38 @@ t_list	*create_token(t_token_type type, const char value)
 	return (ft_lstnew(token));
 }
 
-bool	append_char_to_token(t_list **head, char c)
-{
-	char	*new_buffer;
-	t_list	*current;
-	t_token	*token_content;
-
-	current = ft_lstlast(*head);
-	token_content = (t_token *)(current->content);
-	if (token_content->len + 1 >= token_content->capacity)
-	{
-		token_content->capacity *= 2;
-		new_buffer = malloc(token_content->capacity);
-		if (!new_buffer)
-			return (false);
-		ft_strlcpy(new_buffer, token_content->value, token_content->len + 1);
-		free(token_content->value);
-		token_content->value = new_buffer;
-	}
-	token_content->value[token_content->len++] = c;
-	token_content->value[token_content->len] = '\0';
-	return (true);
-}
-
 void	free_token(void *token)
 {
-	t_token	*token_ptr;
+	t_token	*token_content;
 
 	if (!token)
 		return ;
-	token_ptr = (t_token *)token;
-	if (token_ptr->value)
-		free(token_ptr->value);
-	free(token_ptr);
+	token_content = (t_token *)token;
+	if (token_content->value)
+		free(token_content->value);
+	free(token_content);
 }
 
 t_list	*tokenize_line(const char *line)
 {
-	t_list	*head;
+	t_list	*token_list;
 	t_state	state;
 	int		i;
 
-	head = NULL;
+	token_list = NULL;
 	state = STATE_NONE;
 	i = 0;
 	while (line[i])
 	{
-		if (!handle_tokenize_state(&state, &head, line[i]))
-			return (ft_lstclear(&head, free_token), NULL);
+		if (!handle_tokenize_state(&state, &token_list, line[i]))
+			return (ft_lstclear(&token_list, free_token), NULL);
 		i++;
 	}
 	if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)
 	{
 		ft_printf(STDERR_FILENO, "minishell: Unclosed quote detected.\n");
-		return (ft_lstclear(&head, free_token), NULL);
+		return (ft_lstclear(&token_list, free_token), NULL);
 	}
-	return (head);
+	return (token_list);
 }
 

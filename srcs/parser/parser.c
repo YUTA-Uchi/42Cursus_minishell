@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 15:32:17 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:43:37 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,23 @@
 #include "environment.h"
 
 extern volatile sig_atomic_t	g_signal;
+
+t_list	*parse(t_parser *parser, t_shell_state *shell_state)
+{
+	t_list	*cmd_list;
+	t_list	*token_list;
+
+	token_list = tokenize_line(parser->line);
+	if (!token_list)
+		return (NULL);
+	if (!expansion(&token_list, shell_state))
+		return (ft_lstclear(&token_list, free_token), NULL);
+	cmd_list = parse_tokens(token_list, shell_state);
+	ft_lstclear(&token_list, free_token);
+	if (!cmd_list)
+		return (NULL);
+	return (cmd_list);
+}
 
 static char	*ft_readline(t_shell_state *sh_state, const char *prompt)
 {
@@ -29,7 +46,10 @@ static char	*ft_readline(t_shell_state *sh_state, const char *prompt)
 	}
 	if (g_signal == SIGINT)
 	{
+		free(line);
 		sh_state->last_status = SIGINT | 128;
+		g_signal = 0;
+		return (NULL);
 	}
 	if (*line)
 	{
