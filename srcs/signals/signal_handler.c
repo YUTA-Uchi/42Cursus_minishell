@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:16:03 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/15 18:00:48 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/19 14:52:48 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,6 @@
 
 volatile sig_atomic_t	g_signal;
 
-/*
-** シグナルハンドラ関数 - インタラクティブモード用
-** SIGINT (Ctrl+C) を受け取った場合、g_signalを更新し新しい行に移動
-*/
 static void	interactive_signal_handler(int signum)
 {
 	if (signum == SIGINT)
@@ -30,10 +26,6 @@ static void	interactive_signal_handler(int signum)
 	}
 }
 
-/*
-** シグナルハンドラ関数 - heredocモード用
-** SIGINT (Ctrl+C) を受け取った場合、g_signalを更新し処理を中断
-*/
 static void	heredoc_signal_handler(int signum)
 {
 	if (signum == SIGINT)
@@ -46,10 +38,7 @@ static void	heredoc_signal_handler(int signum)
 	}
 }
 
-/*
-** シグナルハンドラ関数 - 子プロセス実行中用
-** 親プロセスがシグナルを無視するように設定
-*/
+
 static void	exec_signal_handler(int signum)
 {
 	if (signum == SIGINT)
@@ -58,10 +47,6 @@ static void	exec_signal_handler(int signum)
 		g_signal = signum;
 }
 
-/*
-** readline のイベントフックコールバック
-** シグナル状態をチェックして必要な処理を行う
-*/
 int	check_signals(void)
 {
 	if (g_signal == SIGINT || g_signal == SIGQUIT)
@@ -72,9 +57,6 @@ int	check_signals(void)
 	return (0);
 }
 
-/*
-** インタラクティブモード用のシグナルハンドラを設定
-*/
 bool	set_interactive_signal_handler(void)
 {
 	struct sigaction	sa;
@@ -89,9 +71,6 @@ bool	set_interactive_signal_handler(void)
 	return (true);
 }
 
-/*
-** heredocモード用のシグナルハンドラを設定
-*/
 bool	set_heredoc_signal_handler(void)
 {
 	struct sigaction	sa_int;
@@ -110,9 +89,6 @@ bool	set_heredoc_signal_handler(void)
 	return (true);
 }
 
-/*
-** コマンド実行中用のシグナルハンドラを設定
-*/
 bool	set_exec_signal_handler(void)
 {
 	struct sigaction	sa;
@@ -127,9 +103,6 @@ bool	set_exec_signal_handler(void)
 	return (true);
 }
 
-/*
-** 子プロセス用のシグナルハンドラを設定（デフォルトの動作に戻す）
-*/
 bool	set_child_signal_handler(void)
 {
 	signal(SIGINT, SIG_DFL);
