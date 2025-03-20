@@ -69,5 +69,13 @@ bool	set_pipes(t_executor *self, t_list *current_cmd \
 
 void	free_pipes(t_pipes *pipes)
 {
+	if (is_fd_open(pipes->prev_pipe[0]))
+		close(pipes->prev_pipe[0]);
+	if (is_fd_open(pipes->prev_pipe[1]))
+		close(pipes->prev_pipe[1]);
+	if (is_fd_open(pipes->next_pipe[0]))
+		close(pipes->next_pipe[0]);
+	if (is_fd_open(pipes->next_pipe[1]))
+		close(pipes->next_pipe[1]);
 	free(pipes);
 }

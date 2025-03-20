@@ -78,11 +78,12 @@ int	main(int argc, char **argv, char **environ)
 		return (fatal_error("main", "malloc failed", errno), E_GENERAL_ERR);
 	while (sh_state->running)
 	{
-		executor = create_executor();
-		if (!executor)
-			continue ;
+		executor = NULL;
 		parser = create_parser(sh_state);
 		if (!parser)
+			continue ;
+		executor = create_executor();
+		if (!executor)
 			continue ;
 		if (!set_cmd_to_exec(&executor, &parser, sh_state))
 			continue ;

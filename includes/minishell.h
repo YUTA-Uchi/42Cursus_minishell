@@ -35,4 +35,6 @@
 # endif
 # define PROMPT "minishell$ "
 
+bool	is_fd_open(int fd);
+
 #endif

@@ -94,8 +94,10 @@ void	execute_child_process(t_executor *self, t_list *current_cmd \
 	all_clear_exit(self, shell_state, get_err_status());
 }
 
-bool	parent_process(t_pipes *pipes)
+bool	parent_process(t_pipes *pipes, t_list *redir_list)
 {
+	t_redirection	*redir_content;
+
 	if (pipes->prev_pipe[0] > -1 && is_fd_open(pipes->prev_pipe[0]))
 	{
 		if (close(pipes->prev_pipe[0]) == -1)
@@ -105,6 +107,16 @@ bool	parent_process(t_pipes *pipes)
 	{
 		if (close(pipes->prev_pipe[1]) == -1)
 			return (print_strerror("close"), false);
+	}
+	while (redir_list)
+	{
+		redir_content = (t_redirection *)(redir_list->content);
+		if (is_fd_open(redir_content->fd))
+		{
+			if (close(redir_content->fd) == -1)
+				return (print_strerror("close"), false);
+		}
+		redir_list = redir_list->next;
 	}
 	return (true);
 }

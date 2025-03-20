@@ -56,13 +56,11 @@ bool		set_redirections(t_list *current_cmd);
 
 void		execute_child_process(t_executor *self, t_list *current_cmd \
 								, t_shell_state *shell_state);
-bool		parent_process(t_pipes *pipes);
+bool		parent_process(t_pipes *pipes, t_list *redir_list);
 
 t_pipes		*create_pipes(void);
 bool		set_pipes(t_executor *self, t_list *current_cmd \
 				, t_error_handler *error_handler);
 void		free_pipes(t_pipes *pipes);
-
-bool		is_fd_open(int fd);
 
 #endif

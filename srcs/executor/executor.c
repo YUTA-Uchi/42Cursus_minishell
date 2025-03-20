@@ -145,7 +145,7 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 				set_child_signal_handler();
 				execute_child_process(self, head, shell_state);
 			}
-			if (!parent_process(self->pipes))
+			if (!parent_process(self->pipes, ((t_cmd *)(head->content))->redirections))
 				return (set_interactive_signal_handler(), get_err_status());
 			head = head->next;
 		}
@@ -199,5 +199,9 @@ void	free_executor(t_executor *executor)
 		free_cmd_list(&executor->cmds);
 	if (executor->pipes)
 		free_pipes(executor->pipes);
+	if (is_fd_open(executor->original_stdin))
+		close(executor->original_stdin);
+	if (is_fd_open(executor->original_stdout))
+		close(executor->original_stdout);
 	free(executor);
 }

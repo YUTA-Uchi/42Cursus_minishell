@@ -44,6 +44,8 @@ void	free_redirection(void *redir)
 
 	redir_content = (t_redirection *)redir;
 	free(redir_content->file);
+	if (is_fd_open(redir_content->fd))
+		close(redir_content->fd);
 	free(redir_content);
 }
 
@@ -78,6 +80,7 @@ bool	set_heredoc(t_redirection *redir_content)
 			line = readline("heredoc> ");
 			if (!line || g_signal == SIGINT)
 			{
+				free(line);
 				free(delimiter);
 				close(here_doc_pipe[1]);
 				if (g_signal == SIGINT)

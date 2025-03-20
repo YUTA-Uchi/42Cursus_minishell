@@ -19,10 +19,6 @@ static void	interactive_signal_handler(int signum)
 	if (signum == SIGINT)
 	{
 		g_signal = signum;
-		write(STDOUT_FILENO, "\n", 1);
-		rl_done = 1;
-		rl_replace_line("", 0);
-		rl_on_new_line();
 	}
 }
 
@@ -31,10 +27,6 @@ static void	heredoc_signal_handler(int signum)
 	if (signum == SIGINT)
 	{
 		g_signal = signum;
-		write(STDOUT_FILENO, "\n", 1);
-		rl_done = 1;
-		rl_replace_line("", 0);
-		rl_on_new_line();
 	}
 }
 
@@ -51,22 +43,28 @@ int	check_signals(void)
 {
 	if (g_signal == SIGINT || g_signal == SIGQUIT)
 	{
-		// rl_done = 1;
-		return (0);
+		rl_done = 1;
+		rl_replace_line("", 0);
+		rl_on_new_line();
 	}
 	return (0);
 }
 
 bool	set_interactive_signal_handler(void)
 {
-	struct sigaction	sa;
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
-	sigemptyset(&sa.sa_mask);
-	sa.sa_handler = interactive_signal_handler;
-	sa.sa_flags = 0;
-	if (sigaction(SIGINT, &sa, NULL) == -1)
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_handler = interactive_signal_handler;
+	sa_int.sa_flags = 0;
+	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 		return (false);
-	signal(SIGQUIT, SIG_IGN);
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_handler = SIG_IGN;
+	sa_quit.sa_flags = 0;
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
+		return (false);
 	g_signal = 0;
 	return (true);
 }
@@ -105,7 +103,17 @@ bool	set_exec_signal_handler(void)
 
 bool	set_child_signal_handler(void)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+
+	sa_int.sa_handler = SIG_DFL;
+	sa_int.sa_flags = 0;
+	if (sigaction(SIGINT, &sa_int, NULL) == -1)
+		return (false);
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_handler = SIG_DFL;
+	sa_quit.sa_flags = 0;
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
+		return (false);
 	return (true);
 }
