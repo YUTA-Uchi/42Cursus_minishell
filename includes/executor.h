@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 12:39:40 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:21:28 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef bool				(*t_redirection_handler)(t_redirection *);
 
 t_executor	*create_executor(void);
 void		free_executor(t_executor *executor);
-void		all_clear_exit(t_executor *executor, t_shell_state *sh_state \
+int			terminate_shell(t_executor *executor, t_shell_state *sh_state \
 				, int status);
 bool		repair_std_io(t_executor *self);
 bool		set_redirections(t_list *current_cmd);

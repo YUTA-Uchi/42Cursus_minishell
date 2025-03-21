@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 14:51:12 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:21:59 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,9 @@ void	execute_child_process(t_executor *self, t_list *current_cmd \
 	int		exec_ret;
 
 	if (!set_pipes(self, current_cmd, shell_state->error_handler))
-		all_clear_exit(self, shell_state, errno);
+		terminate_shell(self, shell_state, errno);
 	if (!set_redirections(current_cmd))
-		all_clear_exit(self, shell_state, errno);
+		terminate_shell(self, shell_state, errno);
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
 		exit(lookup_builtin(cmd_content->cmd_name, \
@@ -87,11 +87,11 @@ void	execute_child_process(t_executor *self, t_list *current_cmd \
 		else
 			ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
 					, strerror(errno));
-		all_clear_exit(self, shell_state, get_err_status());
+		terminate_shell(self, shell_state, get_err_status());
 	}
 	ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
 			, COMMAND_NOT_FOUND);
-	all_clear_exit(self, shell_state, get_err_status());
+	terminate_shell(self, shell_state, get_err_status());
 }
 
 bool	parent_process(t_pipes *pipes, t_list *redir_list)

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/18 15:21:26 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:21:17 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,13 @@
 #include "builtin.h"
 #include "signals.h"
 
-void	all_clear_exit(t_executor *executor, t_shell_state *sh_state, int status)
+int	terminate_shell(t_executor *executor, t_shell_state *sh_state, int status)
 {
 	if (executor)
 		free_executor(executor);
 	free_shell_state(sh_state);
 	exit(status);
+	return (0);
 }
 
 void	print_cmd(t_list *cmds)

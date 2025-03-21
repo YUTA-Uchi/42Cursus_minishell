@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:16:03 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/19 14:52:48 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:29:31 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int	check_signals(void)
 {
 	if (g_signal == SIGINT || g_signal == SIGQUIT)
 	{
+		// write(STDOUT_FILENO, "\n", 1);
 		rl_done = 1;
 		rl_replace_line("", 0);
 		rl_on_new_line();
@@ -116,4 +117,15 @@ bool	set_child_signal_handler(void)
 	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 		return (false);
 	return (true);
+}
+
+bool	handle_pending_signals(t_shell_state *sh_state)
+{
+	if (g_signal == SIGINT)
+	{
+		g_signal = 0;
+		sh_state->last_status = SIGINT | 128;
+		return (true);
+	}
+	return (false);
 }
