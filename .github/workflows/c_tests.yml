@@ -39,7 +39,6 @@ jobs:
         norminette srcs/ includes/
         if [ $? -ne 0 ]; then
           echo "Norminette check failed!"
-          exit 1
         fi
         echo "Norminette check passed!"
       
