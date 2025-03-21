@@ -12,7 +12,7 @@ CFLAGS		:=	-Wall -Wextra -I../includes -I$(LIBFT_DIR) -fprofile-arcs -ftest-cove
 LD_FLAGS	:=	-L$(LIBFT_DIR)
 LDFLAGS		:=	-lft -lcriterion -lgcov --coverage -lreadline
 
-vpath %.c ../srcs/parser
+vpath %.c ../srcs/parser:../srcs/error_handler:
 
 all: $(TARGET)
 
