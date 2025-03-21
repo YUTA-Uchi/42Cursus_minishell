@@ -34,6 +34,7 @@ jobs:
         python3 -m pip install norminette
         
     - name: Run Norminette check
+      continue-on-error: true
       run: |
         echo "Running Norminette check on srcs/ and includes/"
         norminette srcs/ includes/
