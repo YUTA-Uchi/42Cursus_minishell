@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 14:21:28 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:03:44 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,10 @@ struct s_pipes
 struct s_builtins
 {
 	char	*name;
-	int		(*func)(t_executor *,t_list *, t_shell_state *);
+	int		(*func)(t_executor *, t_list *, t_shell_state *);
 };
 
 typedef bool				(*t_redirection_handler)(t_redirection *);
-
 
 t_executor	*create_executor(void);
 void		free_executor(t_executor *executor);

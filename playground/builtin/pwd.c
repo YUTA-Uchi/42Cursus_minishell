@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:09:38 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/18 15:06:56 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:12:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,3 @@ int	main(void)
 	ft_printf(STDOUT_FILENO, "%s\n", absolute_path_buff);
 	free(absolute_path_buff);
 }
-

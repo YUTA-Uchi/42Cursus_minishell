@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 14:21:59 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:05:51 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ static int	ft_execvp(t_cmd *cmd, t_list *env_list)
 		if (access(exec_path, F_OK) == 0)
 		{
 			free_arr(env_pathes);
-			// ft_printf(STDERR_FILENO, "signal child end: %d\n", g_signal);
 			return (execve(exec_path, cmd->args \
 					, (char *const *)env_list_to_array(env_list)));
 		}

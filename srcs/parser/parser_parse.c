@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:04:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/18 18:47:57 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:09:34 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,8 @@ t_list	*parse_tokens(t_list *token_list, t_shell_state *shell_state)
 		if (token_content->type == TOKEN_PIPE)
 		{
 			if (!current_cmd)
-				return (free_cmd_list(&cmd_list), print_const_error(SYNERR_NEAR_PIPE, 0), NULL);
+				return (free_cmd_list(&cmd_list) \
+						, print_const_error(SYNERR_NEAR_PIPE, 0), NULL);
 			current_cmd = NULL;
 			token_list = token_list->next;
 			continue ;

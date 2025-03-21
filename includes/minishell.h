@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:35:35 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 14:51:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:03:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,5 @@
 # define PROMPT "minishell$ "
 
 bool	is_fd_open(int fd);
-
 
 #endif

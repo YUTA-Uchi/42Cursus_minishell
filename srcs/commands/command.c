@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 13:47:29 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:10:07 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,3 @@ void	free_cmd_list(t_list **cmd_list)
 {
 	ft_lstclear(cmd_list, free_cmd);
 }
-

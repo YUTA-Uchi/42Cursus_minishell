@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 14:39:31 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:07:08 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ int	ft_export(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 		if (ft_strchr(cmd_content->args[i], '='))
 		{
 			key = ft_strndup(cmd_content->args[i] \
-							, ft_strchr(cmd_content->args[i], '=') - cmd_content->args[i]);
+						, ft_strchr(cmd_content->args[i], '=') \
+						- cmd_content->args[i]);
 			value = ft_strdup(ft_strchr(cmd_content->args[i], '=') + 1);
 			if (!add_env(shell_state->env_list, key, value))
 			{

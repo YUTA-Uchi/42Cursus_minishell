@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/18 15:58:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:08:55 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,3 @@ t_list	*tokenize_line(const char *line)
 	}
 	return (token_list);
 }
-

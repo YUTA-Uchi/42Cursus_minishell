@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 14:21:17 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:04:26 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,38 +23,38 @@ int	terminate_shell(t_executor *executor, t_shell_state *sh_state, int status)
 	return (0);
 }
 
-void	print_cmd(t_list *cmds)
-{
-	int		i;
-	t_cmd	*cmd_content;
-	t_list	*redir_list;
-	t_list	*cmd_list;
+// void	print_cmd(t_list *cmds)
+// {
+// 	int		i;
+// 	t_cmd	*cmd_content;
+// 	t_list	*redir_list;
+// 	t_list	*cmd_list;
 
-	cmd_list = cmds;
-	while (cmd_list)
-	{
-		cmd_content = (t_cmd *)(cmd_list->content);
-		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
-		i = 0;
-		while (cmd_content->args[i])
-		{
-			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
-			i++;
-		}
-		i = 0;
-		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
-		redir_list = cmd_content->redirections;
-		while (redir_list)
-		{
-			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, 
-((t_redirection *)(redir_list->content))->file, ((t_redirection *)
-(redir_list->content))->type);
-			redir_list = redir_list->next;
-			i++;
-		}
-		cmd_list = cmd_list->next;
-	}
-}
+// 	cmd_list = cmds;
+// 	while (cmd_list)
+// 	{
+// 		cmd_content = (t_cmd *)(cmd_list->content);
+// 		ft_printf(STDERR_FILENO, "cmd_name: %s\n", cmd_content->cmd_name);
+// 		i = 0;
+// 		while (cmd_content->args[i])
+// 		{
+// 			ft_printf(STDERR_FILENO, "args[%d]: %s\n", i, cmd_content->args[i]);
+// 			i++;
+// 		}
+// 		i = 0;
+// 		ft_printf(STDERR_FILENO, "redir:%p\n", (cmd_content->redirections));
+// 		redir_list = cmd_content->redirections;
+// 		while (redir_list)
+// 		{
+// 			ft_printf(STDERR_FILENO, "redirections[%d]: %s:%d\n", i, 
+// ((t_redirection *)(redir_list->content))->file, ((t_redirection *)
+// (redir_list->content))->type);
+// 			redir_list = redir_list->next;
+// 			i++;
+// 		}
+// 		cmd_list = cmd_list->next;
+// 	}
+// }
 
 int	wait_all_children(t_list *cmd_list)
 {

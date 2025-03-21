@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:16:03 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 16:53:42 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:11:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ static void	heredoc_signal_handler(int signum)
 	}
 }
 
-
 static void	exec_signal_handler(int signum)
 {
 	if (signum == SIGINT)
@@ -43,10 +42,8 @@ int	check_signals(void)
 {
 	if (g_signal == SIGINT || g_signal == SIGQUIT)
 	{
-		// write(STDOUT_FILENO, "\n", 1);
 		rl_done = 1;
 		rl_replace_line("", 0);
-		// rl_redisplay();
 		rl_on_new_line();
 	}
 	return (0);
