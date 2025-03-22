@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/21 14:53:42 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/22 18:04:47 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,11 +29,17 @@ COMMON_SRCS		:=	shell_core_main.c \
 					executor_redirection_handler.c \
 					executor_process_handler.c \
 					parser.c \
-					parser_parse.c \
+					parser_readline.c \
+					parser_token.c \
+					parser_cmd.c \
+					parser_redirection.c \
 					tokenizer.c \
-					tokenizer_state_handler_normal.c \
-					tokenizer_state_handler_meta_character.c \
+					tokenizer_util.c \
+					tokenizer_state_normal.c \
+					tokenizer_state_quote.c \
+					tokenizer_state_redirection.c \
 					expander.c \
+					expander_token_util.c \
 					expander_string_handler.c \
 					expander_state_handler.c \
 					env_expand_handler.c \
@@ -52,7 +58,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser:./srcs/environment:./srcs/shell_state:./srcs/signals
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser/tokenize_process:./srcs/parser/expand_process:./srcs/parser/parse_process:./srcs/environment:./srcs/shell_state:./srcs/signals
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a

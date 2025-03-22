@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:02:06 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/22 18:09:20 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,15 @@ struct s_parser
 	t_list		*(*parse)(t_parser *, t_shell_state *);
 };
 
+
+// parser
 t_parser		*create_parser(t_shell_state *sh_state);
 void			free_parser(t_parser *parser);
+char			*ft_readline(t_shell_state *sh_state, const char *prompt);
 t_list			*parse(t_parser *parser, t_shell_state *shell_state);
 t_list			*parse_tokens(t_list *token_list, t_shell_state *shell_state);
+bool			parse_redirection(t_list **token_list, t_cmd *cmd_content);
+bool			parse_command_args(t_token *token_content, t_cmd *cmd_content);
 
 // tokenizer
 t_list			*tokenize_line(const char *line);
@@ -108,11 +113,17 @@ bool			tokenize_state_in_redir_out(t_state *state \
 // expander
 t_expand		*create_expand(t_shell_state *shell_state);
 void			free_expand(t_expand *expand);
+bool			finalize_expand(t_expand *expand, t_list *env_list);
 bool			initialize_env_key(t_expand *expand_context);
 bool			expansion(t_list **token_list, t_shell_state *shell_state);
 bool			handle_expand_state(t_expand *expand, char c, t_list *env_list);
 bool			expand_state_in_env(t_expand *expand_context \
 									, char c, t_list *env_list);
+bool			replace_with_expanded_token(t_list **current \
+										, t_list *prev, t_expand **expand);
+bool			is_empty_token(t_token *token);
+void			remove_token_node(t_list **token_list, t_list *to_remove \
+								, t_list *prev);
 // expander string handler
 bool			append_char_to_env_key(t_expand *expand, char c);
 bool			append_char_to_str(t_expand *expand, char c);

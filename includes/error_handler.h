@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:58:27 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/22 16:47:42 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # define ERR_HEADER "minishell: "
 # define MALLOCF "malloc failed"
 # define SYNERR "syntax error"
+# define SYNERR_NEWLINE "syntax error near unexpected token `newline'"
+# define SYNERR_UNEXPECTED "syntax error near unexpected token `%s'"
 # define SYNERR_NEAR_PIPE "syntax error near unexpected token '|'"
 # define SYNERR_NEAR_RIN "syntax error near unexpected token '<'"
 # define SYNERR_NEAR_ROUT "syntax error near unexpected token '>'"

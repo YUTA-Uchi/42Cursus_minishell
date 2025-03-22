@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:20:07 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/12 14:03:25 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/22 18:11:06 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,28 +73,32 @@ bool	append_last_status_to_str(t_expand *expand)
 	return (true);
 }
 
+static bool	append_env_value(t_expand *expand_context, char *env_value)
+{
+	int	i;
+
+	if (!env_value)
+		return (true);
+	i = 0;
+	while (env_value[i])
+	{
+		if (!append_char_to_str(expand_context, env_value[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 bool	set_env_value_to_str(t_expand *expand_context, t_list *env_list)
 {
 	char	*env_value;
-	int		i;
 
 	if (expand_context->env_key_len == 0)
 	{
-		if (!append_char_to_str(expand_context, '$'))
-			return (false);
-		return (true);
+		return (append_char_to_str(expand_context, '$'));
 	}
 	env_value = get_env_value(env_list, expand_context->env_key);
-	if (env_value)
-	{
-		i = 0;
-		while (env_value[i])
-		{
-			if (!append_char_to_str(expand_context, env_value[i++]))
-				return (false);
-		}
-	}
-	if (!initialize_env_key(expand_context))
+	if (!append_env_value(expand_context, env_value))
 		return (false);
-	return (true);
+	return (initialize_env_key(expand_context));
 }

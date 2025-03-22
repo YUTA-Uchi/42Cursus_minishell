@@ -1,7 +1,9 @@
 TARGET		:=	run_tests
 SRCS		:=	tokenizer.c \
-				tokenizer_state_handler_normal.c \
-				tokenizer_state_handler_meta_character.c \
+				tokenizer_util.c \
+				tokenizer_state_normal.c \
+				tokenizer_state_quote.c \
+				tokenizer_state_redirection.c \
 				error_handler.c \
 
 TESTS_SRCS	:=	test_parse.c 

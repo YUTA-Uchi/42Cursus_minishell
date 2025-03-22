@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:07:08 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/22 16:13:53 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ int	ft_export(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 		}
 		else
 		{
+			if (ft_strlen(cmd_content->args[i]) == 0)
+				return (0);
 			if (!get_env_value(shell_state->env_list, cmd_content->args[i]))
 				add_env(shell_state->env_list, cmd_content->args[i], NULL);
 		}
