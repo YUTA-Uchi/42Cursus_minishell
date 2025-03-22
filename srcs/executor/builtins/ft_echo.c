@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:31:24 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 12:49:56 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/22 22:03:18 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 bool	is_option_n(char *arg)
 {
+	if (!arg)
+		return (false);
 	if (*arg && ft_strncmp(arg, "-n", 3) == 0)
 	{
 		return (true);
@@ -32,8 +34,6 @@ int	ft_echo(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 	cmd_content = (t_cmd *)(current_cmd->content);
 	(void)shell_state;
 	(void)self;
-	if (!open_redirections(cmd_content->redirections))
-		return (set_interactive_signal_handler(), get_err_status());
 	is_option_n_flag = is_option_n(cmd_content->args[i]);
 	if (is_option_n_flag)
 		i++;
