@@ -14,7 +14,7 @@ CFLAGS		:=	-Wall -Wextra -I../includes -I$(LIBFT_DIR) -fprofile-arcs -ftest-cove
 LD_FLAGS	:=	-L$(LIBFT_DIR)
 LDFLAGS		:=	-lft -lcriterion -lgcov --coverage -lreadline
 
-vpath %.c ../srcs/parser:../srcs/error_handler:
+vpath %.c ../srcs/parser/tokenize_process/:../srcs/error_handler:
 
 all: $(TARGET)
 

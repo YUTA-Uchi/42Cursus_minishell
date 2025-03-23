@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/22 18:04:47 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/23 12:32:03 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,7 @@ COMMON_SRCS		:=	shell_core_main.c \
 					expander_token_util.c \
 					expander_string_handler.c \
 					expander_state_handler.c \
-					env_expand_handler.c \
+					expander_env_handler.c \
 					expander_constructor.c \
 					environment.c \
 					shell_state.c \

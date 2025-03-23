@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 18:09:20 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 13:29:18 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,22 +112,24 @@ bool			tokenize_state_in_redir_out(t_state *state \
 
 // expander
 t_expand		*create_expand(t_shell_state *shell_state);
-void			free_expand(t_expand *expand);
-bool			finalize_expand(t_expand *expand, t_list *env_list);
-bool			initialize_env_key(t_expand *expand_context);
+void			free_expand(t_expand *expand_ctx);
+bool			resolve_pending_expansion(t_expand *expand_ctx \
+										, t_list *env_list);
+bool			initialize_env_key(t_expand *expand_ctx);
 bool			expansion(t_list **token_list, t_shell_state *shell_state);
-bool			handle_expand_state(t_expand *expand, char c, t_list *env_list);
-bool			expand_state_in_env(t_expand *expand_context \
+bool			dispatch_expand_state_handler(t_expand *expand_ctx \
+											, char c, t_list *env_list);
+bool			expand_state_in_env(t_expand *expand_ctx \
 									, char c, t_list *env_list);
 bool			replace_with_expanded_token(t_list **current \
-										, t_list *prev, t_expand **expand);
+										, t_list *prev, t_expand **expand_ctx);
 bool			is_empty_token(t_token *token);
 void			remove_token_node(t_list **token_list, t_list *to_remove \
 								, t_list *prev);
 // expander string handler
-bool			append_char_to_env_key(t_expand *expand, char c);
-bool			append_char_to_str(t_expand *expand, char c);
-bool			append_last_status_to_str(t_expand *expand);
-bool			set_env_value_to_str(t_expand *expand, t_list *env_list);
+bool			append_char_to_env_key(t_expand *expand_ctx, char c);
+bool			append_char_to_str(t_expand *expand_ctx, char c);
+bool			append_last_status_to_str(t_expand *expand_ctx);
+bool			set_env_value_to_str(t_expand *expand_ctx, t_list *env_list);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:18:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 18:09:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 13:26:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,43 +28,43 @@ void	remove_token_node(t_list **token_list, t_list *to_remove \
 	ft_lstdelone(to_remove, free_token);
 }
 
-bool	finalize_expand(t_expand *expand, t_list *env_list)
+bool	resolve_pending_expansion(t_expand *expand_ctx, t_list *env_list)
 {
-	if (expand->state == EXPAND_IN_ENV)
+	if (expand_ctx->state == EXPAND_IN_ENV)
 	{
-		if (!set_env_value_to_str(expand, env_list))
+		if (!set_env_value_to_str(expand_ctx, env_list))
 			return (false);
 	}
 	return (true);
 }
 
-static t_list	*create_new_expanded_node(t_expand *expand)
+static t_list	*create_new_expanded_node(t_expand *expand_ctx)
 {
 	t_list	*new_token_node;
 	t_token	*token_content;
 
 	new_token_node = create_token(TOKEN_WORD, '\0');
-	if (!new_token_node || !expand->value || !new_token_node->content)
+	if (!new_token_node || !expand_ctx->value || !new_token_node->content)
 		return (NULL);
 	token_content = (t_token *)(new_token_node->content);
 	free(token_content->value);
-	token_content->value = ft_strdup(expand->value);
+	token_content->value = ft_strdup(expand_ctx->value);
 	if (!token_content->value)
 		return (NULL);
-	token_content->len = expand->len;
-	token_content->capacity = expand->capacity;
+	token_content->len = expand_ctx->len;
+	token_content->capacity = expand_ctx->capacity;
 	return (new_token_node);
 }
 
 bool	replace_with_expanded_token(t_list **current \
-											, t_list *prev, t_expand **expand)
+										, t_list *prev, t_expand **expand_ctx)
 {
 	t_list		*new_token_node;
 
-	new_token_node = create_new_expanded_node(*expand);
+	new_token_node = create_new_expanded_node(*expand_ctx);
 	if (!new_token_node)
 		return (print_const_error(MALLOCF, 0), false);
-	free_expand(*expand);
+	free_expand(*expand_ctx);
 	if (prev)
 		prev->next = new_token_node;
 	new_token_node->next = (*current)->next;
