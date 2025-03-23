@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/23 13:35:04 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/23 17:22:12 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ COMMON_SRCS		:=	shell_core_main.c \
 					command_processor.c \
 					command.c \
 					redirections.c \
+					heredoc_handler.c \
 					ft_cd.c \
 					ft_echo.c \
 					ft_env.c \
@@ -25,6 +26,8 @@ COMMON_SRCS		:=	shell_core_main.c \
 					builtins.c \
 					error_handler.c \
 					executor.c \
+					command_execution.c \
+					executor_flow.c \
 					executor_pipe_handler.c \
 					executor_redirection_handler.c \
 					executor_process_handler.c \

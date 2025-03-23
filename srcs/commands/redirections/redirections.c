@@ -6,14 +6,11 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:20:24 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 16:54:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "redirection.h"
-#include "signals.h"
-
-extern volatile sig_atomic_t	g_signal;
 
 t_list	*create_redirection(char *file, t_redir_type type)
 {
@@ -47,81 +44,6 @@ void	free_redirection(void *redir)
 	if (is_fd_open(redir_content->fd))
 		close(redir_content->fd);
 	free(redir_content);
-}
-
-bool	set_heredoc(t_redirection *redir_content)
-{
-	char	*delimiter;
-	int		here_doc_pipe[2];
-	pid_t	pid;
-	int		status;
-	char	*line;
-
-	delimiter = ft_strdup(redir_content->file);
-	if (!delimiter)
-		exit(EXIT_FAILURE);
-	if (pipe(here_doc_pipe) == -1)
-		return (print_strerror("pipe"), false);
-	pid = fork();
-	if (pid == -1)
-	{
-		free(delimiter);
-		close(here_doc_pipe[0]);
-		close(here_doc_pipe[1]);
-		return (print_strerror("fork"), false);
-	}
-	if (pid == 0)
-	{
-		close(here_doc_pipe[0]);
-		if (!set_heredoc_signal_handler())
-			exit(EXIT_FAILURE);
-		while (true)
-		{
-			line = readline("heredoc> ");
-			if (!line || g_signal == SIGINT)
-			{
-				free(line);
-				free(delimiter);
-				close(here_doc_pipe[1]);
-				if (g_signal == SIGINT)
-					exit(130);
-				exit(EXIT_SUCCESS);
-			}
-			if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-			{
-				free(line);
-				free(delimiter);
-				close(here_doc_pipe[1]);
-				exit(EXIT_SUCCESS);
-			}
-			ft_printf(here_doc_pipe[1], "%s\n", line);
-			free(line);
-		}
-	}
-	free(delimiter);
-	close(here_doc_pipe[1]);
-	while (waitpid(pid, &status, 0) == -1)
-	{
-		if (errno == EINTR)
-			continue ;
-		close(here_doc_pipe[0]);
-		return (print_strerror("waitpid"), false);
-	}
-	if (WIFSIGNALED(status))
-	{
-		g_signal = WTERMSIG(status);
-		close(here_doc_pipe[0]);
-		return (false);
-	}
-	else if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-	{
-		if (WEXITSTATUS(status) == 130)
-			g_signal = SIGINT;
-		close(here_doc_pipe[0]);
-		return (false);
-	}
-	redir_content->fd = here_doc_pipe[0];
-	return (true);
 }
 
 bool	open_redirections(t_list *redir_list)

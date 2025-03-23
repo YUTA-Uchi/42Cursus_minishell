@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:03:44 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 17:27:42 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,17 @@ t_executor	*create_executor(void);
 void		free_executor(t_executor *executor);
 int			terminate_shell(t_executor *executor, t_shell_state *sh_state \
 				, int status);
+bool		is_single_builtin(t_executor *self);
+int			execute_single_builtin(t_executor *self, t_shell_state *shell_state);
+int			execute_external_commands(t_executor *self \
+									, t_shell_state *shell_state);
+int			execve_in_absolute_path(t_cmd *cmd, t_list *env_list);
+int			ft_execvp(t_cmd *cmd, t_list *env_list);
 bool		repair_std_io(t_executor *self);
 bool		set_redirections(t_list *current_cmd);
-
+bool		setup_io_redirections(t_executor *self, t_list *current_cmd \
+								, t_shell_state *shell_state);
+int			wait_all_children(t_list *cmd_list);
 void		execute_child_process(t_executor *self, t_list *current_cmd \
 								, t_shell_state *shell_state);
 bool		parent_process(t_pipes *pipes, t_list *redir_list);

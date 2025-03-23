@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 21:48:43 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 17:12:08 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,107 +56,94 @@ int	terminate_shell(t_executor *executor, t_shell_state *sh_state, int status)
 // 	}
 // }
 
-int	wait_all_children(t_list *cmd_list)
+static void	display_signal_message(int signal, bool *sigint_displayed \
+									, bool *sigquit_displayed)
+{
+	if (signal == SIGINT && !(*sigint_displayed))
+	{
+		ft_printf(STDERR_FILENO, "\n");
+		*sigint_displayed = true;
+	}
+	else if (signal == SIGQUIT && !(*sigquit_displayed))
+	{
+		ft_printf(STDERR_FILENO, "Quit (core dumped)\n");
+		*sigquit_displayed = true;
+	}
+}
+
+static int	handle_exit_status(int status, bool *sigint_displayed \
+							, bool *sigquit_displayed)
+{
+	int	signal;
+
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+	{
+		signal = WTERMSIG(status);
+		display_signal_message(signal, sigint_displayed, sigquit_displayed);
+		return (signal + E_SIGTERM);
+	}
+	return (E_GENERAL_ERR);
+}
+
+static int	wait_single_command(t_cmd *cmd_content, bool *sigint_displayed \
+								, bool *sigquit_displayed)
 {
 	int		status;
-	int		last_status;
-	t_list	*current_cmd;
-	t_cmd	*cmd_content;
 	pid_t	wait_result;
+
+	while (1)
+	{
+		wait_result = waitpid(cmd_content->pid, &status, 0);
+		if (wait_result != -1 || errno != EINTR)
+			break ;
+	}
+	if (wait_result == -1)
+		return (E_GENERAL_ERR);
+	return (handle_exit_status(status, sigint_displayed, sigquit_displayed));
+}
+
+int	wait_all_children(t_list *cmd_list)
+{
+	t_list	*current;
 	bool	sigint_displayed;
 	bool	sigquit_displayed;
+	int		last_status;
+	t_cmd	*cmd_content;
 
 	sigint_displayed = false;
 	sigquit_displayed = false;
-	current_cmd = cmd_list;
-	while (current_cmd)
+	last_status = 0;
+	current = cmd_list;
+	while (current)
 	{
-		cmd_content = (t_cmd *)(current_cmd->content);
-		wait_result = waitpid(cmd_content->pid, &status, 0);
-		if (wait_result == -1 && errno == EINTR)
-			continue ;
-		if (wait_result != -1)
-		{
-			if (WIFEXITED(status))
-				last_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-			{
-				last_status = WTERMSIG(status) + E_SIGTERM;
-				if (WTERMSIG(status) == SIGINT && !sigint_displayed)
-				{
-					ft_printf(STDERR_FILENO, "\n");
-					sigint_displayed = true;
-				}
-				else if (WTERMSIG(status) == SIGQUIT && !sigquit_displayed)
-				{
-					ft_printf(STDERR_FILENO, "Quit (core dumped)\n");
-					sigquit_displayed = true;
-				}
-			}
-		}
-		current_cmd = current_cmd->next;
+		cmd_content = (t_cmd *)(current->content);
+		last_status = wait_single_command(cmd_content, &sigint_displayed,
+				&sigquit_displayed);
+		current = current->next;
 	}
 	if (errno != 0 && errno != ECHILD && errno != EINTR)
 	{
 		ft_printf(STDERR_FILENO, "waitpid: %s\n", strerror(errno));
-		last_status = E_GENERAL_ERR;
+		return (E_GENERAL_ERR);
 	}
 	return (last_status);
 }
 
 
 
+
+
 int	execute(t_executor *self, t_shell_state *shell_state)
 {
-	t_cmd	*cmd_content;
-	t_list	*head;
-	int		status;
+	int	status;
 
-	// ft_printf(STDERR_FILENO, "signal execute start: %d\n", g_signal);
 	set_exec_signal_handler();
-	// print_cmd(self->cmds);
-	head = self->cmds;
-	cmd_content = (t_cmd *)(head->content);
-	if (!head->next && cmd_content->cmd_name && lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
-	{
-		if (!open_redirections(((t_cmd *)(head->content))->redirections))
-			return (set_interactive_signal_handler(), get_err_status());
-		if (!set_redirections(head))
-			return (set_interactive_signal_handler(), get_err_status());
-		status = lookup_builtin(cmd_content->cmd_name, self->builtins_list)->func(self, head, shell_state);
-	}
+	if (is_single_builtin(self))
+		status = execute_single_builtin(self, shell_state);
 	else
-	{
-		while (head)
-		{
-			if (!open_redirections(((t_cmd *)(head->content))->redirections))
-				return (set_interactive_signal_handler(), get_err_status());
-			self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
-			self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
-			if (head->next)
-			{
-				if (pipe(self->pipes->next_pipe) == -1)
-					return (print_strerror("pipe"), errno);
-			}
-			cmd_content = (t_cmd *)(head->content);
-			if (!cmd_content->cmd_name)
-				return (set_interactive_signal_handler(), E_GENERAL_ERR);
-			cmd_content->pid = fork();
-			if (cmd_content->pid == -1)
-				return (print_strerror("fork"), errno);
-			else if (cmd_content->pid == 0)
-			{
-				// ft_printf(STDERR_FILENO, "signal execute child: %d\n", g_signal);
-				set_child_signal_handler();
-				execute_child_process(self, head, shell_state);
-			}
-			if (!parent_process(self->pipes, ((t_cmd *)(head->content))->redirections))
-				return (set_interactive_signal_handler(), get_err_status());
-			head = head->next;
-		}
-		status = wait_all_children(self->cmds);
-	}
-	// ft_printf(STDERR_FILENO, "signal execute end: %d\n", g_signal);
+		status = execute_external_commands(self, shell_state);
 	set_interactive_signal_handler();
 	return (status);
 }

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:16:03 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:11:19 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 15:51:45 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int	check_signals(void)
 	if (g_signal == SIGINT || g_signal == SIGQUIT)
 	{
 		rl_done = 1;
+		write(STDERR_FILENO, "\n", 1);
 		rl_replace_line("", 0);
 		rl_on_new_line();
 	}

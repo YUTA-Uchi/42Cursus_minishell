@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:05:51 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/23 17:26:52 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,81 +15,64 @@
 
 extern volatile sig_atomic_t	g_signal;
 
-static char	*create_path(char *env_path, char *cmd)
+bool	setup_io_redirections(t_executor *self, t_list *current_cmd \
+								, t_shell_state *shell_state)
 {
-	char	*path_part;
-	char	*exec_path;
-
-	path_part = ft_strjoin(env_path, "/");
-	exec_path = ft_strjoin(path_part, cmd);
-	free(path_part);
-	return (exec_path);
+	if (!set_pipes(self, current_cmd, shell_state->error_handler))
+		return (false);
+	if (!set_redirections(current_cmd))
+		return (false);
+	return (true);
 }
 
-static int	execve_in_absolute_path(t_cmd *cmd, t_list *env_list)
+static bool	try_builtin_execution(t_executor *self, t_list *current_cmd \
+							, t_shell_state *shell_state, int *exit_code)
 {
-	if (access(cmd->cmd_name, F_OK) == 0)
-		return (execve(cmd->cmd_name, cmd->args \
-				, (char *const *)env_list_to_array(env_list)));
-	return (-1);
-}
+	t_cmd				*cmd_content;
+	const t_builtins	*builtin;
 
-static int	ft_execvp(t_cmd *cmd, t_list *env_list)
-{
-	int				i;
-	char			**env_pathes;
-	char			*exec_path;
+	cmd_content = (t_cmd *)(current_cmd->content);
+	builtin = lookup_builtin(cmd_content->cmd_name, self->builtins_list);
 
-	env_pathes = ft_split(get_env_value(env_list, "PATH"), ':');
-	if (env_pathes == NULL)
-		return (errno = 2, -1);
-	i = 0;
-	while (env_pathes[i])
+	if (builtin->name)
 	{
-		exec_path = create_path(env_pathes[i], cmd->cmd_name);
-		if (access(exec_path, F_OK) == 0)
-		{
-			free_arr(env_pathes);
-			return (execve(exec_path, cmd->args \
-					, (char *const *)env_list_to_array(env_list)));
-		}
-		free(exec_path);
-		i++;
+		*exit_code = builtin->func(self, current_cmd, shell_state);
+		return (true);
 	}
-	free_arr(env_pathes);
-	return (get_err_status());
+	return (false);
+}
+
+static void	exit_with_command_error(char *cmd_name, int error_code \
+						, t_executor *self, t_shell_state *shell_state)
+{
+	if (error_code == EACCES)
+		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_name, COMMAND_NOT_FOUND);
+	else
+		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_name, strerror(error_code));
+	terminate_shell(self, shell_state, get_err_status());
 }
 
 void	execute_child_process(t_executor *self, t_list *current_cmd \
 							, t_shell_state *shell_state)
 {
 	t_cmd	*cmd_content;
+	int		exit_code;
 	int		exec_ret;
 
-	if (!set_pipes(self, current_cmd, shell_state->error_handler))
-		terminate_shell(self, shell_state, errno);
-	if (!set_redirections(current_cmd))
+	if (!setup_io_redirections(self, current_cmd, shell_state))
 		terminate_shell(self, shell_state, errno);
 	cmd_content = (t_cmd *)(current_cmd->content);
-	if (lookup_builtin(cmd_content->cmd_name, self->builtins_list)->name)
-		exit(lookup_builtin(cmd_content->cmd_name, \
-			self->builtins_list)->func(self, current_cmd, shell_state));
+	if (try_builtin_execution(self, current_cmd, shell_state, &exit_code))
+		exit(exit_code);
 	if (ft_strchr(cmd_content->cmd_name, '/') != NULL)
 		exec_ret = execve_in_absolute_path(cmd_content, shell_state->env_list);
 	else
 		exec_ret = ft_execvp(cmd_content, shell_state->env_list);
 	if (exec_ret == -1)
-	{
-		if (errno == EACCES)
-			ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
-					, COMMAND_NOT_FOUND);
-		else
-			ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
-					, strerror(errno));
-		terminate_shell(self, shell_state, get_err_status());
-	}
+		exit_with_command_error(cmd_content->cmd_name \
+							, errno, self, shell_state);
 	ft_printf(STDERR_FILENO, "%s: %s\n", cmd_content->cmd_name \
-			, COMMAND_NOT_FOUND);
+				, COMMAND_NOT_FOUND);
 	terminate_shell(self, shell_state, get_err_status());
 }
 
