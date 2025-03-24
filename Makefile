@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/24 14:46:27 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/24 19:58:36 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,7 +50,8 @@ COMMON_SRCS		:=	shell_core_main.c \
 					expander_constructor.c \
 					environment.c \
 					shell_state.c \
-					fd_manager.c \
+					fd_syscall_wrapper.c \
+					process_syscall_wrapper.c \
 					signal_handler.c 
 
 OBJ_DIR			:=	./obj
@@ -62,7 +63,7 @@ INC				:=	-Iincludes -I$(LIBFT_DIR) -MMD -MP
 CC				:=	cc
 CFLAGS			:=	-Wall -Wextra -Werror
 
-vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser/tokenize_process:./srcs/parser/expand_process:./srcs/parser/parse_process:./srcs/environment:./srcs/shell_state:./srcs/signals
+vpath %.c	./srcs:./srcs/commands:./srcs/commands/redirections:./srcs/error_handler:./srcs/executor:./srcs/executor/builtins:./srcs/parser/tokenize_process:./srcs/parser/expand_process:./srcs/parser/parse_process:./srcs/environment:./srcs/shell_state:./srcs/signals:./srcs/syscall_wrapper
 vpath %.sh	./tests
 
 $(NAME) : $(OBJS) $(LIBFT_DIR)/libft.a

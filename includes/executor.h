@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 17:27:42 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:14:27 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "error_handler.h"
 # include "environment.h"
 # include "shell_state.h"
+# include "syscall_wrapper.h"
 
 typedef struct s_builtins	t_builtins;
 typedef struct s_pipes		t_pipes;
@@ -51,7 +52,8 @@ void		free_executor(t_executor *executor);
 int			terminate_shell(t_executor *executor, t_shell_state *sh_state \
 				, int status);
 bool		is_single_builtin(t_executor *self);
-int			execute_single_builtin(t_executor *self, t_shell_state *shell_state);
+int			execute_single_builtin(t_executor *self \
+									, t_shell_state *shell_state);
 int			execute_external_commands(t_executor *self \
 									, t_shell_state *shell_state);
 int			execve_in_absolute_path(t_cmd *cmd, t_list *env_list);

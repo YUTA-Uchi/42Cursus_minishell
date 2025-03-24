@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:52:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:29:45 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:43:06 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,51 +14,29 @@
 
 static bool	set_redirection_in(t_redirection *redir)
 {
-	if (is_fd_open(redir->fd))
-	{
-		if (close(STDIN_FILENO) == -1)
-			return (print_strerror("close"), false);
-		if (dup2(redir->fd, STDIN_FILENO) == -1)
-			return (print_strerror("dup2"), false);
-		if (close(redir->fd) == -1)
-			return (print_strerror("close"), false);
-	}
+	if (!replace_fd(STDIN_FILENO, redir->fd))
+		return (false);
 	return (true);
 }
 
 static bool	set_redirection_out(t_redirection *redir)
 {
-	if (close(STDOUT_FILENO) == -1)
-		return (print_strerror("close"), false);
-	if (dup2(redir->fd, STDOUT_FILENO) == -1)
-		return (print_strerror("dup2"), false);
-	if (close(redir->fd) == -1)
-		return (print_strerror("close"), false);
+	if (!replace_fd(STDOUT_FILENO, redir->fd))
+		return (false);
 	return (true);
 }
 
 static bool	set_redirection_append(t_redirection *redir)
 {
-	if (close(STDOUT_FILENO) == -1)
-		return (print_strerror("close"), false);
-	if (dup2(redir->fd, STDOUT_FILENO) == -1)
-		return (print_strerror("dup2"), false);
-	if (close(redir->fd) == -1)
-		return (print_strerror("close"), false);
+	if (!replace_fd(STDOUT_FILENO, redir->fd))
+		return (false);
 	return (true);
 }
 
 static bool	set_redirection_heredoc(t_redirection *redir)
 {
-	if (is_fd_open(redir->fd))
-	{
-		if (close(STDIN_FILENO) == -1)
-			return (print_strerror("close"), false);
-		if (dup2(redir->fd, STDIN_FILENO) == -1)
-			return (print_strerror("dup2"), false);
-		if (close(redir->fd) == -1)
-			return (print_strerror("close"), false);
-	}
+	if (!replace_fd(STDIN_FILENO, redir->fd))
+		return (false);
 	return (true);
 }
 

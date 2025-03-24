@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:10:06 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 17:24:26 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static bool	expand_word(t_list **current_node, t_list *prev_node \
 					, print_error_with_status(MALLOCF, 0), false);
 	}
 	if (!resolve_pending_expansion(expand_ctx, shell_state->env_list))
-		return (free_expand(expand_ctx), print_error_with_status(MALLOCF, 0), false);
+		return (free_expand(expand_ctx), print_error(MALLOCF));
 	if (!replace_with_expanded_token(current_node, prev_node, &expand_ctx))
 		return (false);
 	return (true);
@@ -51,7 +51,6 @@ static bool	process_expanded_token(t_list **token_list, t_list **current,
 	{
 		if (!expand_word(current, prev, shell_state))
 			return (false);
-
 		token_content = (t_token *)((*current)->content);
 		if (is_empty_token(token_content))
 		{

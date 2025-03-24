@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:57:03 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/19 14:57:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:55:14 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ t_shell_state	*create_shell_state(char **environ)
 {
 	t_shell_state	*shell_state;
 
-	shell_state = malloc(sizeof(t_shell_state));
+	shell_state = safe_malloc_critical(sizeof(t_shell_state) \
+									, "create_shell_state");
 	if (!shell_state)
 		return (NULL);
 	shell_state->running = true;

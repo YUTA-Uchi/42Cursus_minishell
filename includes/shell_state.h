@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:58:30 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/19 14:58:32 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:54:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "minishell.h"
 # include "error_handler.h"
 # include "environment.h"
+# include "syscall_wrapper.h"
 
 typedef struct s_shell_state
 {

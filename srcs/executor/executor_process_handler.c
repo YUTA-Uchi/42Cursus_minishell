@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 14:31:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:40:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ static bool	try_builtin_execution(t_executor *self, t_list *current_cmd \
 
 	cmd_content = (t_cmd *)(current_cmd->content);
 	builtin = lookup_builtin(cmd_content->cmd_name, self->builtins_list);
-
 	if (builtin->name)
 	{
 		*exit_code = builtin->func(self, current_cmd, shell_state);
@@ -82,21 +81,21 @@ bool	parent_process(t_pipes *pipes, t_list *redir_list)
 
 	if (pipes->prev_pipe[0] > -1 && is_fd_open(pipes->prev_pipe[0]))
 	{
-		if (close(pipes->prev_pipe[0]) == -1)
-			return (print_strerror("close"), false);
+		if (!safe_close(pipes->prev_pipe[0]))
+			return (false);
 	}
 	if (pipes->prev_pipe[1] > -1 && is_fd_open(pipes->prev_pipe[1]))
 	{
-		if (close(pipes->prev_pipe[1]) == -1)
-			return (print_strerror("close"), false);
+		if (!safe_close(pipes->prev_pipe[1]))
+			return (false);
 	}
 	while (redir_list)
 	{
 		redir_content = (t_redirection *)(redir_list->content);
 		if (is_fd_open(redir_content->fd))
 		{
-			if (close(redir_content->fd) == -1)
-				return (print_strerror("close"), false);
+			if (!safe_close(redir_content->fd))
+				return (false);
 		}
 		redir_list = redir_list->next;
 	}

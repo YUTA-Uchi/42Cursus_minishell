@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:52:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 17:31:42 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:37:53 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,37 +32,23 @@ bool	set_pipes(t_executor *self, t_list *current_cmd \
 	(void)error_handler;
 	if (current_cmd != self->cmds)
 	{
-		if (is_fd_open(self->pipes->prev_pipe[0]))
-		{
-			if (close(STDIN_FILENO) == -1)
-				return (print_strerror("close"), false);
-			if (dup2(self->pipes->prev_pipe[0], STDIN_FILENO) == -1)
-				return (print_strerror("dup2"), false);
-			if (close(self->pipes->prev_pipe[0]) == -1)
-				return (print_strerror("close"), false);
-		}
+		if (!replace_fd(STDIN_FILENO, self->pipes->prev_pipe[0]))
+			return (false);
 		if (is_fd_open(self->pipes->prev_pipe[1]))
 		{
-			if (close(self->pipes->prev_pipe[1]) == -1)
-				return (print_strerror("close"), false);
+			if (!safe_close(self->pipes->prev_pipe[1]))
+				return (false);
 		}
 	}
 	if (current_cmd->next)
 	{
 		if (is_fd_open(self->pipes->next_pipe[0]))
 		{
-			if (close(self->pipes->next_pipe[0]) == -1)
-				return (print_strerror("close"), false);
+			if (!safe_close(self->pipes->next_pipe[0]))
+				return (false);
 		}
-		if (is_fd_open(self->pipes->next_pipe[1]))
-		{
-			if (close(STDOUT_FILENO) == -1)
-				return (print_strerror("close"), false);
-			if (dup2(self->pipes->next_pipe[1], STDOUT_FILENO) == -1)
-				return (print_strerror("dup2"), false);
-			if (close(self->pipes->next_pipe[1]) == -1)
-				return (print_strerror("close"), false);
-		}
+		if (!replace_fd(STDOUT_FILENO, self->pipes->next_pipe[1]))
+			return (false);
 	}
 	return (true);
 }
@@ -70,12 +56,12 @@ bool	set_pipes(t_executor *self, t_list *current_cmd \
 void	free_pipes(t_pipes *pipes)
 {
 	if (is_fd_open(pipes->prev_pipe[0]))
-		close(pipes->prev_pipe[0]);
+		safe_close(pipes->prev_pipe[0]);
 	if (is_fd_open(pipes->prev_pipe[1]))
-		close(pipes->prev_pipe[1]);
+		safe_close(pipes->prev_pipe[1]);
 	if (is_fd_open(pipes->next_pipe[0]))
-		close(pipes->next_pipe[0]);
+		safe_close(pipes->next_pipe[0]);
 	if (is_fd_open(pipes->next_pipe[1]))
-		close(pipes->next_pipe[1]);
+		safe_close(pipes->next_pipe[1]);
 	free(pipes);
 }

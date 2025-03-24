@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 14:11:18 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:48:13 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,18 +71,12 @@ int	execute(t_executor *self, t_shell_state *shell_state)
 
 bool	repair_std_io(t_executor *self)
 {
-	if (close(STDIN_FILENO) == -1)
-		return (print_strerror("close"), false);
-	if (dup2(self->original_stdin, STDIN_FILENO) == -1)
-		return (print_strerror("dup2"), false);
-	if (close(self->original_stdin) == -1)
-		return (print_strerror("close"), false);
-	if (close(STDOUT_FILENO) == -1)
-		return (print_strerror("close"), false);
-	if (dup2(self->original_stdout, STDOUT_FILENO) == -1)
-		return (print_strerror("dup2"), false);
-	if (close(self->original_stdout) == -1)
-		return (print_strerror("close"), false);
+	if (!safe_close(STDIN_FILENO))
+		return (false);
+	if (!safe_close(STDOUT_FILENO))
+		return (false);
+	if (!restore_std_fd(&self->original_stdin, &self->original_stdout))
+		return (false);
 	return (true);
 }
 
@@ -113,8 +107,8 @@ void	free_executor(t_executor *executor)
 	if (executor->pipes)
 		free_pipes(executor->pipes);
 	if (is_fd_open(executor->original_stdin))
-		close(executor->original_stdin);
+		safe_close(executor->original_stdin);
 	if (is_fd_open(executor->original_stdout))
-		close(executor->original_stdout);
+		safe_close(executor->original_stdout);
 	free(executor);
 }

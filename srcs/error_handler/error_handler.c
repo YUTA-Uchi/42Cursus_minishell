@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:35:23 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:59:36 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	print_error_with_status(const char *msg, int status)
 	return (status);
 }
 
-void	print_strerror(char *funcname)
+void	print_strerror(const char *funcname)
 {
 	ft_printf(STDERR_FILENO, "%s%s: %s\n", ERR_HEADER, \
 			funcname, strerror(errno));

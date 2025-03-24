@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 13:29:18 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 17:28:01 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ struct s_token
 	int				capacity;
 };
 
-typedef enum e_state {
+typedef enum e_state
+{
 	STATE_NONE,
 	STATE_WORD,
 	STATE_IN_SINGLE_QUOTE,
@@ -80,7 +81,6 @@ struct s_parser
 	char		*line;
 	t_list		*(*parse)(t_parser *, t_shell_state *);
 };
-
 
 // parser
 t_parser		*create_parser(t_shell_state *sh_state);

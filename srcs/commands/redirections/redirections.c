@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 16:54:54 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:25:15 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	free_redirection(void *redir)
 	redir_content = (t_redirection *)redir;
 	free(redir_content->file);
 	if (is_fd_open(redir_content->fd))
-		close(redir_content->fd);
+		safe_close(redir_content->fd);
 	free(redir_content);
 }
 
@@ -56,12 +56,12 @@ bool	open_redirections(t_list *redir_list)
 	{
 		redir_content = (t_redirection *)(current_redir->content);
 		if (redir_content->type == REDIR_IN)
-			redir_content->fd = open(redir_content->file, O_RDONLY);
+			redir_content->fd = safe_open(redir_content->file, O_RDONLY, 0644);
 		else if (redir_content->type == REDIR_OUT)
-			redir_content->fd = open(redir_content->file, O_WRONLY \
+			redir_content->fd = safe_open(redir_content->file, O_WRONLY \
 									| O_CREAT | O_TRUNC, 0644);
 		else if (redir_content->type == REDIR_APPEND)
-			redir_content->fd = open(redir_content->file, O_WRONLY \
+			redir_content->fd = safe_open(redir_content->file, O_WRONLY \
 									| O_CREAT | O_APPEND, 0644);
 		else if (redir_content->type == REDIR_HEREDOC)
 		{
@@ -69,7 +69,7 @@ bool	open_redirections(t_list *redir_list)
 				return (false);
 		}
 		if (redir_content->fd == -1)
-			return (print_strerror(redir_content->file), false);
+			return (false);
 		current_redir = current_redir->next;
 	}
 	return (true);

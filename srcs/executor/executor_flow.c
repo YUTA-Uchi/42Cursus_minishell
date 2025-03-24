@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:26 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 14:09:11 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:51:33 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ static bool	setup_command_execution(t_executor *self, t_list *cmd)
 		return (false);
 	self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 	self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
-	if (cmd->next && pipe(self->pipes->next_pipe) == -1)
-		return (print_strerror("pipe"), false);
+	if (cmd->next && !safe_pipe(self->pipes->next_pipe))
+		return (false);
 	cmd_content = (t_cmd *)(cmd->content);
 	if (!cmd_content->cmd_name)
 		return (false);
