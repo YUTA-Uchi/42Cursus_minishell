@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:26 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 17:29:09 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:09:11 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,17 @@ bool	is_single_builtin(t_executor *self)
 
 int	execute_single_builtin(t_executor *self, t_shell_state *shell_state)
 {
-	t_list	*cmd;
+	t_list	*cmd_list;
 	t_cmd	*cmd_content;
 
-	cmd = self->cmds;
-	cmd_content = (t_cmd *)(cmd->content);
+	cmd_list = self->cmds;
+	cmd_content = (t_cmd *)(cmd_list->content);
 	if (!open_redirections(cmd_content->redirections))
 		return (get_err_status());
-	if (!set_redirections(cmd))
+	if (!set_redirections(cmd_list))
 		return (get_err_status());
 	return (lookup_builtin(cmd_content->cmd_name \
-		, self->builtins_list)->func(self, cmd, shell_state));
+		, self->builtins_list)->func(self, cmd_list, shell_state));
 }
 
 static bool	setup_command_execution(t_executor *self, t_list *cmd)

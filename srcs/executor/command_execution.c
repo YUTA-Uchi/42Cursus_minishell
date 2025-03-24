@@ -6,22 +6,11 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 17:26:06 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:45:37 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
-
-static char	*create_path(char *env_path, char *cmd)
-{
-	char	*path_part;
-	char	*exec_path;
-
-	path_part = ft_strjoin(env_path, "/");
-	exec_path = ft_strjoin(path_part, cmd);
-	free(path_part);
-	return (exec_path);
-}
 
 int	execve_in_absolute_path(t_cmd *cmd, t_list *env_list)
 {
@@ -43,10 +32,13 @@ int	execve_in_absolute_path(t_cmd *cmd, t_list *env_list)
 
 static int	try_execute_in_path(char *path, t_cmd *cmd, char **env_array)
 {
+	char	*path_part;
 	char	*exec_path;
 	int		ret;
 
-	exec_path = create_path(path, cmd->cmd_name);
+	path_part = ft_strjoin(path, "/");
+	exec_path = ft_strjoin(path_part, cmd);
+	free(path_part);
 	if (!exec_path)
 		return (ENOMEM);
 	if (access(exec_path, F_OK) == 0)
@@ -65,7 +57,7 @@ static bool	init_path_execution(t_list *env_list, char ***env_pathes \
 								, char ***env_array)
 {
 	*env_pathes = ft_split(get_env_value(env_list, "PATH"), ':');
-	if (*env_pathes == NULL)
+	if (!*env_pathes)
 	{
 		errno = ENOENT;
 		return (false);
@@ -89,7 +81,7 @@ static int	execute_command_in_paths(t_cmd *cmd, char **env_pathes \
 	i = 0;
 	while (env_pathes[i])
 	{
-	ret = try_execute_in_path(env_pathes[i], cmd, env_array);
+		ret = try_execute_in_path(env_pathes[i], cmd, env_array);
 		if (ret == EACCES)
 		{
 			free_arr(env_pathes);
@@ -100,7 +92,6 @@ static int	execute_command_in_paths(t_cmd *cmd, char **env_pathes \
 		{
 			free_arr(env_pathes);
 			free_arr(env_array);
-			errno = ENOMEM;
 			return (-1);
 		}
 		i++;
