@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:06:21 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,12 @@ int	ft_exit(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 	if (!cmd->args[1])
 		terminate_shell(self, shell_state, 0);
 	else if (cmd->args[2])
-		return (print_const_error(EXIT_TOO_MANY_ARGS, E_GENERAL_ERR));
+		return (print_error_with_status(EXIT_TOO_MANY_ARGS, E_GENERAL_ERR));
 	if (ft_isdigit_str(cmd->args[1]))
 		exit_status = ft_atoi(cmd->args[1]) % 256;
 	else
 	{
-		print_const_error(EXIT_NUMERIC_ARG, E_GENERAL_ERR);
+		print_error_with_status(EXIT_NUMERIC_ARG, E_GENERAL_ERR);
 		exit_status = 2;
 	}
 	terminate_shell(self, shell_state, exit_status);

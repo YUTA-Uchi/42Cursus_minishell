@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:45:28 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 14:25:18 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 {
 	if (!append_char_to_token(head, c))
-		return (print_const_error(MALLOCF, 0), false);
+		return (print_error_with_status(MALLOCF, 0), false);
 	if (c == '\'')
 	{
 		*state = STATE_WORD;
@@ -26,7 +26,7 @@ bool	tokenize_state_in_single_quote(t_state *state, t_list **head, char c)
 bool	tokenize_state_in_double_quote(t_state *state, t_list **head, char c)
 {
 	if (!append_char_to_token(head, c))
-		return (print_const_error(MALLOCF, 0), false);
+		return (print_error_with_status(MALLOCF, 0), false);
 	if (c == '\"')
 		*state = STATE_WORD;
 	return (true);

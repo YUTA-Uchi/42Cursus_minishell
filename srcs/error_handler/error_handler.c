@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/17 12:25:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:35:23 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,13 @@ void	set_error(t_error_handler *self, int error, const char *msg)
 	self->msg = msg;
 }
 
-int	print_const_error(const char *msg, int status)
+bool	print_error(const char *msg)
+{
+	ft_printf(STDERR_FILENO, "%s%s\n", ERR_HEADER, msg);
+	return (false);
+}
+
+int	print_error_with_status(const char *msg, int status)
 {
 	ft_printf(STDERR_FILENO, "%s%s\n", ERR_HEADER, msg);
 	return (status);

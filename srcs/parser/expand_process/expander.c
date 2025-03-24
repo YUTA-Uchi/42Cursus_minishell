@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:10:06 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 13:28:10 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,17 @@ static bool	expand_word(t_list **current_node, t_list *prev_node \
 	token_content = (t_token *)((*current_node)->content);
 	expand_ctx = create_expand(shell_state);
 	if (!expand_ctx)
-		return (print_const_error(MALLOCF, 0), false);
+		return (print_error_with_status(MALLOCF, 0), false);
 	i = 0;
 	while (token_content->value[i])
 	{
 		if (!dispatch_expand_state_handler(expand_ctx \
 					, token_content->value[i++], shell_state->env_list))
 			return (free_expand(expand_ctx) \
-					, print_const_error(MALLOCF, 0), false);
+					, print_error_with_status(MALLOCF, 0), false);
 	}
 	if (!resolve_pending_expansion(expand_ctx, shell_state->env_list))
-		return (free_expand(expand_ctx), print_const_error(MALLOCF, 0), false);
+		return (free_expand(expand_ctx), print_error_with_status(MALLOCF, 0), false);
 	if (!replace_with_expanded_token(current_node, prev_node, &expand_ctx))
 		return (false);
 	return (true);

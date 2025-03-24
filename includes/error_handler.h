@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 16:47:42 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:40 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,6 @@ void			fatal_error(const char *function_name, const char *msg \
 int				get_err_status(void);
 void			set_error(t_error_handler *self, int error, const char *msg);
 void			print_strerror(char *funcname);
-int				print_const_error(const char *msg, int status);
+bool			print_error(const char *msg);
+int				print_error_with_status(const char *msg, int status);
 #endif

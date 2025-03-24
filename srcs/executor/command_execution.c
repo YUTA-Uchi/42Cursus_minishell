@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 14:45:37 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 15:02:58 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int	try_execute_in_path(char *path, t_cmd *cmd, char **env_array)
 	int		ret;
 
 	path_part = ft_strjoin(path, "/");
-	exec_path = ft_strjoin(path_part, cmd);
+	exec_path = ft_strjoin(path_part, cmd->cmd_name);
 	free(path_part);
 	if (!exec_path)
 		return (ENOMEM);

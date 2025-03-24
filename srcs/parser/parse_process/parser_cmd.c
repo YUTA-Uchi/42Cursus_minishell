@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:42:51 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 16:07:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,10 @@ bool	parse_command_args(t_token *token_content, t_cmd *cmd_content)
 	{
 		cmd_content->cmd_name = ft_strdup(token_content->value);
 		if (cmd_content->cmd_name == NULL)
-			return (print_const_error(MALLOCF, 0), false);
+			return (print_error_with_status(MALLOCF, 0), false);
 	}
 	new_arg = ft_strdup(token_content->value);
 	if (!new_arg)
-		return (print_const_error(MALLOCF, 0), false);
+		return (print_error_with_status(MALLOCF, 0), false);
 	return (add_arg(&(cmd_content->args), new_arg));
 }

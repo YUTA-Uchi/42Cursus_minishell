@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:22:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 14:31:17 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ bool	tokenize_state_in_redir_in(t_state *state, t_list **head, char c)
 	}
 	if (c == '>')
 	{
-		print_const_error(SYNERR_NEAR_RIN, 0);
+		print_error_with_status(SYNERR_NEAR_RIN, 0);
 		return (false);
 	}
 	if (isspace(c))
@@ -64,7 +64,7 @@ bool	tokenize_state_in_redir_out(t_state *state, t_list **head, char c)
 	}
 	if (c == '<')
 	{
-		print_const_error(SYNERR_NEAR_ROUT, 0);
+		print_error_with_status(SYNERR_NEAR_ROUT, 0);
 		return (false);
 	}
 	if (isspace(c))

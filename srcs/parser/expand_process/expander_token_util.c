@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:18:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 13:26:23 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ bool	replace_with_expanded_token(t_list **current \
 
 	new_token_node = create_new_expanded_node(*expand_ctx);
 	if (!new_token_node)
-		return (print_const_error(MALLOCF, 0), false);
+		return (print_error_with_status(MALLOCF, 0), false);
 	free_expand(*expand_ctx);
 	if (prev)
 		prev->next = new_token_node;

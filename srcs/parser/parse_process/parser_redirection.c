@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:42:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 16:50:23 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ bool	parse_redirection(t_list **token_list, t_cmd *cmd_content)
 	if (token_content->type < TOKEN_REDIR_IN)
 		return (true);
 	if (!(*token_list)->next)
-		return (print_const_error(SYNERR_NEWLINE, 0), false);
+		return (print_error_with_status(SYNERR_NEWLINE, 0), false);
 	next_token_content = (t_token *)((*token_list)->next->content);
 	if (next_token_content->type != TOKEN_WORD)
-		return (print_const_error(SYNERR, 0), false); // need to change
+		return (print_error_with_status(SYNERR, 0), false); // need to change
 	redirection = create_redirection(next_token_content->value \
 		, get_redir_type(token_content->type));
 	if (!redirection)
-		return (print_const_error(MALLOCF, 0), false);
+		return (print_error_with_status(MALLOCF, 0), false);
 	ft_lstadd_back(&(cmd_content->redirections), redirection);
 	*token_list = (*token_list)->next;
 	return (true);
