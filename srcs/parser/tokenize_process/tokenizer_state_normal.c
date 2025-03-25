@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:43:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 15:42:24 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:33:35 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ bool	add_new_token(t_list **head, char c, t_state *state)
 		*state = STATE_REDIR_IN;
 	else if (c == '>')
 		*state = STATE_REDIR_OUT;
+	else if (c == '|')
+		*state = STATE_NONE;
 	else if (!isspace(c))
 		*state = STATE_WORD;
 	return (true);
