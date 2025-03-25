@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 16:54:29 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/06 13:09:37 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:10:24 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,12 @@ const t_builtins	*lookup_builtin(char *cmd_name, \
 {
 	const t_builtins	*ret;
 	int					builtin_len;
-	int					cmd_len;
-	int					search_len;
 
 	ret = builtins_list;
-	cmd_len = ft_strlen(cmd_name);
 	while (ret->name)
 	{
 		builtin_len = ft_strlen(ret->name);
-		if (cmd_len < builtin_len)
-			search_len = builtin_len;
-		else
-			search_len = cmd_len;
-		if (ft_strncmp(ret->name, cmd_name, search_len) == 0)
+		if (ft_strncmp(ret->name, cmd_name, builtin_len + 1) == 0)
 			break ;
 		ret++;
 	}

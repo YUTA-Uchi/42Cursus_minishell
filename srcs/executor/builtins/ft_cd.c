@@ -6,13 +6,13 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:16 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:47:04 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:16:46 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 
-bool	validate_and_set_target_path(char **target_path, t_cmd *cmd_content \
+static bool	validate_and_set_target_path(char **target_path, t_cmd *cmd_content \
 									, t_shell_state *shell_state)
 {
 	if (!cmd_content->args[1])
@@ -30,7 +30,7 @@ bool	validate_and_set_target_path(char **target_path, t_cmd *cmd_content \
 	return (true);
 }
 
-bool	update_pwd_from_getcwd(t_shell_state *shell_state)
+static bool	update_pwd_from_getcwd(t_shell_state *shell_state)
 {
 	char	*absolute_path_buff;
 
