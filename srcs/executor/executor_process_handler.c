@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:40:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:31:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,9 @@
 
 extern volatile sig_atomic_t	g_signal;
 
-bool	setup_io_redirections(t_executor *self, t_list *current_cmd \
-								, t_shell_state *shell_state)
+static bool	setup_io_redirections(t_executor *self, t_list *current_cmd)
 {
-	if (!set_pipes(self, current_cmd, shell_state->error_handler))
+	if (!set_pipes(self, current_cmd))
 		return (false);
 	if (!set_redirections(current_cmd))
 		return (false);
@@ -58,7 +57,7 @@ void	execute_child_process(t_executor *self, t_list *current_cmd \
 	int		exit_code;
 	int		exec_ret;
 
-	if (!setup_io_redirections(self, current_cmd, shell_state))
+	if (!setup_io_redirections(self, current_cmd))
 		terminate_shell(self, shell_state, errno);
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (try_builtin_execution(self, current_cmd, shell_state, &exit_code))

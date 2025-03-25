@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:35:28 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 14:39:52 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 11:28:24 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	handle_eof(t_shell_state *sh_state)
 static char	*handle_sigint(char *line, t_shell_state *sh_state)
 {
 	free(line);
-	sh_state->last_status = SIGINT | 128;
+	sh_state->last_status = SIGINT | E_SIGTERM;
 	g_signal = 0;
 	return (NULL);
 }

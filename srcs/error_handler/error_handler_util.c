@@ -1,29 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shell_state.h                                      :+:      :+:    :+:   */
+/*   error_handler_util.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 14:58:30 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 14:28:58 by yuuchiya         ###   ########.fr       */
+/*   Created: 2025/03/25 14:26:34 by yuuchiya          #+#    #+#             */
+/*   Updated: 2025/03/25 14:26:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SHELL_STATE_H
-# define SHELL_STATE_H
+#include "error_handler.h"
 
-# include "minishell.h"
-# include "environment.h"
-# include "syscall_wrapper.h"
-
-typedef struct s_shell_state
+int	get_err_status(void)
 {
-	bool			running;
-	int				last_status;
-	t_list			*env_list;
-}	t_shell_state;
-
-t_shell_state	*create_shell_state(char **environ);
-void			free_shell_state(t_shell_state *shell_state);
-#endif
+	if (errno == EACCES)
+		return (E_NOPERMISSION);
+	return (E_NOTFOUND);
+}

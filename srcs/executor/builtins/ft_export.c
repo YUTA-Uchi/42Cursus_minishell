@@ -6,50 +6,73 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 16:13:53 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 11:47:05 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 
+static bool	process_key_value_pair(t_shell_state *shell_state \
+									, char *arg, int *i)
+{
+	char	*key;
+	char	*value;
+
+	key = ft_strndup(arg, ft_strchr(arg, '=') - arg);
+	if (!ft_strlen(key))
+	{
+		free(key);
+		print_error(EXPORT_NO_VALID_IDENTIFIER);
+		(*i)++;
+		return (false);
+	}
+	value = ft_strdup(ft_strchr(arg, '=') + 1);
+	if (!add_env(shell_state->env_list, key, value))
+	{
+		free(key);
+		free(value);
+		print_strerror("export");
+		(*i)++;
+		return (false);
+	}
+	free(key);
+	free(value);
+	return (true);
+}
+
+static bool	process_key_only(t_shell_state *shell_state, char *arg, int *i)
+{
+	if (!ft_strlen(arg))
+	{
+		(*i)++;
+		return (false);
+	}
+	if (!get_env_value(shell_state->env_list, arg))
+		add_env(shell_state->env_list, arg, NULL);
+	return (true);
+}
+
 int	ft_export(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 {
 	int		i;
-	char	*key;
-	char	*value;
 	t_cmd	*cmd_content;
 
 	(void)self;
 	i = 1;
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (!cmd_content->args[i])
-	{
-		print_env(shell_state->env_list, true);
-		return (0);
-	}
+		return (print_env(shell_state->env_list, true), 0);
 	while (cmd_content->args[i])
 	{
 		if (ft_strchr(cmd_content->args[i], '='))
 		{
-			key = ft_strndup(cmd_content->args[i] \
-						, ft_strchr(cmd_content->args[i], '=') \
-						- cmd_content->args[i]);
-			value = ft_strdup(ft_strchr(cmd_content->args[i], '=') + 1);
-			if (!add_env(shell_state->env_list, key, value))
-			{
-				free(key);
-				free(value);
-				return (print_strerror("export"), 1);
-			}
-			free(key);
-			free(value);
+			if (!process_key_value_pair(shell_state, cmd_content->args[i], &i))
+				continue ;
 		}
 		else
 		{
-			if (ft_strlen(cmd_content->args[i]) == 0)
-				return (0);
-			if (!get_env_value(shell_state->env_list, cmd_content->args[i]))
-				add_env(shell_state->env_list, cmd_content->args[i], NULL);
+			if (!process_key_only(shell_state, cmd_content->args[i], &i))
+				continue ;
 		}
 		i++;
 	}

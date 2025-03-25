@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:14:27 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:31:36 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,16 +60,13 @@ int			execve_in_absolute_path(t_cmd *cmd, t_list *env_list);
 int			ft_execvp(t_cmd *cmd, t_list *env_list);
 bool		repair_std_io(t_executor *self);
 bool		set_redirections(t_list *current_cmd);
-bool		setup_io_redirections(t_executor *self, t_list *current_cmd \
-								, t_shell_state *shell_state);
 int			wait_all_children(t_list *cmd_list);
 void		execute_child_process(t_executor *self, t_list *current_cmd \
 								, t_shell_state *shell_state);
 bool		parent_process(t_pipes *pipes, t_list *redir_list);
 
 t_pipes		*create_pipes(void);
-bool		set_pipes(t_executor *self, t_list *current_cmd \
-				, t_error_handler *error_handler);
+bool		set_pipes(t_executor *self, t_list *current_cmd);
 void		free_pipes(t_pipes *pipes);
 
 #endif

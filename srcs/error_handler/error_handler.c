@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:30:12 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:59:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:33:43 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,6 @@ void	fatal_error(const char *function_name, const char *msg, int status)
 	ft_printf(STDERR_FILENO, "%s%sFatal Error: %s\n", ERR_HEADER, \
 			function_name, msg);
 	exit(status);
-}
-
-int	get_err_status(void)
-{
-	if (errno == EACCES)
-		return (E_NOPERMISSION);
-	return (E_NOTFOUND);
-}
-
-void	set_error(t_error_handler *self, int error, const char *msg)
-{
-	self->error = error;
-	self->msg = msg;
 }
 
 bool	print_error(const char *msg)
@@ -44,25 +31,14 @@ int	print_error_with_status(const char *msg, int status)
 	return (status);
 }
 
+bool	print_error_with_value(const char *err_msg, const char *variable_value)
+{
+	ft_printf(STDERR_FILENO, err_msg, ERR_HEADER, variable_value);
+	return (false);
+}
+
 void	print_strerror(const char *funcname)
 {
 	ft_printf(STDERR_FILENO, "%s%s: %s\n", ERR_HEADER, \
 			funcname, strerror(errno));
-}
-
-t_error_handler	*create_error_handler(void)
-{
-	t_error_handler	*error_handler;
-
-	error_handler = malloc(sizeof(t_error_handler));
-	if (!error_handler)
-		return (NULL);
-	error_handler->error = E_SUCCESS;
-	error_handler->msg = NULL;
-	return (error_handler);
-}
-
-void	free_error_handler(t_error_handler *error_handler)
-{
-	free(error_handler);
 }

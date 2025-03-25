@@ -6,12 +6,26 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:34:43 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 14:36:53 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:04:35 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include "environment.h"
+
+// void	print_tokens(t_list *token_list)
+// {
+// 	t_list	*current;
+
+// 	current = token_list;
+// 	while (current)
+// 	{
+// 		ft_printf(STDERR_FILENO, "type: %d, value: %s\n"
+// 			, ((t_token *)(current->content))->type
+// 			, ((t_token *)(current->content))->value);
+// 		current = current->next;
+// 	}
+// }
 
 t_list	*parse(t_parser *parser, t_shell_state *shell_state)
 {

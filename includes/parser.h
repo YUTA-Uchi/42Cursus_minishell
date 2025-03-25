@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 17:28:01 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:42:44 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ t_list			*tokenize_line(const char *line);
 t_list			*create_token(t_token_type type, const char value);
 void			free_token(void *token);
 t_token_type	get_token_type(char c);
+bool			add_new_token(t_list **head, char c, t_state *state);
 bool			append_char_to_token(t_list **head, char c);
 // tokenizer state handler
 bool			handle_tokenize_state(t_state *state, t_list **head, char c);

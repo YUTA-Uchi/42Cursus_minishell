@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:27:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:48:13 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:06:07 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,14 @@ int	terminate_shell(t_executor *executor, t_shell_state *sh_state, int status)
 	return (0);
 }
 
-// void	print_cmd(t_list *cmds)
+// void	print_cmd(t_executor *self)
 // {
 // 	int		i;
 // 	t_cmd	*cmd_content;
 // 	t_list	*redir_list;
 // 	t_list	*cmd_list;
 
-// 	cmd_list = cmds;
+// 	cmd_list = self->cmds;
 // 	while (cmd_list)
 // 	{
 // 		cmd_content = (t_cmd *)(cmd_list->content);

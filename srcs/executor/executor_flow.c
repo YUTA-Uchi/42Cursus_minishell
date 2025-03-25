@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:26 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:51:33 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:10:47 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ int	execute_single_builtin(t_executor *self, t_shell_state *shell_state)
 
 	cmd_list = self->cmds;
 	cmd_content = (t_cmd *)(cmd_list->content);
-	if (!open_redirections(cmd_content->redirections))
+	if (!open_redirections(cmd_content->redirections \
+						, self, shell_state))
 		return (get_err_status());
 	if (!set_redirections(cmd_list))
 		return (get_err_status());
@@ -42,11 +43,13 @@ int	execute_single_builtin(t_executor *self, t_shell_state *shell_state)
 		, self->builtins_list)->func(self, cmd_list, shell_state));
 }
 
-static bool	setup_command_execution(t_executor *self, t_list *cmd)
+static bool	setup_command_execution(t_executor *self, t_list *cmd, \
+									t_shell_state *shell_state)
 {
 	t_cmd	*cmd_content;
 
-	if (!open_redirections(((t_cmd *)(cmd->content))->redirections))
+	if (!open_redirections(((t_cmd *)(cmd->content))->redirections \
+						, self, shell_state))
 		return (false);
 	self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 	self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
@@ -84,7 +87,7 @@ int	execute_external_commands(t_executor *self \
 	current_cmd = self->cmds;
 	while (current_cmd)
 	{
-		if (!setup_command_execution(self, current_cmd))
+		if (!setup_command_execution(self, current_cmd, shell_state))
 			return (get_err_status());
 		if (!fork_and_execute_command(self, current_cmd, shell_state))
 			return (get_err_status());

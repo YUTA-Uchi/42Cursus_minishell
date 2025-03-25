@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 20:00:12 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:38:36 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # define MALLOCF "malloc failed"
 # define SYNERR "syntax error"
 # define SYNERR_NEWLINE "syntax error near unexpected token `newline'"
-# define SYNERR_UNEXPECTED "syntax error near unexpected token `%s'"
+# define SYNERR_UNEXPECTED "%ssyntax error near unexpected token `%s'\n"
 # define SYNERR_NEAR_PIPE "syntax error near unexpected token '|'"
 # define SYNERR_NEAR_RIN "syntax error near unexpected token '<'"
 # define SYNERR_NEAR_ROUT "syntax error near unexpected token '>'"
@@ -33,6 +33,8 @@
 //builtin env error message
 # define ENV_TOO_MANY_ARGS "env: too many arguments"
 # define ENV_NULL "environment variables are NULL"
+// builtin export error message
+# define EXPORT_NO_VALID_IDENTIFIER "export: not a valid identifier"
 // builtin unset error message
 # define UNSET_TOO_MANY_ARGS "unset: too many arguments"
 // builtin exit error message
@@ -50,19 +52,12 @@ enum	e_error
 	E_SIGTERM = 128
 };
 
-typedef struct s_error_handler
-{
-	t_error			error;
-	const char		*msg;
-}	t_error_handler;
-
-t_error_handler	*create_error_handler(void);
-void			free_error_handler(t_error_handler *error_handler);
 void			fatal_error(const char *function_name, const char *msg \
 							, int status) __attribute__((noreturn));
 int				get_err_status(void);
-void			set_error(t_error_handler *self, int error, const char *msg);
 void			print_strerror(const char *funcname);
 bool			print_error(const char *msg);
 int				print_error_with_status(const char *msg, int status);
+bool			print_error_with_value(const char *err_msg \
+									, const char *variable_value);
 #endif

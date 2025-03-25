@@ -6,11 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:53:30 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:49:40 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:46:58 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "redirection.h"
+#include "executor.h"
 #include "signals.h"
 
 extern volatile sig_atomic_t	g_signal;
@@ -50,11 +51,15 @@ static void	process_heredoc_input(int pipe_write, char *delimiter)
 	}
 }
 
-static void	run_heredoc_child(int here_doc_pipe[2], char *delimiter)
+static void	run_heredoc_child(int here_doc_pipe[2], char *delimiter \
+						, t_executor *executor, t_shell_state *shell_state)
 {
 	safe_close(here_doc_pipe[0]);
-	if (!set_heredoc_signal_handler())
-		exit(EXIT_FAILURE);
+	if (!set_interactive_signal_handler())
+	{
+		free(delimiter);
+		terminate_shell(executor, shell_state, E_GENERAL_ERR);
+	}
 	process_heredoc_input(here_doc_pipe[1], delimiter);
 }
 
@@ -85,7 +90,8 @@ static bool	wait_heredoc_child(pid_t pid, int pipe_read)
 	return (true);
 }
 
-bool	set_heredoc(t_redirection *redir_content)
+bool	set_heredoc(t_redirection *redir_content, t_executor *executor \
+					, t_shell_state *shell_state)
 {
 	char	*delimiter;
 	int		here_doc_pipe[2];
@@ -105,7 +111,7 @@ bool	set_heredoc(t_redirection *redir_content)
 		return (print_strerror("fork"), false);
 	}
 	if (pid == 0)
-		run_heredoc_child(here_doc_pipe, delimiter);
+		run_heredoc_child(here_doc_pipe, delimiter, executor, shell_state);
 	free(delimiter);
 	safe_close(here_doc_pipe[1]);
 	if (!wait_heredoc_child(pid, here_doc_pipe[0]))

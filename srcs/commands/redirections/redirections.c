@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:57:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:25:15 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:35:30 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ void	free_redirection(void *redir)
 	free(redir_content);
 }
 
-bool	open_redirections(t_list *redir_list)
+bool	open_redirections(t_list *redir_list, t_executor *executor \
+						, t_shell_state *shell_state)
 {
 	t_list			*current_redir;
 	t_redirection	*redir_content;
@@ -65,7 +66,7 @@ bool	open_redirections(t_list *redir_list)
 									| O_CREAT | O_APPEND, 0644);
 		else if (redir_content->type == REDIR_HEREDOC)
 		{
-			if (!set_heredoc(redir_content))
+			if (!set_heredoc(redir_content, executor, shell_state))
 				return (false);
 		}
 		if (redir_content->fd == -1)

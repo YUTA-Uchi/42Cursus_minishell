@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:43:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:42:24 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static bool	is_token_delimiter(char c)
 	return (c == '<' || c == '>' || c == '|' || isspace(c));
 }
 
-static bool	add_new_token(t_list **head, char c, t_state *state)
+bool	add_new_token(t_list **head, char c, t_state *state)
 {
 	t_list	*token;
 

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:52:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:37:53 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:29:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,8 @@ t_pipes	*create_pipes(void)
 	return (pipes);
 }
 
-bool	set_pipes(t_executor *self, t_list *current_cmd \
-				, t_error_handler *error_handler)
+bool	set_pipes(t_executor *self, t_list *current_cmd)
 {
-	(void)error_handler;
 	if (current_cmd != self->cmds)
 	{
 		if (!replace_fd(STDIN_FILENO, self->pipes->prev_pipe[0]))

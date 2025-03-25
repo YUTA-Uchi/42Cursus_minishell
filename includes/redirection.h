@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:13 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:15:45 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:34:43 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define REDIRECTION_H
 
 # include "minishell.h"
-# include "error_handler.h"
 # include "syscall_wrapper.h"
 
 typedef enum e_redir_type
@@ -26,6 +25,8 @@ typedef enum e_redir_type
 }	t_redir_type;
 
 typedef struct s_redirection	t_redirection;
+typedef struct s_executor		t_executor;
+typedef struct s_shell_state	t_shell_state;
 struct s_redirection
 {
 	t_redir_type	type;
@@ -35,6 +36,8 @@ struct s_redirection
 
 t_list	*create_redirection(char *file, t_redir_type type);
 void	free_redirection(void *redir);
-bool	open_redirections(t_list *redir_list);
-bool	set_heredoc(t_redirection *redir_content);
+bool	open_redirections(t_list *redir_list, t_executor *executor \
+						, t_shell_state *shell_state);
+bool	set_heredoc(t_redirection *redir_content, t_executor *executor \
+					, t_shell_state *shell_state);
 #endif

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:22:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:02:06 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,19 @@ static bool	handle_redirection_word(t_list **head, char c, t_state *state)
 
 bool	tokenize_state_in_redir_in(t_state *state, t_list **head, char c)
 {
-	t_list	*token;
+	t_list		*token;
 
 	if (c == '<')
 	{
 		token = ft_lstlast(*head);
 		((t_token *)(token->content))->type = TOKEN_REDIR_HEREDOC;
+		*state = STATE_NONE;
 		return (true);
 	}
 	if (c == '>')
 	{
-		print_error_with_status(SYNERR_NEAR_RIN, 0);
-		return (false);
+		add_new_token(head, c, state);
+		return (true);
 	}
 	if (isspace(c))
 	{
@@ -54,18 +55,19 @@ bool	tokenize_state_in_redir_in(t_state *state, t_list **head, char c)
 
 bool	tokenize_state_in_redir_out(t_state *state, t_list **head, char c)
 {
-	t_list	*token;
+	t_list		*token;
 
 	if (c == '>')
 	{
 		token = ft_lstlast(*head);
 		((t_token *)(token->content))->type = TOKEN_REDIR_APPEND;
+		*state = STATE_NONE;
 		return (true);
 	}
 	if (c == '<')
 	{
-		print_error_with_status(SYNERR_NEAR_ROUT, 0);
-		return (false);
+		add_new_token(head, c, state);
+		return (true);
 	}
 	if (isspace(c))
 	{

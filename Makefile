@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/24 19:58:36 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/25 14:28:08 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ COMMON_SRCS		:=	shell_core_main.c \
 					ft_unset.c \
 					builtins.c \
 					error_handler.c \
+					error_handler_util.c \
 					executor.c \
 					command_execution.c \
 					executor_flow.c \
@@ -49,10 +50,13 @@ COMMON_SRCS		:=	shell_core_main.c \
 					expander_env_handler.c \
 					expander_constructor.c \
 					environment.c \
+					environment_util.c \
+					environment_access.c \
 					shell_state.c \
 					fd_syscall_wrapper.c \
 					process_syscall_wrapper.c \
-					signal_handler.c 
+					signal_handler.c \
+					signal_handler_util.c
 
 OBJ_DIR			:=	./obj
 OBJS			:=	$(COMMON_SRCS:%.c=$(OBJ_DIR)/%.o)
