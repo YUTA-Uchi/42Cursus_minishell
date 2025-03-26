@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:13:13 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/23 13:24:46 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:25:03 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static bool	expand_state_word(t_expand *expand_ctx \
 bool	dispatch_expand_state_handler(t_expand *expand_ctx \
 									, char c, t_list *env_list)
 {
-	const t_expand_state_handler	expand_state_handler[4] = {\
+	static const t_expand_state_handler	expand_state_handler[4] = {\
 		expand_state_word, \
 		expand_state_in_single_quote, \
 		expand_state_in_double_quote, \

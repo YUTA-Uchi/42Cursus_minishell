@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:05:38 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/22 14:07:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:21:19 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,12 @@ t_token_type	get_token_type(char c)
 
 bool	handle_tokenize_state(t_state *state, t_list **head, char c)
 {
-	const t_token_state_handler	handlers[6] = {\
-		tokenize_state_none, \
-		tokenize_state_word, \
-		tokenize_state_in_single_quote, \
-		tokenize_state_in_double_quote, \
-		tokenize_state_in_redir_in, \
+	static const t_token_state_handler	handlers[6] = {
+		tokenize_state_none,
+		tokenize_state_word,
+		tokenize_state_in_single_quote,
+		tokenize_state_in_double_quote,
+		tokenize_state_in_redir_in,
 		tokenize_state_in_redir_out
 	};
 

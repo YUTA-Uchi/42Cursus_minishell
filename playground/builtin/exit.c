@@ -6,46 +6,72 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:10:27 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/02/17 14:39:00 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:17:50 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <stdlib.h>
+#include "../../libft/libft.h"
 
-int	last_status = 5;
-
-bool	is_numeric(char *s)
+typedef struct s_exit_status
 {
-	if (!isdigit(*s))
-		return (false);
-	while (*s)
-	{
-		if (!isdigit(*s))
-			return (false);
-		s++;
-	}
-	return (true);
+	int	status;
+	int	exit_code;
+}	t_exit_status;
+typedef int	(*t_handler)(t_exit_status *, t_list **, char);
+
+int	handler_none(t_exit_status *state, t_list **a, char c)
+{
+	(void)state;
+	(void)c;
+	(void)a;
+	return (0);
+}
+
+int	handler_something(t_exit_status *state, t_list **a, char c)
+{
+	(void)state;
+	(void)c;
+	(void)a;
+	return (0);
+}
+
+int	handler_something2(t_exit_status *state, t_list **a, char c)
+{
+	(void)state;
+	(void)c;
+	(void)a;
+	return (0);
+}
+
+int	handler_something3(t_exit_status *state, t_list **a, char c)
+{
+	(void)state;
+	(void)c;
+	(void)a;
+	return (0);
+}
+
+int	handler_something4(t_exit_status *state, t_list **a, char c)
+{
+	(void)state;
+	(void)c;
+	(void)a;
+	return (0);
+}
+
+int handle(t_exit_status *state, t_list **a, char c)
+{
+	const t_handler	handlers[4] = {
+		handler_none,
+		handler_something,
+		handler_something2,
+		handler_something3
+	};
+	return (handlers[0](state, a, c));
 }
 
 int	main(int argc, char**argv)
 {
-	//unsigned long	res;
-	char			*status_num;
-
-	if (argv[1] == NULL)
-		exit(last_status);
-	if (argc > 2)
-	{
-		printf("too many variables...\n");
-		return (1);
-	}
-	status_num = argv[1];
-	if (is_numeric(status_num))
-	{
-		errno = 0;
-		// TODO unsigned int (0~255) or not
-		exit(atoi(status_num));
-	}
-	printf("numeric argument required");
-	exit(255);
+	return (handle(NULL, NULL, 0));
 }
