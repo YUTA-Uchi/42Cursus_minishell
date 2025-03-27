@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 14:31:54 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:27:18 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,13 @@ extern volatile sig_atomic_t	g_signal;
 static bool	setup_io_redirections(t_executor *self, t_list *current_cmd)
 {
 	if (!set_pipes(self, current_cmd))
+	{
 		return (false);
+	}
 	if (!set_redirections(current_cmd))
+	{
 		return (false);
+	}
 	return (true);
 }
 

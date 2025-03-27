@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 14:38:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:16:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,9 @@ enum	e_error
 {
 	E_SUCCESS = 0,
 	E_GENERAL_ERR = 1,
+	E_SYNTAX_ERR = 2,
+	E_PIPE_ERR = 3,
+	E_REDIRECTION_ERR = 4,
 	E_NOPERMISSION = 126,
 	E_NOTFOUND = 127,
 	E_SIGTERM = 128

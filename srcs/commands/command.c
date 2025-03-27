@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:32:23 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 17:10:07 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:12:18 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_list	*create_cmd(void)
 	if (!cmd->args)
 		return (free_cmd(cmd), NULL);
 	cmd->redirections = NULL;
-	cmd->pid = 0;
+	cmd->pid = -1;
 	return (ft_lstnew(cmd));
 }
 

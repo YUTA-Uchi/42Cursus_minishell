@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:26 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 13:10:47 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:31:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,22 +43,22 @@ int	execute_single_builtin(t_executor *self, t_shell_state *shell_state)
 		, self->builtins_list)->func(self, cmd_list, shell_state));
 }
 
-static bool	setup_command_execution(t_executor *self, t_list *cmd, \
+static t_error	setup_command_execution(t_executor *self, t_list *cmd, \
 									t_shell_state *shell_state)
 {
 	t_cmd	*cmd_content;
 
-	if (!open_redirections(((t_cmd *)(cmd->content))->redirections \
-						, self, shell_state))
-		return (false);
 	self->pipes->prev_pipe[0] = self->pipes->next_pipe[0];
 	self->pipes->prev_pipe[1] = self->pipes->next_pipe[1];
 	if (cmd->next && !safe_pipe(self->pipes->next_pipe))
-		return (false);
+		return (E_PIPE_ERR);
+	if (!open_redirections(((t_cmd *)(cmd->content))->redirections \
+						, self, shell_state))
+		return (E_REDIRECTION_ERR);
 	cmd_content = (t_cmd *)(cmd->content);
 	if (!cmd_content->cmd_name)
-		return (false);
-	return (true);
+		return (E_GENERAL_ERR);
+	return (E_SUCCESS);
 }
 
 static bool	fork_and_execute_command(t_executor *self, t_list *cmd \
@@ -83,12 +83,21 @@ int	execute_external_commands(t_executor *self \
 	, t_shell_state *shell_state)
 {
 	t_list	*current_cmd;
+	t_error	err_status;
 
 	current_cmd = self->cmds;
 	while (current_cmd)
 	{
-		if (!setup_command_execution(self, current_cmd, shell_state))
-			return (get_err_status());
+		err_status = setup_command_execution(self, current_cmd, shell_state);
+		if (err_status == E_PIPE_ERR)
+		{
+			break ;
+		}
+		if (err_status != E_SUCCESS)
+		{
+			current_cmd = current_cmd->next;
+			continue ;
+		}
 		if (!fork_and_execute_command(self, current_cmd, shell_state))
 			return (get_err_status());
 		current_cmd = current_cmd->next;

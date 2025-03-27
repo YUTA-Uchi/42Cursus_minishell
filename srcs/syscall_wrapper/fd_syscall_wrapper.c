@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 18:19:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:07:16 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:29:56 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,33 @@ bool	is_fd_open(int fd)
 bool	safe_close(int fd)
 {
 	if (close(fd) == -1)
-		return (print_strerror("close"), false);
+	{
+		print_strerror("close");
+		errno = 0;
+		return (false);
+	}
 	return (true);
 }
 
 bool	safe_dup2(int oldfd, int newfd)
 {
 	if (dup2(oldfd, newfd) == -1)
-		return (print_strerror("dup2"), false);
+	{
+		print_strerror("dup2");
+		errno = 0;
+		return (false);
+	}
 	return (true);
 }
 
 bool	safe_pipe(int pipefd[2])
 {
 	if (pipe(pipefd) == -1)
-		return (print_strerror("pipe"), false);
+	{
+		print_strerror("pipe");
+		errno = 0;
+		return (false);
+	}
 	return (true);
 }
 
@@ -46,6 +58,9 @@ int	safe_open(const char *path, int flags, mode_t mode)
 
 	fd = open(path, flags, mode);
 	if (fd == -1)
+	{
 		print_strerror(path);
+		errno = 0;
+	}
 	return (fd);
 }

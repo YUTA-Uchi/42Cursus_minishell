@@ -6,11 +6,12 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 14:10:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 14:13:19 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:00:51 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
+#include "signals.h"
 
 static void	display_signal_message(int signal, bool *sigint_displayed \
 	, bool *sigquit_displayed)
@@ -28,7 +29,7 @@ static void	display_signal_message(int signal, bool *sigint_displayed \
 }
 
 static int	handle_exit_status(int status, bool *sigint_displayed \
-, bool *sigquit_displayed)
+			, bool *sigquit_displayed)
 {
 	int	signal;
 
@@ -51,6 +52,10 @@ static int	wait_single_command(t_cmd *cmd_content, bool *sigint_displayed \
 
 	while (1)
 	{
+		if (cmd_content->pid == -1 && g_signal != 0)
+			return (g_signal | E_SIGTERM);
+		if (cmd_content->pid == -1)
+			return (E_GENERAL_ERR);
 		wait_result = waitpid(cmd_content->pid, &status, 0);
 		if (wait_result != -1 || errno != EINTR)
 			break ;
