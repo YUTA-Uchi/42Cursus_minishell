@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:10:06 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 12:29:31 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:10:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,3 +85,10 @@ bool	expansion(t_list **token_list, t_shell_state *shell_state)
 	}
 	return (true);
 }
+
+// #include "expander_filter.h"
+
+// bool	expansion(t_list **token_list, t_shell_state *shell_state)
+// {
+// 	return (apply_expansion_filters(token_list, shell_state));
+// }

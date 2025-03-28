@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 14:39:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 14:56:08 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 21:40:25 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,9 @@ bool	initialize_shell(t_shell_state **sh_state, char **environ)
 
 bool	check_terminal_state(t_shell_state *sh_state)
 {
-	if (!isatty(STDIN_FILENO))
+	if (!sh_state->is_interactive)
 	{
 		sh_state->running = false;
-		sh_state->last_status = E_NOTFOUND;
 		return (false);
 	}
 	return (true);

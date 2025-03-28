@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 11:47:05 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:52:02 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static bool	process_key_value_pair(t_shell_state *shell_state \
 		free(key);
 		print_error(EXPORT_NO_VALID_IDENTIFIER);
 		(*i)++;
-		return (false);
+		return (shell_state->last_status = E_GENERAL_ERR, false);
 	}
 	value = ft_strdup(ft_strchr(arg, '=') + 1);
 	if (!add_env(shell_state->env_list, key, value))
@@ -33,7 +33,7 @@ static bool	process_key_value_pair(t_shell_state *shell_state \
 		free(value);
 		print_strerror("export");
 		(*i)++;
-		return (false);
+		return (shell_state->last_status = E_GENERAL_ERR, false);
 	}
 	free(key);
 	free(value);
@@ -76,5 +76,5 @@ int	ft_export(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 		}
 		i++;
 	}
-	return (0);
+	return (shell_state->last_status);
 }

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:07:26 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/27 18:31:54 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:33:28 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	execute_single_builtin(t_executor *self, t_shell_state *shell_state)
 	cmd_content = (t_cmd *)(cmd_list->content);
 	if (!open_redirections(cmd_content->redirections \
 						, self, shell_state))
-		return (get_err_status());
+		return (E_GENERAL_ERR);
 	if (!set_redirections(cmd_list))
 		return (get_err_status());
 	return (lookup_builtin(cmd_content->cmd_name \

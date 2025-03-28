@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:02 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:47:44 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,13 @@ bool	print_pwd_from_getcwd(void)
 
 int	ft_pwd(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 {
-	t_cmd	*cmd_content;
+	// t_cmd	*cmd_content;
 
 	(void)self;
-	cmd_content = (t_cmd *)(current_cmd->content);
-	if (cmd_content->args[1])
-		return (print_error_with_status(PWD_TOO_MANY_ARGS, E_GENERAL_ERR));
+	(void)current_cmd;
+	// cmd_content = (t_cmd *)(current_cmd->content);
+	// if (cmd_content->args[1])
+	// 	return (print_error_with_status(PWD_TOO_MANY_ARGS, E_GENERAL_ERR));
 	if (print_env_pwd(shell_state))
 		return (0);
 	if (!print_pwd_from_getcwd())

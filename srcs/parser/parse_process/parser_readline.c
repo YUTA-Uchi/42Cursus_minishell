@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:35:28 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 11:28:24 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:26:50 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ static void	handle_eof(t_shell_state *sh_state)
 {
 	sh_state->running = false;
 	sh_state->last_status = E_SUCCESS;
-	ft_printf(STDOUT_FILENO, "exit\n");
+	if (sh_state->is_interactive)
+		ft_printf(STDOUT_FILENO, "exit\n");
 }
 
 static char	*handle_sigint(char *line, t_shell_state *sh_state)
@@ -46,7 +47,7 @@ char	*ft_readline(t_shell_state *sh_state, const char *prompt)
 	}
 	if (g_signal == SIGINT)
 		return (handle_sigint(line, sh_state));
-	if (*line)
+	if (sh_state->is_interactive && *line)
 		add_line_to_history(line);
 	return (line);
 }

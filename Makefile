@@ -6,7 +6,7 @@
 #    By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/17 14:58:49 by yuuchiya          #+#    #+#              #
-#    Updated: 2025/03/25 14:28:08 by yuuchiya         ###   ########.fr        #
+#    Updated: 2025/03/28 18:07:42 by yuuchiya         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,6 +49,10 @@ COMMON_SRCS		:=	shell_core_main.c \
 					expander_state_handler.c \
 					expander_env_handler.c \
 					expander_constructor.c \
+					expander_filter.c \
+					expander_empty_filter.c \
+					expander_quotes_filter.c \
+					expander_variable_filter.c \
 					environment.c \
 					environment_util.c \
 					environment_access.c \

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:22:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 12:49:37 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 13:38:25 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,4 +106,3 @@ bool	tokenize_state_heredoc_delim(t_state *state, t_list **head, char c)
 		*state = STATE_WORD;
 	return (true);
 }
-

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:58:30 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 14:28:58 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:20:02 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ typedef struct s_shell_state
 {
 	bool			running;
 	int				last_status;
+	bool			is_interactive;
 	t_list			*env_list;
 }	t_shell_state;
 

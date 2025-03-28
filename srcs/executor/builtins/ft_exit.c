@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:32:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 16:34:00 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:42:26 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ int	ft_exit(t_executor *self, t_list *current_cmd, t_shell_state *shell_state)
 	t_cmd	*cmd;
 
 	cmd = (t_cmd *)(current_cmd->content);
-	ft_printf(STDERR_FILENO, "exit\n");
+	if (shell_state->is_interactive)
+		ft_printf(STDERR_FILENO, "exit\n");
 	if (!cmd->args[1])
 		terminate_shell(self, shell_state, 0);
 	else if (cmd->args[2])
