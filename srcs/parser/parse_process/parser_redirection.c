@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:42:46 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 15:05:36 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:58:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,16 @@ bool	parse_redirection(t_list **token_list, t_cmd *cmd_content)
 		return (true);
 	redir_type = get_redir_type(token_content->type);
 	if (!(*token_list)->next)
-		return (print_error_with_status(SYNERR_NEWLINE, 0), false);
+		return (print_error(SYNERR_NEWLINE));
 	next_token_content = (t_token *)((*token_list)->next->content);
-	if (next_token_content->type != TOKEN_WORD)
+	if (!(next_token_content->type == TOKEN_WORD \
+		|| next_token_content->type == TOKEN_HEREDOC_DELIMITER))
 		return (print_error_with_value(SYNERR_UNEXPECTED \
 								, get_token_str(next_token_content->type)));
 	redirection = create_redirection(next_token_content->value \
 									, redir_type);
 	if (!redirection)
-		return (print_error_with_status(MALLOCF, 0), false);
+		return (print_error(MALLOCF));
 	ft_lstadd_back(&(cmd_content->redirections), redirection);
 	*token_list = (*token_list)->next;
 	return (true);

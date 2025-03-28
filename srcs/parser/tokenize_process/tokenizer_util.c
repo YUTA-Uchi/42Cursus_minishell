@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:05:38 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/26 14:21:19 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:52:58 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,22 @@ t_token_type	get_token_type(char c)
 
 bool	handle_tokenize_state(t_state *state, t_list **head, char c)
 {
-	static const t_token_state_handler	handlers[6] = {
+	static const t_token_state_handler	handlers[7] = {
 		tokenize_state_none,
 		tokenize_state_word,
 		tokenize_state_in_single_quote,
 		tokenize_state_in_double_quote,
 		tokenize_state_in_redir_in,
-		tokenize_state_in_redir_out
+		tokenize_state_in_redir_out,
+		tokenize_state_heredoc_delim
 	};
 
 	return (handlers[*state](state, head, c));
 }
 
-t_list	*handle_token_error(t_list **token_list, const char *message)
-{
-	ft_printf(STDERR_FILENO, "minishell: %s\n", message);
-	ft_lstclear(token_list, free_token);
-	return (NULL);
-}
+// t_list	*handle_token_error(t_list **token_list, const char *message)
+// {
+// 	ft_printf(STDERR_FILENO, "minishell: %s\n", message);
+// 	ft_lstclear(token_list, free_token);
+// 	return (NULL);
+// }

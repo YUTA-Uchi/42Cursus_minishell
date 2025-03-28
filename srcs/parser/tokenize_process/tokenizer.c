@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 19:22:57 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/24 19:48:28 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:42:11 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ t_list	*tokenize_line(const char *line)
 	}
 	if (state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE)
 	{
-		ft_printf(STDERR_FILENO, "minishell: Unclosed quote detected.\n");
+		print_error(UNCLOSED_QUOTE);
 		return (ft_lstclear(&token_list, free_token), NULL);
 	}
 	return (token_list);

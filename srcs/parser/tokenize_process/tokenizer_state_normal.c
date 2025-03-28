@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:43:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 17:33:35 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:35:09 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static bool	is_token_delimiter(char c)
 {
-	return (c == '<' || c == '>' || c == '|' || isspace(c));
+	return (c == '<' || c == '>' || c == '|');
 }
 
 bool	add_new_token(t_list **head, char c, t_state *state)
@@ -48,7 +48,7 @@ bool	tokenize_state_none(t_state *state, t_list **head, char c)
 		return (true);
 	}
 	if (!add_new_token(head, c, state))
-		return (print_error_with_status(MALLOCF, 0), false);
+		return (print_error(MALLOCF));
 	return (true);
 }
 
@@ -62,11 +62,11 @@ bool	tokenize_state_word(t_state *state, t_list **head, char c)
 	else if (is_token_delimiter(c))
 	{
 		if (!add_new_token(head, c, state))
-			return (print_error_with_status(MALLOCF, 0), false);
+			return (print_error(MALLOCF));
 		return (true);
 	}
 	if (!append_char_to_token(head, c))
-		return (print_error_with_status(MALLOCF, 0), false);
+		return (print_error(MALLOCF));
 	if (c == '\'')
 		*state = STATE_IN_SINGLE_QUOTE;
 	else if (c == '\"')

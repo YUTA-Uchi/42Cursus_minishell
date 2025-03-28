@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/27 16:16:56 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:40:58 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 # define ERR_HEADER "minishell: "
 # define MALLOCF "malloc failed"
+# define UNCLOSED_QUOTE "Unclosed quote detected."
 # define SYNERR "syntax error"
 # define SYNERR_NEWLINE "syntax error near unexpected token `newline'"
 # define SYNERR_UNEXPECTED "%ssyntax error near unexpected token `%s'\n"

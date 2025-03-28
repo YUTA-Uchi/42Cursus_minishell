@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:04:17 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 17:37:38 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:34:12 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static bool	add_cmd_node_to_list(t_list **cmd_list, t_list **current_cmd)
 	{
 		*current_cmd = create_cmd();
 		if (!(*current_cmd))
-			return (print_error_with_status(MALLOCF, 0), NULL);
+			return (print_error(MALLOCF));
 		ft_lstadd_back(cmd_list, *current_cmd);
 	}
 	return (true);
@@ -29,8 +29,7 @@ static bool	handle_pipe_token(t_list **current_cmd)
 {
 	if (!*current_cmd)
 	{
-		print_error_with_status(SYNERR_NEAR_PIPE, 0);
-		return (false);
+		return (print_error(SYNERR_NEAR_PIPE));
 	}
 	*current_cmd = NULL;
 	return (true);

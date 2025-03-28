@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 15:42:44 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:54:34 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ typedef enum e_token_type
 	TOKEN_REDIR_IN,
 	TOKEN_REDIR_OUT,
 	TOKEN_REDIR_APPEND,
-	TOKEN_REDIR_HEREDOC
+	TOKEN_REDIR_HEREDOC,
+	TOKEN_HEREDOC_DELIMITER
 }	t_token_type;
 
 typedef struct s_token	t_token;
@@ -46,7 +47,8 @@ typedef enum e_state
 	STATE_IN_SINGLE_QUOTE,
 	STATE_IN_DOUBLE_QUOTE,
 	STATE_REDIR_IN,
-	STATE_REDIR_OUT
+	STATE_REDIR_OUT,
+	STATE_HEREDOC_DELIM
 }	t_state;
 
 typedef bool			(*t_token_state_handler)(t_state *, t_list **, char);
@@ -103,12 +105,14 @@ bool			handle_tokenize_state(t_state *state, t_list **head, char c);
 bool			tokenize_state_none(t_state *state, t_list **head, char c);
 bool			tokenize_state_word(t_state *state, t_list **head, char c);
 bool			tokenize_state_in_single_quote(t_state *state \
-											, t_list **head, char c);
+										, t_list **head, char c);
 bool			tokenize_state_in_double_quote(t_state *state \
-											, t_list **head, char c);
+										, t_list **head, char c);
 bool			tokenize_state_in_redir_in(t_state *state \
 										, t_list **head, char c);
 bool			tokenize_state_in_redir_out(t_state *state \
+										, t_list **head, char c);
+bool			tokenize_state_heredoc_delim(t_state *state \
 										, t_list **head, char c);
 
 // expander
@@ -119,14 +123,14 @@ bool			resolve_pending_expansion(t_expand *expand_ctx \
 bool			initialize_env_key(t_expand *expand_ctx);
 bool			expansion(t_list **token_list, t_shell_state *shell_state);
 bool			dispatch_expand_state_handler(t_expand *expand_ctx \
-											, char c, t_list *env_list);
+										, char c, t_list *env_list);
 bool			expand_state_in_env(t_expand *expand_ctx \
-									, char c, t_list *env_list);
+										, char c, t_list *env_list);
 bool			replace_with_expanded_token(t_list **current \
 										, t_list *prev, t_expand **expand_ctx);
 bool			is_empty_token(t_token *token);
 void			remove_token_node(t_list **token_list, t_list *to_remove \
-								, t_list *prev);
+										, t_list *prev);
 // expander string handler
 bool			append_char_to_env_key(t_expand *expand_ctx, char c);
 bool			append_char_to_str(t_expand *expand_ctx, char c);

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:22:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/25 16:02:06 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:49:37 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static bool	handle_redirection_word(t_list **head, char c, t_state *state)
 
 	token = create_token(get_token_type(c), c);
 	if (!token)
-		return (false);
+		return (print_error(MALLOCF));
 	ft_lstadd_back(head, token);
 	if (c == '\'')
 		*state = STATE_IN_SINGLE_QUOTE;
@@ -37,12 +37,13 @@ bool	tokenize_state_in_redir_in(t_state *state, t_list **head, char c)
 	{
 		token = ft_lstlast(*head);
 		((t_token *)(token->content))->type = TOKEN_REDIR_HEREDOC;
-		*state = STATE_NONE;
+		*state = STATE_HEREDOC_DELIM;
 		return (true);
 	}
 	if (c == '>')
 	{
-		add_new_token(head, c, state);
+		if (!add_new_token(head, c, state))
+			return (print_error(MALLOCF));
 		return (true);
 	}
 	if (isspace(c))
@@ -66,7 +67,8 @@ bool	tokenize_state_in_redir_out(t_state *state, t_list **head, char c)
 	}
 	if (c == '<')
 	{
-		add_new_token(head, c, state);
+		if (!add_new_token(head, c, state))
+			return (print_error(MALLOCF));
 		return (true);
 	}
 	if (isspace(c))
@@ -76,3 +78,32 @@ bool	tokenize_state_in_redir_out(t_state *state, t_list **head, char c)
 	}
 	return (handle_redirection_word(head, c, state));
 }
+
+bool	tokenize_state_heredoc_delim(t_state *state, t_list **head, char c)
+{
+	t_list	*token;
+
+	if (isspace(c))
+	{
+		*state = STATE_NONE;
+		return (true);
+	}
+	else if (c == '<' || c == '>' || c == '|')
+	{
+		if (!add_new_token(head, c, state))
+			return (print_error(MALLOCF));
+		return (true);
+	}
+	token = create_token(TOKEN_HEREDOC_DELIMITER, c);
+	if (!token)
+		return (print_error(MALLOCF));
+	ft_lstadd_back(head, token);
+	if (c == '\'')
+		*state = STATE_IN_SINGLE_QUOTE;
+	else if (c == '\"')
+		*state = STATE_IN_DOUBLE_QUOTE;
+	else
+		*state = STATE_WORD;
+	return (true);
+}
+
