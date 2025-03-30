@@ -30,11 +30,6 @@ static char	*handle_sigint(char *line, t_shell_state *sh_state)
 	return (NULL);
 }
 
-static void	add_line_to_history(char *line)
-{
-	add_history(line);
-}
-
 char	*ft_readline(t_shell_state *sh_state, const char *prompt)
 {
 	char	*line;
@@ -48,6 +43,6 @@ char	*ft_readline(t_shell_state *sh_state, const char *prompt)
 	if (g_signal == SIGINT)
 		return (handle_sigint(line, sh_state));
 	if (sh_state->is_interactive && *line)
-		add_line_to_history(line);
+		add_history(line);
 	return (line);
 }

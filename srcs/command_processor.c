@@ -14,20 +14,20 @@
 #include "command_processor.h"
 #include "signals.h"
 
-bool	prepare_commands(t_executor **executor \
-	, t_parser **parser, t_shell_state *sh_state)
+bool	prepare_commands(t_executor *executor \
+	, t_parser *parser, t_shell_state *sh_state)
 {
 	if (handle_pending_signals(sh_state))
 	{
-		free_parser(*parser);
-		free_executor(*executor);
+		free_parser(parser);
+		free_executor(executor);
 		return (false);
 	}
-	(*executor)->cmds = (*parser)->parse(*parser, sh_state);
-	free_parser(*parser);
-	if (!(*executor)->cmds)
+	executor->cmds = parser->parse(parser, sh_state);
+	free_parser(parser);
+	if (!executor->cmds)
 	{
-		free_executor(*executor);
+		free_executor(executor);
 		return (false);
 	}
 	return (true);
@@ -56,7 +56,7 @@ bool	process_command_line(t_shell_state *sh_state)
 		free_parser(parser);
 		return (false);
 	}
-	if (!prepare_commands(&executor, &parser, sh_state))
+	if (!prepare_commands(executor, parser, sh_state))
 	{
 		return (true);
 	}

@@ -16,8 +16,8 @@
 # include "executor.h"
 # include "parser.h"
 
-bool	prepare_commands(t_executor **executor \
-	, t_parser **parser, t_shell_state *sh_state);
+bool	prepare_commands(t_executor *executor \
+	, t_parser *parser, t_shell_state *sh_state);
 void	cleanup_after_execution(t_executor *executor, t_shell_state *sh_state \
 	, int status);
 bool	process_command_line(t_shell_state *sh_state);

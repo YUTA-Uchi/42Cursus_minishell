@@ -68,6 +68,7 @@ bool	set_child_signal_handler(void)
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
+	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_handler = SIG_DFL;
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
