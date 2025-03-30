@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:27:11 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 12:54:34 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 15:30:46 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,5 +136,8 @@ bool			append_char_to_env_key(t_expand *expand_ctx, char c);
 bool			append_char_to_str(t_expand *expand_ctx, char c);
 bool			append_last_status_to_str(t_expand *expand_ctx);
 bool			set_env_value_to_str(t_expand *expand_ctx, t_list *env_list);
+
+// utils
+bool			ft_is_space(char c);
 
 #endif

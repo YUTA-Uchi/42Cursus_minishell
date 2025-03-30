@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:05:38 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 12:52:58 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 15:29:30 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,11 @@ bool	handle_tokenize_state(t_state *state, t_list **head, char c)
 	};
 
 	return (handlers[*state](state, head, c));
+}
+
+bool	ft_is_space(char c)
+{
+	return (c == ' ' || ((unsigned)c - '\t' < 5));
 }
 
 // t_list	*handle_token_error(t_list **token_list, const char *message)

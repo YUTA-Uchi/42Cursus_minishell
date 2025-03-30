@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:22:41 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 13:38:25 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 15:32:39 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static bool	handle_redirection_word(t_list **head, char c, t_state *state)
 		*state = STATE_IN_SINGLE_QUOTE;
 	else if (c == '\"')
 		*state = STATE_IN_DOUBLE_QUOTE;
-	else if (!isspace(c))
+	else if (!ft_is_space(c))
 		*state = STATE_WORD;
 	return (true);
 }
@@ -46,7 +46,7 @@ bool	tokenize_state_in_redir_in(t_state *state, t_list **head, char c)
 			return (print_error(MALLOCF));
 		return (true);
 	}
-	if (isspace(c))
+	if (ft_is_space(c))
 	{
 		*state = STATE_NONE;
 		return (true);
@@ -71,7 +71,7 @@ bool	tokenize_state_in_redir_out(t_state *state, t_list **head, char c)
 			return (print_error(MALLOCF));
 		return (true);
 	}
-	if (isspace(c))
+	if (ft_is_space(c))
 	{
 		*state = STATE_NONE;
 		return (true);
@@ -83,7 +83,7 @@ bool	tokenize_state_heredoc_delim(t_state *state, t_list **head, char c)
 {
 	t_list	*token;
 
-	if (isspace(c))
+	if (ft_is_space(c))
 	{
 		*state = STATE_NONE;
 		return (true);

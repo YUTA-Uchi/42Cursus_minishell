@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 17:10:39 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 21:05:57 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 15:31:01 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static bool	replace_env_variable_with_env_value(t_expand *expand_ctx \
 		if (!set_env_value_to_str(expand_ctx, env_list))
 			return (false);
 	}
-	if (isspace(c))
+	if (ft_is_space(c))
 	{
 		if (!set_env_value_to_str(expand_ctx, env_list))
 			return (false);
@@ -96,7 +96,7 @@ bool	expand_state_in_env(t_expand *expand_ctx \
 		expand_ctx->state = expand_ctx->prev_state;
 		return (true);
 	}
-	if (!isspace(c))
+	if (!ft_is_space(c))
 	{
 		if (!append_char_to_env_key(expand_ctx, c))
 			return (false);

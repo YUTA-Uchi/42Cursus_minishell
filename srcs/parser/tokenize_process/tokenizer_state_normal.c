@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 11:43:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 12:35:09 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 15:32:29 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,14 @@ bool	add_new_token(t_list **head, char c, t_state *state)
 		*state = STATE_REDIR_OUT;
 	else if (c == '|')
 		*state = STATE_NONE;
-	else if (!isspace(c))
+	else if (!ft_is_space(c))
 		*state = STATE_WORD;
 	return (true);
 }
 
 bool	tokenize_state_none(t_state *state, t_list **head, char c)
 {
-	if (isspace(c))
+	if (ft_is_space(c))
 	{
 		*state = STATE_NONE;
 		return (true);
@@ -54,7 +54,7 @@ bool	tokenize_state_none(t_state *state, t_list **head, char c)
 
 bool	tokenize_state_word(t_state *state, t_list **head, char c)
 {
-	if (isspace(c))
+	if (ft_is_space(c))
 	{
 		*state = STATE_NONE;
 		return (true);
