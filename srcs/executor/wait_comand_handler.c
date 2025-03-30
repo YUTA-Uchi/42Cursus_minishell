@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 14:10:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 20:35:03 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 18:24:28 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@ static void	display_signal_message(int signal, bool *sigint_displayed \
 	{
 		ft_printf(STDERR_FILENO, "Quit (core dumped)\n");
 		*sigquit_displayed = true;
+	}
+	else if (signal == SIGPIPE)
+	{
+		ft_printf(STDERR_FILENO, "Broken pipe\n");
 	}
 }
 

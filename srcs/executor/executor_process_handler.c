@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 13:55:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/27 18:27:18 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 19:53:54 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,7 @@ static bool	try_builtin_execution(t_executor *self, t_list *current_cmd \
 static void	exit_with_command_error(char *cmd_name \
 						, t_executor *self, t_shell_state *shell_state)
 {
-	if (errno == EACCES)
-		ft_printf(STDERR_FILENO, "%s: %s\n", cmd_name, COMMAND_NOT_FOUND);
-	else
-		print_strerror(cmd_name);
+	print_strerror(cmd_name);
 	terminate_shell(self, shell_state, get_err_status());
 }
 
@@ -65,7 +62,7 @@ void	execute_child_process(t_executor *self, t_list *current_cmd \
 		terminate_shell(self, shell_state, errno);
 	cmd_content = (t_cmd *)(current_cmd->content);
 	if (try_builtin_execution(self, current_cmd, shell_state, &exit_code))
-		exit(exit_code);
+		terminate_shell(self, shell_state, exit_code);
 	if (ft_strchr(cmd_content->cmd_name, '/'))
 		exec_ret = execve_in_absolute_path(cmd_content, shell_state->env_list);
 	else

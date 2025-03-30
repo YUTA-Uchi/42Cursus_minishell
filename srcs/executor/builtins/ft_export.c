@@ -6,11 +6,28 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:35:08 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 19:52:02 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/30 19:48:34 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
+
+static bool	is_valid_identifier(char *key)
+{
+	int	i;
+
+	i = 0;
+	if (!ft_isalpha(key[i]) && key[i] != '_')
+		return (false);
+	i++;
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+			return (false);
+		i++;
+	}
+	return (true);
+}
 
 static bool	process_key_value_pair(t_shell_state *shell_state \
 									, char *arg, int *i)
@@ -19,7 +36,7 @@ static bool	process_key_value_pair(t_shell_state *shell_state \
 	char	*value;
 
 	key = ft_strndup(arg, ft_strchr(arg, '=') - arg);
-	if (!ft_strlen(key))
+	if (!ft_strlen(key) || !is_valid_identifier(key))
 	{
 		free(key);
 		print_error(EXPORT_NO_VALID_IDENTIFIER);
@@ -42,10 +59,11 @@ static bool	process_key_value_pair(t_shell_state *shell_state \
 
 static bool	process_key_only(t_shell_state *shell_state, char *arg, int *i)
 {
-	if (!ft_strlen(arg))
+	if (!ft_strlen(arg) || !is_valid_identifier(arg))
 	{
+		print_error(EXPORT_NO_VALID_IDENTIFIER);
 		(*i)++;
-		return (false);
+		return (shell_state->last_status = E_GENERAL_ERR, false);
 	}
 	if (!get_env_value(shell_state->env_list, arg))
 		add_env(shell_state->env_list, arg, NULL);
