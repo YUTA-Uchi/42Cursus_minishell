@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:26:59 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 12:40:58 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/31 15:02:55 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # define SYNERR_NEAR_RIN "syntax error near unexpected token '<'"
 # define SYNERR_NEAR_ROUT "syntax error near unexpected token '>'"
 # define COMMAND_NOT_FOUND "command not found"
+# define HEREDOC_EOF "%sheredoc: warning: here-document at line 1 delimited by end-of-file (wanted `%s')\n"
 // builtin pwd error message
 # define BUFF_NULL "buff is null"
 # define PWD_TOO_MANY_ARGS "pwd: too many arguments"
@@ -51,6 +52,7 @@ enum	e_error
 	E_SYNTAX_ERR = 2,
 	E_PIPE_ERR = 3,
 	E_REDIRECTION_ERR = 4,
+	E_EOF_ERR = 5,
 	E_NOPERMISSION = 126,
 	E_NOTFOUND = 127,
 	E_SIGTERM = 128

@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 14:33:22 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/21 14:55:51 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/31 15:12:44 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	cleanup_after_execution(t_executor *executor, t_shell_state *sh_state \
 			, int status)
 {
 	sh_state->last_status = status;
+	sh_state->is_eof = false;
 	repair_std_io(executor);
 	free_executor(executor);
 }

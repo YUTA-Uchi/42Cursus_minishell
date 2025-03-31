@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 14:10:54 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/30 18:24:28 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/31 15:17:32 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,23 +43,27 @@ static int	handle_exit_status(int status, bool *sigint_displayed \
 	{
 		signal = WTERMSIG(status);
 		display_signal_message(signal, sigint_displayed, sigquit_displayed);
-		return (signal + E_SIGTERM);
+		return (signal | E_SIGTERM);
 	}
 	return (E_GENERAL_ERR);
 }
 
 static int	wait_single_command(t_cmd *cmd_content, bool *sigint_displayed \
-, bool *sigquit_displayed)
+			, bool *sigquit_displayed, t_shell_state *shell_state)
 {
 	int		status;
 	pid_t	wait_result;
 
 	while (1)
 	{
-		if (cmd_content->pid == -1 && g_signal != 0)
-			return (g_signal | E_SIGTERM);
 		if (cmd_content->pid == -1)
+		{
+			if (g_signal != 0)
+				return (g_signal | E_SIGTERM);
+			if (shell_state->is_eof)
+				return (EXIT_SUCCESS);
 			return (E_GENERAL_ERR);
+		}
 		wait_result = waitpid(cmd_content->pid, &status, 0);
 		if (wait_result != -1 || errno != EINTR)
 			break ;
@@ -69,7 +73,7 @@ static int	wait_single_command(t_cmd *cmd_content, bool *sigint_displayed \
 	return (handle_exit_status(status, sigint_displayed, sigquit_displayed));
 }
 
-int	wait_all_children(t_list *cmd_list)
+int	wait_all_children(t_list *cmd_list, t_shell_state *shell_state)
 {
 	t_list	*current;
 	bool	sigint_displayed;
@@ -85,7 +89,7 @@ int	wait_all_children(t_list *cmd_list)
 	{
 		cmd_content = (t_cmd *)(current->content);
 		last_status = wait_single_command(cmd_content, &sigint_displayed \
-										, &sigquit_displayed);
+										, &sigquit_displayed, shell_state);
 		current = current->next;
 	}
 	if (errno != 0 && errno != ECHILD && errno != EINTR)

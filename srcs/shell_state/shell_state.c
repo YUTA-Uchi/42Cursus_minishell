@@ -6,7 +6,7 @@
 /*   By: yuuchiya <yuuchiya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:57:03 by yuuchiya          #+#    #+#             */
-/*   Updated: 2025/03/28 17:20:30 by yuuchiya         ###   ########.fr       */
+/*   Updated: 2025/03/31 15:11:12 by yuuchiya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ t_shell_state	*create_shell_state(char **environ)
 	shell_state->running = true;
 	shell_state->last_status = 0;
 	shell_state->is_interactive = isatty(STDIN_FILENO);
+	shell_state->is_eof = false;
 	shell_state->env_list = create_env_list(environ);
 	if (!shell_state->env_list)
 		return (free_shell_state(shell_state), NULL);
