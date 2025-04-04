@@ -66,7 +66,14 @@ static bool	process_key_only(t_shell_state *shell_state, char *arg, int *i)
 		return (shell_state->last_status = E_GENERAL_ERR, false);
 	}
 	if (!get_env_value(shell_state->env_list, arg))
-		add_env(shell_state->env_list, arg, NULL);
+	{
+		if (!add_env(shell_state->env_list, arg, NULL))
+		{
+			print_strerror("export");
+			(*i)++;
+			return (shell_state->last_status = EXIT_FAILURE, false);
+		}
+	}
 	return (true);
 }
 
